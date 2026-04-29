@@ -1,0 +1,388 @@
+{
+  "common": {
+    "brand": "Violette Train",
+    "tagline": "Luxury Train Travel in Vietnam",
+    "nav": {
+      "home": "Home",
+      "cabins": "Room Classes",
+      "booking": "Book Now",
+      "blog": "Blog",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "cta": {
+      "bookNow": "Book Now",
+      "learnMore": "Learn More",
+      "viewAll": "View All",
+      "exploreNow": "Explore Now",
+      "selectCabin": "Select Cabin",
+      "continueBtn": "Continue",
+      "searchTickets": "Search Tickets",
+      "confirm": "Confirm"
+    },
+    "footer": {
+      "about": "Violette Train delivers luxury rail travel experiences, blending Vietnamese cultural heritage with modern comfort.",
+      "quickLinks": "Quick Links",
+      "support": "Support",
+      "contact": "Contact",
+      "address": "11 Thanh Nien Street, Ba Dinh, Ha Noi",
+      "phone": "091 582 3667",
+      "phoneAlt": "0947 163 497",
+      "email": "violettetrains@gmail.com",
+      "copyright": "Violette Train. All rights reserved.",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "checkIn": "Check-in: Gate 16, Hall C, Floor 1, 120 Le Duan (Ha Noi Station)"
+    },
+    "locale": {
+      "switch": "Switch language"
+    }
+  },
+  "dsvn": {
+    "trainSchedule": "Train Schedule",
+    "availableSeats": "Available Seats",
+    "selectSeat": "Select Seat",
+    "searching": "Searching...",
+    "noTrains": "No Trains Available",
+    "noTrainsDesc": "No trains found for this route. Please try a different date or route.",
+    "trainNumber": "Train Number",
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "duration": "Duration",
+    "restaurant": "Restaurant",
+    "from": "From",
+    "ticketPrice": "Ticket Price",
+    "seatClass": {
+      "standard": "Standard Room",
+      "premium": "Premium Room"
+    },
+    "categories": {
+      "news": "News",
+      "policy": "Policy",
+      "announcement": "Announcement"
+    }
+  },
+  "news": {
+    "title": "News & Updates",
+    "subtitle": "Stay updated with the latest schedules and policies from Violette Train.",
+    "latestNews": "Latest News",
+    "allNews": "All News",
+    "readMore": "Read More",
+    "minRead": "min read"
+  },
+  "home": {
+    "hero": {
+      "title": "Violette Train Vietnam",
+      "subtitle": "Luxury journeys, unforgettable experiences. With Violette Train, every trip tells a story.",
+      "cta": "Begin Your Journey"
+    },
+    "booking": {
+      "from": "From",
+      "to": "To",
+      "departure": "Departure",
+      "return": "Return",
+      "passengers": "Passengers",
+      "oneWay": "One Way",
+      "roundTrip": "Round Trip",
+      "selectDeparture": "Select departure",
+      "selectDestination": "Select destination",
+      "swapStations": "Swap departure & destination",
+      "searching": "Searching...",
+      "searchTrains": "Search Trains",
+      "continueToPayment": "Continue to Payment",
+      "confirmPayment": "Confirm Payment",
+      "processing": "Processing...",
+      "apply": "Apply",
+      "noSchedules": "No trains available for this route on the selected date.",
+      "loadError": "Unable to load schedules. Please try again.",
+      "selectCabin": "Select Cabin",
+      "foundTrains": "Found {count} train(s)",
+      "bestPrice": "Best price",
+      "soldOut": "Sold out",
+      "selectCabinClass": "Select cabin class",
+      "available": "available",
+      "perGuest": "/guest"
+    },
+    "whyUs": {
+      "title": "Why Choose Violette Train",
+      "uniqueTitle": "Pioneer & Unique",
+      "uniqueDesc": "Our carriages feature premium interiors with designs inspired by H'Mong brocade and Dong Ho paintings, celebrating Vietnamese cultural heritage. Our state-of-the-art VIP lounge system offers a truly comfortable experience.",
+      "serviceTitle": "Professional Expertise",
+      "serviceDesc": "Our dedicated team is committed to delivering exceptional customer service 24/7, year-round — including public holidays. We pride ourselves on fast, convenient, and reliable solutions.",
+      "sustainTitle": "Sustainability & Innovation",
+      "sustainDesc": "We are committed to protecting the environment with eco-friendly products. Additionally, we actively support local communities by preserving cultural heritage and enhancing their craftsmanship."
+    },
+    "cabins": {
+      "title": "Luxurious Resting Space",
+      "subtitle": "From budget-friendly Standard rooms to private Premium rooms — each room class offers a unique experience.",
+      "viewDetails": "View Details",
+      "startingFrom": "From"
+    },
+    "stats": {
+      "passengers": "Passengers Served",
+      "routes": "Routes",
+      "cabins": "Room Classes",
+      "support": "24/7 Support"
+    },
+    "inspiration": {
+      "title": "Trip Inspiration",
+      "subtitle": "Explore travel stories, destination guides, and experiences from Violette Train passengers.",
+      "featuredTitle": "Unforgettable Journey on the Sapa Train",
+      "featuredDesc": "The most wonderful experiences when stepping on the Hanoi - Sapa night train."
+    },
+    "testimonials": {
+      "title": "What Our Passengers Say",
+      "subtitle": "Thousands of passengers have trusted and experienced Violette Train's service."
+    },
+    "notice": {
+      "title": "Notice Regarding Noise on Vietnam's Railway",
+      "text": "With over 119 years of history, Vietnam's railway system carries the charm of the past — including the distinctive clatter of the tracks, a nostalgic sound inseparable from the classic train experience. At Violette, we understand noise can affect rest. We've made every effort to minimize it by improving rail joints, upgrading carriages, and installing soundproof materials."
+    },
+    "cta": {
+      "title": "Ready for Adventure?",
+      "subtitle": "Whatever you want from your Vietnam tour, our expert travel designers are ready to help."
+    }
+  },
+  "cabins": {
+    "title": "Room Classes",
+    "subtitle": "Explore the room classes of Violette Train — each designed for a unique experience.",
+    "standard": {
+      "name": "Standard",
+      "tagline": "Budget & Comfort",
+      "desc": "Shared 4-bed dormitory room, upper bunk cannot be pushed up. Ideal for groups or families seeking a quality train experience at great value. Booking all 4 tickets for a room grants full privacy of the entire space.",
+      "capacity": "Up to 4 guests/room",
+      "amenities": ["Air conditioning", "Power outlets", "Reading lights", "Shared restroom nearby", "Luggage storage", "Bedding included"],
+      "config4": "4 guests/room — Experience complete privacy at the best value price.",
+      "config2": "2 guests/room — More comfort with only one travel companion."
+    },
+    "premium": {
+      "name": "Premium",
+      "tagline": "Privacy & Upgraded",
+      "desc": "VIP room with push-up bunk beds (creating luxurious bus-style seating when desired), private lockable door, and en-suite restroom. Available in 2 or 4 guest configurations.",
+      "capacity": "Up to 4 guests/room",
+      "amenities": ["Push-up bunk beds (VIP seating)", "En-suite restroom", "Lockable door", "Personal AC", "Premium bedding", "Complimentary snacks & drinks", "Luggage storage"],
+      "config4": "4 guests/room — Spacious room for families or friend groups at a great rate.",
+      "config2": "2 guests/room (VIP) — Beds push up for luxurious seating, complete privacy."
+    },
+    "bookNow": "Book Now"
+  },
+  "booking": {
+    "title": "Book Your Journey",
+    "oneWay": "One Way",
+    "roundTrip": "Round Trip",
+    "selectRoute": "Select Route",
+    "selectCabin": "Select Cabin",
+    "passengerInfo": "Passenger Info",
+    "payment": "Payment",
+    "confirmation": "Confirmation",
+    "selectDeparture": "Select departure",
+    "selectDestination": "Select destination",
+    "swapStations": "Swap stations",
+    "searching": "Searching...",
+    "searchTrains": "Search Trains",
+    "continueToPayment": "Continue to Payment",
+    "confirmPayment": "Confirm Payment",
+    "processing": "Processing...",
+    "apply": "Apply",
+    "noSchedules": "No trains available for this route on the selected date.",
+    "loadError": "Unable to load schedules. Please try again.",
+    "foundTrains": "Found {count} train(s)",
+    "bestPrice": "Best price",
+    "soldOut": "Sold out",
+    "selectCabinClass": "Select cabin class",
+    "available": "available",
+    "perGuest": "/guest",
+    "form": {
+      "from": "From",
+      "to": "To",
+      "departureDate": "Departure Date",
+      "returnDate": "Return Date",
+      "passengers": "Passengers",
+      "adults": "Adults",
+      "children": "Children",
+      "selectRoute": "Select route",
+      "selectDate": "Select date",
+      "passengerDetails": "Passenger Details",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "specialRequests": "Special Requests",
+      "passenger": "Passenger",
+      "passengerType": "Passenger Type",
+      "gender": "Gender",
+      "dateOfBirth": "Date of Birth",
+      "adult": "Adult",
+      "child": "Child (under 12)",
+      "selectOption": "Select",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "addPassenger": "Add Passenger",
+      "removePassenger": "Remove",
+      "nameRequired": "Name must be at least 2 characters",
+      "invalidEmail": "Invalid email address",
+      "invalidPhone": "Invalid phone number",
+      "specialRequestsPlaceholder": "Special requests (if any): special luggage, assistance..."
+    },
+    "summary": {
+      "title": "Booking Summary",
+      "route": "Route",
+      "date": "Departure Date",
+      "cabin": "Room Class",
+      "passengers": "Passengers",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "Tax (10%)",
+      "total": "Total"
+    },
+    "payment": {
+      "title": "Payment Method",
+      "vnpay": "VNPay QR",
+      "momo": "MoMo",
+      "card": "Visa/Mastercard",
+      "bank": "Bank Transfer",
+      "payNow": "Pay Now",
+      "securePayment": "Secure Payment",
+      "sslEncrypted": "All transactions are encrypted with SSL 256-bit",
+      "selectedMethod": "Selected:",
+      "scanQR": "Scan VNPay QR code",
+      "payMoMo": "Pay via MoMo e-wallet",
+      "cardTypes": "Visa, Mastercard, JCB",
+      "bankTransfer": "Direct bank transfer"
+    },
+    "confirmation": {
+      "title": "Booking Successful!",
+      "subtitle": "Thank you for booking with Violette Train. Your booking details have been sent to your email.",
+      "bookingRef": "Booking Reference",
+      "printTicket": "Print Ticket",
+      "backHome": "Back to Home",
+      "emailSent": "A confirmation email has been sent to your email address."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Travel inspiration, destination guides, and stories from Violette Train.",
+    "categories": {
+      "all": "All",
+      "travel": "Travel",
+      "tips": "Tips & Tricks",
+      "culture": "Culture",
+      "food": "Food",
+      "testimonial": "Guest Stories"
+    },
+    "readMore": "Read More",
+    "minRead": "min read"
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Discover the story behind Violette Train — Vietnam's leading luxury tourist train brand.",
+    "story": {
+      "title": "Our Story",
+      "text": "Violette Train was born from a passion for combining Vietnam's railway heritage with modern travel experiences. We believe every train journey is more than transportation — it's a memorable journey where passengers experience culture, nature, and luxury comfort."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "text": "To deliver luxury rail travel experiences and showcase the beauty of Vietnam through every train journey."
+    }
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "bookings": "Bookings",
+      "routes": "Routes",
+      "pricing": "Pricing",
+      "schedules": "Schedules",
+      "settings": "Settings & DB",
+      "signOut": "Sign Out"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "total": "total bookings",
+      "noBookings": "No bookings found",
+      "searchPlaceholder": "Search by reference, name, route...",
+      "allStatus": "All Status",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "refresh": "Refresh",
+      "viewDetails": "View details",
+      "reference": "Reference",
+      "route": "Route",
+      "date": "Date",
+      "passengers": "Passengers",
+      "amount": "Amount",
+      "bookingStatus": "Booking",
+      "paymentStatus": "Payment",
+      "actions": "Actions",
+      "showing": "Showing {from}-{to} of {total}",
+      "page": "Page {page} of {total}",
+      "detail": {
+        "route": "Route",
+        "totalAmount": "Total Amount",
+        "passengersTitle": "Passengers ({count})",
+        "paymentTitle": "Payment",
+        "method": "Method",
+        "transactionId": "Transaction ID",
+        "na": "N/A",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "markComplete": "Mark Complete",
+        "close": "Close"
+      }
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "completed": "Completed"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Overview of Violette Train operations.",
+      "refresh": "Refresh",
+      "totalBookings": "Total Bookings",
+      "confirmationRate": "{rate}% confirmation rate",
+      "confirmed": "Confirmed",
+      "pending": "pending",
+      "totalRevenue": "Total Revenue",
+      "avgBooking": "Avg {price}/booking",
+      "cancelled": "Cancelled",
+      "thisMonth": "This month",
+      "topRoutes": "Top Routes",
+      "bookingsLabel": "bookings",
+      "revenueTrend": "Revenue Trend (Last 12 Months)",
+      "recentBookings": "Recent Bookings",
+      "viewAll": "View all",
+      "noRouteData": "No route data yet",
+      "noRevenueData": "No revenue data yet",
+      "noBookingsYet": "No bookings yet"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We're always ready to assist you. Get in touch today!",
+    "form": {
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "subject": "Subject",
+      "message": "Your Message",
+      "send": "Send Message"
+    },
+    "info": {
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "hours": "Working Hours"
+    }
+  }
+}

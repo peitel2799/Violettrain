@@ -1,0 +1,390 @@
+{
+  "common": {
+    "brand": "Violette Train",
+    "tagline": "Du lịch đường sắt sang trọng tại Việt Nam",
+    "nav": {
+      "home": "Trang chủ",
+      "cabins": "Hạng phòng",
+      "booking": "Đặt vé",
+      "blog": "Blog",
+      "about": "Giới thiệu",
+      "contact": "Liên hệ"
+    },
+    "cta": {
+      "bookNow": "Đặt vé ngay",
+      "learnMore": "Tìm hiểu thêm",
+      "viewAll": "Xem tất cả",
+      "exploreNow": "Khám phá ngay",
+      "selectCabin": "Chọn ghế",
+      "continueBtn": "Tiếp tục",
+      "searchTickets": "Tìm vé",
+      "confirm": "Xác nhận"
+    },
+    "footer": {
+      "about": "Violette Train mang đến trải nghiệm du lịch đường sắt đẳng cấp, kết hợp giữa di sản văn hóa Việt Nam và tiện nghi hiện đại.",
+      "quickLinks": "Liên kết nhanh",
+      "support": "Hỗ trợ",
+      "contact": "Liên hệ",
+      "address": "11 Thanh Nien Street, Ba Dinh, Ha Noi",
+      "phone": "091 582 3667",
+      "phoneAlt": "0947 163 497",
+      "email": "violettetrains@gmail.com",
+      "copyright": "Violette Train. Bảo lưu mọi quyền.",
+      "privacy": "Chính sách bảo mật",
+      "terms": "Điều khoản sử dụng",
+      "checkIn": "Check-in: Gate 16, Hall C, Floor 1, 120 Le Duan (Ga Hà Nội)"
+    },
+    "locale": {
+      "switch": "Chuyển ngôn ngữ"
+    }
+  },
+  "dsvn": {
+    "trainSchedule": "Lịch tàu",
+    "availableSeats": "Chỗ trống",
+    "selectSeat": "Chọn ghế",
+    "searching": "Đang tìm kiếm...",
+    "noTrains": "Không có chuyến tàu",
+    "noTrainsDesc": "Không tìm thấy chuyến tàu phù hợp. Vui lòng thử ngày hoặc tuyến đường khác.",
+    "trainNumber": "Số hiệu tàu",
+    "departure": "Khởi hành",
+    "arrival": "Đến",
+    "duration": "Thời gian",
+    "restaurant": "Nhà hàng",
+    "from": "Từ",
+    "ticketPrice": "Giá vé",
+    "seatClass": {
+      "standard": "Phòng Standard",
+      "premium": "Phòng Premium"
+    },
+    "categories": {
+      "news": "Tin tức",
+      "policy": "Chính sách",
+      "announcement": "Thông báo"
+    }
+  },
+  "news": {
+    "title": "Tin tức & Thông báo",
+    "subtitle": "Cập nhật lịch trình và chính sách mới nhất từ Violette Train.",
+    "latestNews": "Tin mới nhất",
+    "allNews": "Tất cả tin tức",
+    "readMore": "Đọc tiếp",
+    "minRead": "phút đọc"
+  },
+  "home": {
+    "hero": {
+      "title": "Violette Train Vietnam",
+      "subtitle": "Hành trình đẳng cấp, trải nghiệm đáng nhớ. Cùng Violette Train, mỗi chuyến đi là một câu chuyện.",
+      "cta": "Bắt đầu hành trình"
+    },
+    "booking": {
+      "from": "Điểm đi",
+      "to": "Điểm đến",
+      "departure": "Ngày đi",
+      "return": "Ngày về",
+      "passengers": "Hành khách",
+      "oneWay": "Một chiều",
+      "roundTrip": "Khứ hồi",
+      "selectDeparture": "Chọn điểm đi",
+      "selectDestination": "Chọn điểm đến",
+      "swapStations": "Đổi điểm đi/đến",
+      "searching": "Đang tìm kiếm...",
+      "searchTrains": "Tìm chuyến tàu",
+      "continueToPayment": "Tiếp tục thanh toán",
+      "confirmPayment": "Xác nhận thanh toán",
+      "processing": "Đang xử lý...",
+      "apply": "Áp dụng",
+      "noSchedules": "Không có chuyến tàu cho tuyến này vào ngày đã chọn.",
+      "loadError": "Không thể tải lịch trình. Vui lòng thử lại.",
+      "selectCabin": "Chọn hạng ghế",
+      "foundTrains": "Tìm thấy {count} chuyến tàu",
+      "bestPrice": "Giá tốt nhất",
+      "soldOut": "Hết vé",
+      "selectCabinClass": "Chọn hạng ghế",
+      "available": "chỗ trống",
+      "perGuest": "/khách"
+    },
+    "whyUs": {
+      "title": "Tại sao chọn Violette Train",
+      "uniqueTitle": "Độc đáo & Tiên phong",
+      "uniqueDesc": "Toa tàu được thiết kế tinh xảo với hoa văn thổ cẩm H'Mong và tranh Đông Hồ, mang đậm bản sắc văn hóa Việt Nam. Hệ thống phòng chờ VIP hiện đại mang đến trải nghiệm không thể quên.",
+      "serviceTitle": "Chuyên nghiệp & Tận tâm",
+      "serviceDesc": "Đội ngũ nhân viên phục vụ 24/7 quanh năm, kể cả ngày lễ Tết. Cam kết mang đến dịch vụ nhanh chóng, thuận tiện và đáng tin cậy nhất.",
+      "sustainTitle": "Bền vững & Đổi mới",
+      "sustainDesc": "Cam kết bảo vệ môi trường với các sản phẩm thân thiện với thiên nhiên. Hỗ trợ cộng đồng địa phương, gìn giữ và phát huy di sản văn hóa dân tộc."
+    },
+    "cabins": {
+      "title": "Không gian nghỉ ngơi đẳng cấp",
+      "subtitle": "Từ phòng Standard tiết kiệm đến Premium riêng tư — mỗi hạng phòng là một trải nghiệm riêng biệt.",
+      "viewDetails": "Xem chi tiết",
+      "startingFrom": "Từ"
+    },
+    "stats": {
+      "passengers": "Hành khách phục vụ",
+      "routes": "Tuyến đường",
+      "cabins": "Hạng phòng",
+      "support": "Hỗ trợ 24/7"
+    },
+    "inspiration": {
+      "title": "Cảm hứng lên đường",
+      "subtitle": "Khám phá những câu chuyện du lịch, destination guides và trải nghiệm từ hành khách Violette Train.",
+      "featuredTitle": "Hành trình đáng nhớ trên tàu lửa Sapa",
+      "featuredDesc": "Những trải nghiệm tuyệt vời nhất khi đặt chân lên chuyến tàu đêm Hà Nội - Sapa."
+    },
+    "testimonials": {
+      "title": "Hành khách nói gì về Violette",
+      "subtitle": "Hàng nghìn hành khách đã tin tưởng và trải nghiệm dịch vụ của Violette Train."
+    },
+    "notice": {
+      "title": "Lưu ý về tiếng ồn trên tàu hỏa Việt Nam",
+      "text": "Với hơn 119 năm lịch sử, đường sắt Việt Nam mang theo sự quyến rũ của quá khứ — bao gồm tiếng lộp cộp đặc trưng trên đường ray, một âm thanh hoài niệm gắn liền với trải nghiệm tàu cổ điển. Tại Violette, chúng tôi hiểu rằng tiếng ồn có thể ảnh hưởng đến sự nghỉ ngơi của bạn. Chúng tôi đã nỗ lực giảm thiểu bằng cách cải thiện mối nối đường ray, nâng cấp toa tàu và lắp đặt vật liệu cách âm."
+    },
+    "cta": {
+      "title": "Sẵn sàng cho cuộc phiêu lưu?",
+      "subtitle": "Dù bạn muốn gì cho chuyến đi Việt Nam, đội ngũ thiết kế du lịch của chúng tôi luôn sẵn sàng hỗ trợ."
+    }
+  },
+  "cabins": {
+    "title": "Hạng phòng",
+    "subtitle": "Khám phá các hạng phòng của Violette Train — mỗi hạng được thiết kế để mang đến trải nghiệm độc đáo.",
+    "standard": {
+      "name": "Standard",
+      "tagline": "Tiết kiệm & Thoải mái",
+      "desc": "Phòng 4 giường tầng chia sẻ, giường trên không thể nâng lên. Lý tưởng cho nhóm bạn hoặc gia đình muốn trải nghiệm tàu lửa với chi phí hợp lý. Khi đặt đủ 4 vé cho một phòng, quý khách có không gian riêng tư hoàn toàn.",
+      "capacity": "Tối đa 4 khách/phòng",
+      "amenities": ["Điều hòa không khí", "Ổ cắm điện", "Đèn đọc sách", "Nhà vệ sinh chung", "Hành lý ký gửi", "Bộ ga giường"],
+      "config4": "4 khách/phòng — Ghé đầu để trải nghiệm không gian riêng tư hoàn toàn với giá tiết kiệm nhất.",
+      "config2": "2 khách/phòng — Lựa chọn thoải mái hơn khi chỉ chia sẻ với 1 người bạn đồng hành."
+    },
+    "premium": {
+      "name": "Premium",
+      "tagline": "Riêng tư & Nâng cấp",
+      "desc": "Phòng VIP với giường tầng có thể nâng lên (tạo không gian ngồi sang trọng kiểu xe khách), cửa khóa riêng và nhà vệ sinh riêng. Tùy chọn 2 hoặc 4 khách/phòng.",
+      "capacity": "Tối đa 4 khách/phòng",
+      "amenities": ["Giường tầng có thể nâng lên (tạo ghế VIP)", "Nhà vệ sinh riêng", "Cửa khóa riêng", "Điều hòa riêng", "Bộ ga giường cao cấp", "Snack & đồ uống miễn phí", "Hành lý ký gửi"],
+      "config4": "4 khách/phòng — Không gian rộng rãi cho gia đình hoặc nhóm bạn, tiết kiệm chi phí.",
+      "config2": "2 khách/phòng (VIP) — Giường nâng lên tạo không gian ngồi sang trọng, riêng tư hoàn toàn."
+    },
+    "bookNow": "Đặt ngay"
+  },
+  "booking": {
+    "title": "Đặt vé",
+    "steps": {
+      "selectRoute": "Chọn hành trình",
+      "selectCabin": "Chọn hạng ghế",
+      "passengerInfo": "Thông tin khách",
+      "payment": "Thanh toán",
+      "confirmation": "Hoàn tất"
+    },
+    "oneWay": "Một chiều",
+    "roundTrip": "Khứ hồi",
+    "selectDeparture": "Chọn điểm đi",
+    "selectDestination": "Chọn điểm đến",
+    "swapStations": "Đổi điểm đi/đến",
+    "searching": "Đang tìm kiếm...",
+    "searchTrains": "Tìm chuyến tàu",
+    "continueToPayment": "Tiếp tục thanh toán",
+    "confirmPayment": "Xác nhận thanh toán",
+    "processing": "Đang xử lý...",
+    "apply": "Áp dụng",
+    "noSchedules": "Không có chuyến tàu cho tuyến này vào ngày đã chọn.",
+    "loadError": "Không thể tải lịch trình. Vui lòng thử lại.",
+    "foundTrains": "Tìm thấy {count} chuyến tàu",
+    "bestPrice": "Giá tốt nhất",
+    "soldOut": "Hết vé",
+    "selectCabinClass": "Chọn hạng ghế",
+    "available": "chỗ trống",
+    "perGuest": "/khách",
+    "form": {
+      "from": "Điểm đi",
+      "to": "Điểm đến",
+      "departureDate": "Ngày khởi hành",
+      "returnDate": "Ngày về",
+      "passengers": "Số hành khách",
+      "adults": "Người lớn",
+      "children": "Trẻ em",
+      "selectRoute": "Chọn tuyến đường",
+      "selectDate": "Chọn ngày",
+      "passengerDetails": "Thông tin hành khách",
+      "fullName": "Họ và tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "specialRequests": "Yêu cầu đặc biệt",
+      "passenger": "Hành khách",
+      "passengerType": "Loại khách",
+      "gender": "Giới tính",
+      "dateOfBirth": "Ngày sinh",
+      "adult": "Người lớn",
+      "child": "Trẻ em (dưới 12 tuổi)",
+      "selectOption": "Chọn",
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác",
+      "addPassenger": "Thêm hành khách",
+      "removePassenger": "Xóa",
+      "nameRequired": "Họ tên phải ít nhất 2 ký tự",
+      "invalidEmail": "Địa chỉ email không hợp lệ",
+      "invalidPhone": "Số điện thoại không hợp lệ",
+      "specialRequestsPlaceholder": "Yêu cầu đặc biệt (nếu có): hành lý đặc biệt, hỗ trợ đặc biệt..."
+    },
+    "summary": {
+      "title": "Tóm tắt đặt vé",
+      "route": "Hành trình",
+      "date": "Ngày khởi hành",
+      "cabin": "Hạng phòng",
+      "passengers": "Hành khách",
+      "subtotal": "Tạm tính",
+      "discount": "Giảm giá",
+      "tax": "Thuế (10%)",
+      "total": "Tổng cộng"
+    },
+    "payment": {
+      "title": "Phương thức thanh toán",
+      "vnpay": "VNPay QR",
+      "momo": "MoMo",
+      "card": "Thẻ Visa/Mastercard",
+      "bank": "Chuyển khoản ngân hàng",
+      "payNow": "Thanh toán ngay",
+      "securePayment": "Thanh toán an toàn & bảo mật",
+      "sslEncrypted": "Mọi giao dịch được mã hóa SSL 256-bit",
+      "selectedMethod": "Phương thức đã chọn:",
+      "scanQR": "Quét mã QR VNPay",
+      "payMoMo": "Thanh toán qua ví MoMo",
+      "cardTypes": "Visa, Mastercard, JCB",
+      "bankTransfer": "Chuyển khoản ngân hàng"
+    },
+    "confirmation": {
+      "title": "Đặt vé thành công!",
+      "subtitle": "Cảm ơn bạn đã đặt vé với Violette Train. Thông tin đặt vé đã được gửi đến email của bạn.",
+      "bookingRef": "Mã đặt vé",
+      "printTicket": "In vé",
+      "backHome": "Về trang chủ",
+      "emailSent": "Email xác nhận đã được gửi đến địa chỉ email của bạn."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Cảm hứng du lịch, destination guides và những câu chuyện từ Violette Train.",
+    "categories": {
+      "all": "Tất cả",
+      "travel": "Du lịch",
+      "tips": "Mẹo hay",
+      "culture": "Văn hóa",
+      "food": "Ẩm thực",
+      "testimonial": "Cảm nhận"
+    },
+    "readMore": "Đọc tiếp",
+    "minRead": "phút đọc"
+  },
+  "about": {
+    "title": "Giới thiệu",
+    "subtitle": "Khám phá câu chuyện đằng sau Violette Train — thương hiệu tàu lửa du lịch sang trọng hàng đầu Việt Nam.",
+    "story": {
+      "title": "Câu chuyện của chúng tôi",
+      "text": "Violette Train ra đời từ niềm đam mê kết hợp giữa di sản đường sắt Việt Nam và trải nghiệm du lịch hiện đại. Chúng tôi tin rằng mỗi chuyến tàu không chỉ là phương tiện di chuyển, mà là một hành trình đáng nhớ, nơi hành khách được trải nghiệm văn hóa, thiên nhiên và sự thoải mái đẳng cấp."
+    },
+    "mission": {
+      "title": "Sứ mệnh",
+      "text": "Mang đến trải nghiệm du lịch đường sắt đẳng cấp, khám phá vẻ đẹp Việt Nam qua mỗi chuyến tàu."
+    }
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "bookings": "Đặt vé",
+      "routes": "Tuyến đường",
+      "pricing": "Giá vé",
+      "schedules": "Lịch trình",
+      "settings": "Cài đặt & DB",
+      "signOut": "Đăng xuất"
+    },
+    "bookings": {
+      "title": "Đặt vé",
+      "total": "đặt vé",
+      "noBookings": "Không tìm thấy đặt vé nào",
+      "searchPlaceholder": "Tìm theo mã, tên, tuyến đường...",
+      "allStatus": "Tất cả",
+      "pending": "Đang chờ",
+      "confirmed": "Đã xác nhận",
+      "completed": "Hoàn tất",
+      "cancelled": "Đã hủy",
+      "refunded": "Đã hoàn tiền",
+      "refresh": "Làm mới",
+      "viewDetails": "Xem chi tiết",
+      "reference": "Mã đặt vé",
+      "route": "Tuyến đường",
+      "date": "Ngày",
+      "passengers": "Hành khách",
+      "amount": "Số tiền",
+      "bookingStatus": "Trạng thái",
+      "paymentStatus": "Thanh toán",
+      "actions": "Hành động",
+      "showing": "Hiển thị {from}-{to} trong tổng {total}",
+      "page": "Trang {page} trong {total}",
+      "detail": {
+        "route": "Tuyến đường",
+        "totalAmount": "Tổng số tiền",
+        "passengersTitle": "Hành khách ({count})",
+        "paymentTitle": "Thanh toán",
+        "method": "Phương thức",
+        "transactionId": "Mã giao dịch",
+        "na": "Không có",
+        "confirm": "Xác nhận",
+        "cancel": "Hủy",
+        "markComplete": "Hoàn tất",
+        "close": "Đóng"
+      }
+    },
+    "status": {
+      "pending": "Đang chờ",
+      "confirmed": "Đã xác nhận",
+      "cancelled": "Đã hủy",
+      "refunded": "Đã hoàn tiền",
+      "completed": "Hoàn tất"
+    },
+    "paymentStatus": {
+      "pending": "Đang chờ",
+      "paid": "Đã thanh toán",
+      "failed": "Thất bại",
+      "refunded": "Đã hoàn tiền"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Tổng quan hoạt động của Violette Train.",
+      "refresh": "Làm mới",
+      "totalBookings": "Tổng đặt vé",
+      "confirmationRate": "Tỷ lệ xác nhận {rate}%",
+      "confirmed": "Đã xác nhận",
+      "pending": "đang chờ",
+      "totalRevenue": "Tổng doanh thu",
+      "avgBooking": "TB {price}/đặt vé",
+      "cancelled": "Đã hủy",
+      "thisMonth": "Tháng này",
+      "topRoutes": "Tuyến hot",
+      "bookingsLabel": "đặt vé",
+      "revenueTrend": "Xu hướng doanh thu (12 tháng gần nhất)",
+      "recentBookings": "Đặt vé gần đây",
+      "viewAll": "Xem tất cả",
+      "noRouteData": "Chưa có dữ liệu tuyến",
+      "noRevenueData": "Chưa có dữ liệu doanh thu",
+      "noBookingsYet": "Chưa có đặt vé nào"
+    }
+  },
+  "contact": {
+    "title": "Liên hệ",
+    "subtitle": "Chúng tôi luôn sẵn sàng hỗ trợ bạn. Liên hệ ngay!",
+    "form": {
+      "name": "Họ và tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "subject": "Chủ đề",
+      "message": "Nội dung tin nhắn",
+      "send": "Gửi tin nhắn"
+    },
+    "info": {
+      "address": "Địa chỉ",
+      "phone": "Điện thoại",
+      "email": "Email",
+      "hours": "Giờ làm việc"
+    }
+  }
+}

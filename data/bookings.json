@@ -1,0 +1,127 @@
+[
+  {
+    "reference": "VT-AIWSHLFU",
+    "status": "confirmed",
+    "paymentStatus": "paid",
+    "routeId": "hanoi-ninhbinh",
+    "routeName": "Hanoi → Ninh Binh",
+    "cabinClassId": "premium",
+    "cabinClassName": "Phòng Premium",
+    "departureDate": "2026-04-26",
+    "departureTime": "06:30",
+    "trainNumber": "SE25",
+    "isRoundTrip": false,
+    "passengers": [
+      {
+        "type": "adult",
+        "fullName": "LE NGOC TIEP",
+        "email": "tiep.ln225159@sis.hust.edu.vn",
+        "phone": "0941710927",
+        "dateOfBirth": ""
+      }
+    ],
+    "pricing": {
+      "subtotal": 900000,
+      "discount": 0,
+      "tax": 90000,
+      "total": 990000,
+      "promoCode": "W"
+    },
+    "payment": {
+      "method": "bank",
+      "paidAt": "2026-04-26T18:54:15.733Z"
+    },
+    "contact": {
+      "email": "tiep.ln225159@sis.hust.edu.vn",
+      "phone": "0941710927"
+    },
+    "id": "BK-1777229656978",
+    "createdAt": "2026-04-26T18:54:16.978Z",
+    "updatedAt": "2026-04-26T18:54:16.978Z"
+  },
+  {
+    "reference": "VT-NWV8K7TI",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "routeId": "hanoi-laocai",
+    "routeName": "Hanoi → Lao Cai (Sapa)",
+    "cabinClassId": "premium",
+    "cabinClassName": "Phòng Premium",
+    "departureDate": "2025-11-11",
+    "departureTime": "22:00",
+    "trainNumber": "SE19",
+    "isRoundTrip": false,
+    "passengers": [
+      {
+        "type": "adult",
+        "fullName": "LE NGOC TIEP",
+        "email": "tiep.ln225159@sis.hust.edu.vn",
+        "phone": "0941710927",
+        "dateOfBirth": ""
+      }
+    ],
+    "pricing": {
+      "subtotal": 2700000,
+      "discount": 0,
+      "tax": 270000,
+      "total": 2970000,
+      "promoCode": "H"
+    },
+    "payment": {
+      "method": "card"
+    },
+    "contact": {
+      "email": "tiep.ln225159@sis.hust.edu.vn",
+      "phone": "0941710927"
+    },
+    "id": "BK-1777227357324",
+    "createdAt": "2026-04-26T18:15:57.324Z",
+    "updatedAt": "2026-04-26T18:15:57.324Z"
+  },
+  {
+    "reference": "VT-6CNI5ABS",
+    "status": "pending",
+    "paymentStatus": "pending",
+    "routeId": "hanoi-danang",
+    "routeName": "Hanoi → Da Nang",
+    "cabinClassId": "premium",
+    "cabinClassName": "Phòng Premium",
+    "departureDate": "2026-04-28",
+    "departureTime": "19:00",
+    "trainNumber": "SE3",
+    "isRoundTrip": false,
+    "passengers": [
+      {
+        "type": "adult",
+        "fullName": "LE NGOC TIEP",
+        "email": "tiep.ln225159@sis.hust.edu.vn",
+        "phone": "0941710927",
+        "dateOfBirth": "2000-01-12"
+      },
+      {
+        "type": "adult",
+        "fullName": "LE NGOC TIEP",
+        "email": "tiep.ln225159@sis.hust.edu.vn",
+        "phone": "0941710927",
+        "dateOfBirth": "2000-02-12"
+      }
+    ],
+    "pricing": {
+      "subtotal": 9000000,
+      "discount": 0,
+      "tax": 900000,
+      "total": 9900000,
+      "promoCode": "FYU"
+    },
+    "payment": {
+      "method": "vnpay"
+    },
+    "contact": {
+      "email": "tiep.ln225159@sis.hust.edu.vn",
+      "phone": "0941710927"
+    },
+    "id": "BK-1777226840815",
+    "createdAt": "2026-04-26T18:07:20.815Z",
+    "updatedAt": "2026-04-26T18:07:20.815Z"
+  }
+]

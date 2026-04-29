@@ -1,0 +1,456 @@
+import type { Route, CabinClass, Testimonial, BlogPost } from './types'
+import { STATIONS } from './dsvn-client'
+
+// Bookable stations for the booking widget (Violette's primary routes)
+export const BOOKABLE_STATIONS = ['hanoi', 'ninhbinh', 'donghoi', 'hue', 'danang'] as const
+export type BookableStationKey = (typeof BOOKABLE_STATIONS)[number]
+
+// Derive STATION_NAMES and STATION_CODES from dsvn-client's authoritative STATIONS data
+export const STATION_NAMES: Record<string, { vi: string; en: string; dsvnCode?: string }> = Object.fromEntries(
+  Object.entries(STATIONS).map(([key, s]) => [key, { vi: s.nameVi, en: s.nameEn, dsvnCode: s.code }])
+)
+
+export const STATION_CODES: Record<string, string> = Object.fromEntries(
+  Object.entries(STATIONS).map(([key, s]) => [s.code, key])
+)
+
+// UI Design Token Constants
+
+export const CATEGORY_COLORS: Record<string, string> = {
+  travel: 'bg-blue-50 text-blue-600',
+  tips: 'bg-green-50 text-green-600',
+  culture: 'bg-violet-50 text-violet-600',
+  food: 'bg-orange-50 text-orange-600',
+  testimonial: 'bg-gold-50 text-gold-600',
+  news: 'bg-blue-50 text-blue-600',
+  policy: 'bg-violet-50 text-violet-600',
+  announcement: 'bg-red-50 text-red-600',
+}
+
+export const CATEGORIES = ['travel', 'tips', 'culture', 'food', 'testimonial'] as const
+
+export const BADGE_VARIANTS = {
+  default: 'bg-gray-100 text-gray-700 border-gray-200',
+  success: 'bg-green-50 text-green-700 border-green-200',
+  warning: 'bg-amber-50 text-amber-700 border-amber-200',
+  error: 'bg-red-50 text-red-700 border-red-200',
+  info: 'bg-blue-50 text-blue-700 border-blue-200',
+  violet: 'bg-violet-50 text-violet-700 border-violet-200',
+  gold: 'bg-gold-500/10 text-gold-600 border-gold-400/30',
+} as const
+
+export type BadgeVariant = keyof typeof BADGE_VARIANTS
+
+export const BOOKING_STATUS_STYLES: Record<string, string> = {
+  pending: 'bg-amber-50 text-amber-700 border-amber-200',
+  confirmed: 'bg-green-50 text-green-700 border-green-200',
+  cancelled: 'bg-red-50 text-red-700 border-red-200',
+  completed: 'bg-blue-50 text-blue-700 border-blue-200',
+}
+
+export const TRANSITION = {
+  fast: 'transition-all duration-200 ease-out',
+  standard: 'transition-all duration-300 ease-out',
+  slow: 'transition-all duration-500 ease-out',
+  spring: 'transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)',
+} as const
+
+export const ROUTES: Route[] = [
+  {
+    id: 'HNO-NBI',
+    from: 'hanoi',
+    to: 'ninhbinh',
+    fromStation: 'Ga Hà Nội',
+    toStation: 'Ga Ninh Bình',
+    duration: '~2 tiếng',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '06:30 / 19:00',
+    arrivalTime: '08:30 / 21:00',
+    basePrice: 500000,
+  },
+  {
+    id: 'HNO-DHO',
+    from: 'hanoi',
+    to: 'donghoi',
+    fromStation: 'Ga Hà Nội',
+    toStation: 'Ga Đồng Hới (Phong Nha)',
+    duration: '~6 tiếng',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '19:30 / 21:00',
+    arrivalTime: '01:30 / 03:00',
+    basePrice: 900000,
+  },
+  {
+    id: 'HNO-HUE',
+    from: 'hanoi',
+    to: 'hue',
+    fromStation: 'Ga Hà Nội',
+    toStation: 'Ga Huế',
+    duration: '~12 tiếng',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '19:00 / 21:30',
+    arrivalTime: '07:00 / 09:30',
+    basePrice: 2000000,
+  },
+  {
+    id: 'HNO-DNA',
+    from: 'hanoi',
+    to: 'danang',
+    fromStation: 'Ga Hà Nội',
+    toStation: 'Ga Đà Nẵng',
+    duration: '~17 tiếng 30 phút',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '19:00 / 20:30 / 22:00',
+    arrivalTime: '12:30 / 14:00 / 15:30',
+    basePrice: 2500000,
+  },
+  {
+    id: 'DNA-HUE',
+    from: 'danang',
+    to: 'hue',
+    fromStation: 'Ga Đà Nẵng',
+    toStation: 'Ga Huế',
+    duration: '~2 tiếng 30 phút',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '07:30 / 16:30',
+    arrivalTime: '10:00 / 19:00',
+    basePrice: 600000,
+  },
+  {
+    id: 'DHO-HUE',
+    from: 'donghoi',
+    to: 'hue',
+    fromStation: 'Ga Đồng Hới (Phong Nha)',
+    toStation: 'Ga Huế',
+    duration: '~4 tiếng 30 phút',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '05:30 / 23:00',
+    arrivalTime: '10:00 / 03:30',
+    basePrice: 700000,
+  },
+  {
+    id: 'DHO-DNA',
+    from: 'donghoi',
+    to: 'danang',
+    fromStation: 'Ga Đồng Hới (Phong Nha)',
+    toStation: 'Ga Đà Nẵng',
+    duration: '~7 tiếng 30 phút',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '04:00 / 20:00',
+    arrivalTime: '11:30 / 03:30',
+    basePrice: 1000000,
+  },
+  {
+    id: 'NBI-HUE',
+    from: 'ninhbinh',
+    to: 'hue',
+    fromStation: 'Ga Ninh Bình',
+    toStation: 'Ga Huế',
+    duration: '~10 tiếng',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '22:00',
+    arrivalTime: '08:00',
+    basePrice: 1600000,
+  },
+  {
+    id: 'NBI-DNA',
+    from: 'ninhbinh',
+    to: 'danang',
+    fromStation: 'Ga Ninh Bình',
+    toStation: 'Ga Đà Nẵng',
+    duration: '~15 tiếng',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    departureTime: '19:00 / 21:00',
+    arrivalTime: '10:00 / 12:00',
+    basePrice: 2200000,
+  },
+]
+
+export const CABIN_CLASSES: CabinClass[] = [
+  {
+    id: 'standard',
+    name: 'Standard',
+    abbr: 'STD',
+    taglineKey: 'cabins.standard.tagline',
+    descKey: 'cabins.standard.desc',
+    maxBeds: 4,
+    pushUpBeds: false,
+    amenities: [
+      'Air conditioning',
+      'Power outlets',
+      'Reading lights',
+      'Shared restroom nearby',
+      'Luggage storage',
+      'Bedding included',
+    ],
+    images: [
+      '/violette-cabin-standard-1.jpg',
+      '/violette-cabin-standard-3.jpg',
+      '/violette-cabin-standard-4.jpg',
+    ],
+    priceFactor: 1.0,
+    configs: [
+      {
+        maxPax: 4,
+        descKey: 'cabins.standard.config4',
+        priceMultiplier: 1.0,
+      },
+      {
+        maxPax: 2,
+        descKey: 'cabins.standard.config2',
+        priceMultiplier: 1.4,
+      },
+    ],
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    abbr: 'PRM',
+    taglineKey: 'cabins.premium.tagline',
+    descKey: 'cabins.premium.desc',
+    maxBeds: 4,
+    pushUpBeds: true,
+    amenities: [
+      'Push-up bunk beds (VIP seating)',
+      'En-suite restroom',
+      'Lockable cabin door',
+      'Personal AC',
+      'Premium bedding',
+      'Complimentary snacks & drinks',
+      'Luggage storage',
+    ],
+    images: [
+      '/premium_room/4pax.JPG',
+      '/premium_room/room1.JPG',
+      '/premium_room/room2.JPG',
+      '/premium_room/outside1.JPG',
+      '/premium_room/outside2.JPG',
+    ],
+    priceFactor: 1.8,
+    configs: [
+      {
+        maxPax: 4,
+        descKey: 'cabins.premium.config4',
+        priceMultiplier: 1.0,
+      },
+      {
+        maxPax: 2,
+        descKey: 'cabins.premium.config2',
+        priceMultiplier: 1.5,
+      },
+    ],
+  },
+]
+
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    id: '1',
+    name: 'Elena Bezdetko',
+    title: "Wife of the Russian Ambassador to Vietnam",
+    quote: 'Thank you Violette Train for an amazing project. I was able to see and experience Hanoi in a whole new way on this journey.',
+    avatar: '/avatars/placeholder.svg',
+  },
+  {
+    id: '2',
+    name: 'Travip',
+    title: 'Travel Blogger',
+    quote: "In my opinion, this is not just a simple train ride. It's a complete tour package. My mother and I had a very interesting experience.",
+    avatar: '/avatars/placeholder.svg',
+  },
+  {
+    id: '3',
+    name: 'Nguyen Khang',
+    title: 'MC & TV Host',
+    quote: "As someone from the South, I'm proud and cherish the distinctive cultural values of Hanoi preserved through the journey.",
+    avatar: '/avatars/placeholder.svg',
+  },
+  {
+    id: '4',
+    name: 'Thu May',
+    title: 'Content Creator',
+    quote: 'The carriages are as beautiful as a film set backdrop — just raise your phone and you are guaranteed a set of stunning photos, especially in traditional attire.',
+    avatar: '/avatars/placeholder.svg',
+  },
+]
+
+export const BLOG_POSTS: BlogPost[] = [
+  {
+    id: '1',
+    slug: 'discover-sapa-by-train',
+    category: 'travel',
+    title: 'Khám phá Sapa bằng tàu lửa — Hành trình đáng nhớ',
+    titleEn: 'Discover Sapa by Train — An Unforgettable Journey',
+    excerpt: 'Những trải nghiệm tuyệt vời nhất khi đặt chân lên chuyến tàu đêm Hà Nội - Sapa.',
+    excerptEn: 'The most wonderful experiences when stepping on the Hanoi - Sapa night train.',
+    content: '',
+    coverImage: '/stations/HaNoiStation.webp',
+    author: 'Violette Train',
+    publishedAt: '2026-01-15',
+    readTime: 8,
+    featured: true,
+  },
+  {
+    id: '2',
+    slug: 'sapa-travel-guide-2026',
+    category: 'travel',
+    title: 'Cẩm nang du lịch Sapa 2026 — Tất tần tật bạn cần biết',
+    titleEn: 'Sapa Travel Guide 2026 — Everything You Need to Know',
+    excerpt: 'Hướng dẫn toàn diện về Sapa: thời điểm đẹp nhất, địa điểm tham quan, và mẹo du lịch.',
+    excerptEn: 'Complete guide to Sapa: best time to visit, top attractions, and travel tips.',
+    content: '',
+    coverImage: '/stations/HueStation.JPG',
+    author: 'Violette Train',
+    publishedAt: '2026-02-10',
+    readTime: 12,
+    featured: false,
+  },
+  {
+    id: '3',
+    slug: '10-things-before-sapa-trip',
+    category: 'tips',
+    title: '10 điều cần biết trước chuyến đi tàu Sapa',
+    titleEn: '10 Things to Know Before Your Sapa Train Trip',
+    excerpt: 'Những mẹo hữu ích giúp chuyến đi tàu Sapa của bạn trở nên hoàn hảo.',
+    excerptEn: 'Useful tips to make your Sapa train trip perfect.',
+    content: '',
+    coverImage: '/violette-train-exterior.jpg',
+    author: 'Violette Train',
+    publishedAt: '2026-03-05',
+    readTime: 6,
+    featured: false,
+  },
+  {
+    id: '4',
+    slug: 'phong-nha-cave-guide',
+    category: 'travel',
+    title: 'Phong Nha — Động hang đẹp nhất Việt Nam',
+    titleEn: 'Phong Nha — The Most Beautiful Caves in Vietnam',
+    excerpt: 'Khám phá hang động kỳ vĩ nhất Việt Nam bằng tàu lửa Violette.',
+    excerptEn: 'Explore Vietnam\'s most spectacular caves by Violette Train.',
+    content: '',
+    coverImage: '/stations/DongHoiStation.jpg',
+    author: 'Violette Train',
+    publishedAt: '2026-03-20',
+    readTime: 10,
+    featured: false,
+  },
+  {
+    id: '5',
+    slug: 'hanoi-night-train-experience',
+    category: 'testimonial',
+    title: 'Trải nghiệm chuyến tàu đêm Hà Nội — Kỷ niệm tuần trăng mật',
+    titleEn: 'Hanoi Night Train Experience — Honeymoon Memories',
+    excerpt: 'Cặp đôi chia sẻ kỷ niệm tuần trăng mật đáng nhớ trên tàu Violette.',
+    excerptEn: 'A couple shares their unforgettable honeymoon memories on Violette Train.',
+    content: '',
+    coverImage: '/violette-train-evening.jpg',
+    author: 'Violette Train',
+    publishedAt: '2026-04-01',
+    readTime: 7,
+    featured: false,
+  },
+  {
+    id: '6',
+    slug: 'hue-imperial-city-guide',
+    category: 'travel',
+    title: 'Cẩm nang du lịch Huế 2026 — Cố đô lịch sử',
+    titleEn: 'Hue Imperial City Travel Guide 2026',
+    excerpt: 'Khám phá cố đô Huế với những địa điểm không thể bỏ qua.',
+    excerptEn: 'Explore the ancient capital of Hue with must-visit destinations.',
+    content: '',
+    coverImage: '/stations/HueStation.JPG',
+    author: 'Violette Train',
+    publishedAt: '2026-04-10',
+    readTime: 11,
+    featured: false,
+  },
+]
+
+export const REFUND_POLICY = {
+  regular: [
+    {
+      timeframeVi: 'Trước giờ tàu chạy 24 giờ trở lên',
+      timeframeEn: '24+ hours before departure',
+      feePercent: 10,
+      notesVi: 'Lệ phí 10% giá vé',
+      notesEn: '10% of ticket price',
+    },
+    {
+      timeframeVi: 'Từ 4 giờ đến dưới 24 giờ trước giờ tàu chạy',
+      timeframeEn: '4 to under 24 hours before departure',
+      feePercent: 20,
+      notesVi: 'Lệ phí 20% giá vé',
+      notesEn: '20% of ticket price',
+    },
+    {
+      timeframeVi: 'Dưới 4 giờ trước giờ tàu chạy',
+      timeframeEn: 'Under 4 hours before departure',
+      feePercent: 100,
+      notesVi: 'Không được hoàn tiền',
+      notesEn: 'No refund',
+    },
+  ],
+  peak: [
+    {
+      timeframeVi: 'Trước giờ tàu chạy 48 giờ trở lên',
+      timeframeEn: '48+ hours before departure',
+      feePercent: 30,
+      notesVi: 'Khấu trừ 30% giá vé (mùa cao điểm Tết)',
+      notesEn: '30% deduction (Tet peak season)',
+    },
+    {
+      timeframeVi: 'Dưới 48 giờ trước giờ tàu chạy',
+      timeframeEn: 'Under 48 hours before departure',
+      feePercent: 100,
+      notesVi: 'Không được hoàn tiền',
+      notesEn: 'No refund',
+    },
+  ],
+  exchange: {
+    timeframeVi: 'Trước giờ tàu chạy 24 giờ trở lên',
+    timeframeEn: '24+ hours before departure',
+    fee: 20000,
+    notesVi: 'Lệ phí đổi vé 20.000đ/vé. Không áp dụng đổi vé tập thể.',
+    notesEn: 'Exchange fee 20,000 VND/ticket. Not applicable for group bookings.',
+  },
+}
+
+export const AMENITY_ICONS: Record<string, string> = {
+  'Air conditioning': 'wind',
+  'wifi': 'wifi',
+  'Power': 'plug',
+  'Lock door': 'lock',
+  'Reading lights': 'lamp-desk',
+  'Shared restroom': 'bath',
+  'En-suite restroom': 'bath',
+  'Bathroom with shower': 'shower-head',
+  'Premium bunk beds': 'bed-double',
+  'Queen-size bed': 'bed',
+  'Personal AC': 'wind',
+  'Power outlets': 'plug',
+  'Luggage storage': 'luggage',
+  'Mini bar': 'wine',
+  'Entertainment screen': 'tv',
+  'Welcome package': 'gift',
+  'Priority boarding': 'arrow-up-circle',
+  'Butler service': 'concierge-bell',
+  'Exclusive VIP lounge': 'crown',
+  'Welcome champagne': 'champagne',
+  'Premium bedding': 'bed',
+  'Mineral water & tea': 'cup-soda',
+  'Complimentary snacks': 'cookie',
+  'Strong Wifi': 'wifi',
+  'Natural soap': 'droplets',
+  'Modern facilities': 'settings',
+  'Spotless toilet': 'bath',
+  'Bedding with premium fabric': 'bed',
+  'The Great Smile Kit': 'gift',
+  'Local candies and cake': 'cake-slice',
+  'Comfort Pillows': 'cloud',
+  'Comb': 'scissors',
+  'Seasonal Fruit': 'apple',
+  'Lamp': 'lamp-desk',
+  'Earplug': 'ear',
+  'Essential oil': 'flower',
+  'Soft drink, Local Beer': 'beer',
+}

@@ -8,8 +8,10 @@
       "booking": "Đặt vé",
       "blog": "Blog",
       "about": "Giới thiệu",
-      "contact": "Liên hệ"
+      "contact": "Liên hệ",
+      "news": "Tin tức"
     },
+    "skipLink": "Skip to main content",
     "cta": {
       "bookNow": "Đặt vé ngay",
       "learnMore": "Tìm hiểu thêm",
@@ -32,7 +34,9 @@
       "copyright": "Violette Train. Bảo lưu mọi quyền.",
       "privacy": "Chính sách bảo mật",
       "terms": "Điều khoản sử dụng",
-      "checkIn": "Check-in: Gate 16, Hall C, Floor 1, 120 Le Duan (Ga Hà Nội)"
+      "checkIn": "Check-in: Gate 16, Hall C, Floor 1, 120 Le Duan (Ga Hà Nội)",
+      "refundPolicy": "Chính sách hoàn vé",
+      "termsOfService": "Điều khoản dịch vụ"
     },
     "locale": {
       "switch": "Chuyển ngôn ngữ"
@@ -53,8 +57,8 @@
     "from": "Từ",
     "ticketPrice": "Giá vé",
     "seatClass": {
-      "standard": "Phòng Standard",
-      "premium": "Phòng Premium"
+      "standard": "Cabin 4 giường cố định",
+      "premium": "VIP 2"
     },
     "categories": {
       "news": "Tin tức",
@@ -68,13 +72,17 @@
     "latestNews": "Tin mới nhất",
     "allNews": "Tất cả tin tức",
     "readMore": "Đọc tiếp",
-    "minRead": "phút đọc"
+    "minRead": "phút đọc",
+    "pageTitle": "Tin tức & Thông báo",
+    "pageSubtitle": "Cập nhật lịch trình, chính sách và thông báo mới nhất từ Violette Train và đường sắt Việt Nam."
   },
   "home": {
     "hero": {
       "title": "Violette Train Vietnam",
       "subtitle": "Hành trình đẳng cấp, trải nghiệm đáng nhớ. Cùng Violette Train, mỗi chuyến đi là một câu chuyện.",
-      "cta": "Bắt đầu hành trình"
+      "cta": "Bắt đầu hành trình",
+      "tagline": "Du lịch đường sắt sang trọng tại Việt Nam",
+      "exploreCabins": "Khám phá cabin"
     },
     "booking": {
       "from": "Điểm đi",
@@ -101,7 +109,7 @@
       "soldOut": "Hết vé",
       "selectCabinClass": "Chọn hạng ghế",
       "available": "chỗ trống",
-      "perGuest": "/khách"
+      "perGuest": "/vé"
     },
     "whyUs": {
       "title": "Tại sao chọn Violette Train",
@@ -114,9 +122,15 @@
     },
     "cabins": {
       "title": "Không gian nghỉ ngơi đẳng cấp",
-      "subtitle": "Từ phòng Standard tiết kiệm đến Premium riêng tư — mỗi hạng phòng là một trải nghiệm riêng biệt.",
-      "viewDetails": "Xem chi tiết",
-      "startingFrom": "Từ"
+      "subtitle": "Cabin 4 giường cố định và 7 cabin VIP 2 có giường trên nâng được — giá vé cố định trên mọi tuyến.",
+      "viewDetails": "Khám phá cabin",
+      "startingFrom": "Từ",
+      "perPerson": "/khách",
+      "guestsPerRoom": "khách/phòng",
+      "amenities": "Tiện nghi",
+      "ctaTitle": "Sẵn sàng cho hành trình?",
+      "ctaSubtitle": "Đặt vé ngay hôm nay và trải nghiệm du lịch đường sắt đẳng cấp cùng Violette Train.",
+      "ctaButton": "Đặt vé ngay"
     },
     "stats": {
       "passengers": "Hành khách phục vụ",
@@ -128,7 +142,9 @@
       "title": "Cảm hứng lên đường",
       "subtitle": "Khám phá những câu chuyện du lịch, destination guides và trải nghiệm từ hành khách Violette Train.",
       "featuredTitle": "Hành trình đáng nhớ trên tàu lửa Sapa",
-      "featuredDesc": "Những trải nghiệm tuyệt vời nhất khi đặt chân lên chuyến tàu đêm Hà Nội - Sapa."
+      "featuredDesc": "Những trải nghiệm tuyệt vời nhất khi đặt chân lên chuyến tàu đêm Hà Nội - Sapa.",
+      "viewAll": "Xem tất cả",
+      "minRead": "phút đọc"
     },
     "testimonials": {
       "title": "Hành khách nói gì về Violette",
@@ -139,31 +155,64 @@
       "text": "Với hơn 119 năm lịch sử, đường sắt Việt Nam mang theo sự quyến rũ của quá khứ — bao gồm tiếng lộp cộp đặc trưng trên đường ray, một âm thanh hoài niệm gắn liền với trải nghiệm tàu cổ điển. Tại Violette, chúng tôi hiểu rằng tiếng ồn có thể ảnh hưởng đến sự nghỉ ngơi của bạn. Chúng tôi đã nỗ lực giảm thiểu bằng cách cải thiện mối nối đường ray, nâng cấp toa tàu và lắp đặt vật liệu cách âm."
     },
     "cta": {
+      "label": "Bắt đầu hành trình",
       "title": "Sẵn sàng cho cuộc phiêu lưu?",
-      "subtitle": "Dù bạn muốn gì cho chuyến đi Việt Nam, đội ngũ thiết kế du lịch của chúng tôi luôn sẵn sàng hỗ trợ."
+      "subtitle": "Dù bạn muốn gì cho chuyến đi Việt Nam, đội ngũ thiết kế du lịch của chúng tôi luôn sẵn sàng hỗ trợ.",
+      "bookNow": "Đặt vé ngay",
+      "contactUs": "Liên hệ tư vấn"
+    },
+    "news": {
+      "title": "Tin tức & Thông báo",
+      "subtitle": "Cập nhật lịch trình và chính sách mới nhất."
+    },
+    "routes": {
+      "label": "Các tuyến đường",
+      "title": "Khám phá Việt Nam bằng tàu",
+      "subtitle": "Mỗi tuyến tàu là một hành trình độc đáo, mang đến trải nghiệm du lịch đẳng cấp qua những cảnh quan tuyệt đẹp của Việt Nam.",
+      "viewAll": "Xem tất cả tuyến đường",
+      "stations": "Ga Hà Nội → Ga Lào Cai",
+      "bookNow": "Đặt vé",
+      "tags": {
+        "popular": "Phổ biến",
+        "scenic": "Nghỉ dưỡng",
+        "heritage": "Di sản",
+        "adventure": "Khám phá",
+        "unesco": "UNESCO"
+      }
+    },
+    "carousel": {
+      "trainStation": "Ga tàu",
+      "previous": "Trước",
+      "next": "Tiếp"
     }
   },
   "cabins": {
     "title": "Hạng phòng",
-    "subtitle": "Khám phá các hạng phòng của Violette Train — mỗi hạng được thiết kế để mang đến trải nghiệm độc đáo.",
+    "subtitle": "Hai lựa chọn cabin 4 khách với giá vé cố định trên tất cả các tuyến.",
     "standard": {
-      "name": "Standard",
-      "tagline": "Tiết kiệm & Thoải mái",
-      "desc": "Phòng 4 giường tầng chia sẻ, giường trên không thể nâng lên. Lý tưởng cho nhóm bạn hoặc gia đình muốn trải nghiệm tàu lửa với chi phí hợp lý. Khi đặt đủ 4 vé cho một phòng, quý khách có không gian riêng tư hoàn toàn.",
+      "name": "Cabin 4 giường cố định",
+      "tagline": "4 giường cố định · Riêng tư khi mua đủ 4 vé",
+      "desc": "Cabin dành cho 4 khách với giường tầng trên cố định, không thể nâng lên. Giá 2.000.000 VND cho mỗi vé; mua đủ 4 vé để sử dụng riêng toàn bộ cabin.",
       "capacity": "Tối đa 4 khách/phòng",
       "amenities": ["Điều hòa không khí", "Ổ cắm điện", "Đèn đọc sách", "Nhà vệ sinh chung", "Hành lý ký gửi", "Bộ ga giường"],
-      "config4": "4 khách/phòng — Ghé đầu để trải nghiệm không gian riêng tư hoàn toàn với giá tiết kiệm nhất.",
-      "config2": "2 khách/phòng — Lựa chọn thoải mái hơn khi chỉ chia sẻ với 1 người bạn đồng hành."
+      "config4": "Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.",
+      "config2": "Mỗi vé dành cho một hành khách trong cabin 4 khách."
     },
     "premium": {
-      "name": "Premium",
-      "tagline": "Riêng tư & Nâng cấp",
-      "desc": "Phòng VIP với giường tầng có thể nâng lên (tạo không gian ngồi sang trọng kiểu xe khách), cửa khóa riêng và nhà vệ sinh riêng. Tùy chọn 2 hoặc 4 khách/phòng.",
+      "name": "VIP 2",
+      "tagline": "Giường trên có thể nâng lên · Chỉ có 7 cabin",
+      "desc": "VIP 2 là cabin dành cho 4 khách. Giường tầng trên có thể nâng lên để tạo không gian thoải mái hơn vào ban ngày. Chỉ có 7 cabin, giá 2.500.000 VND cho mỗi vé.",
       "capacity": "Tối đa 4 khách/phòng",
-      "amenities": ["Giường tầng có thể nâng lên (tạo ghế VIP)", "Nhà vệ sinh riêng", "Cửa khóa riêng", "Điều hòa riêng", "Bộ ga giường cao cấp", "Snack & đồ uống miễn phí", "Hành lý ký gửi"],
-      "config4": "4 khách/phòng — Không gian rộng rãi cho gia đình hoặc nhóm bạn, tiết kiệm chi phí.",
-      "config2": "2 khách/phòng (VIP) — Giường nâng lên tạo không gian ngồi sang trọng, riêng tư hoàn toàn."
+      "amenities": ["Giường tầng trên có thể nâng lên", "Không gian ban ngày thoải mái hơn", "Chỉ có 7 cabin VIP 2", "Điều hòa không khí", "Bộ ga giường", "Hành lý ký gửi"],
+      "config4": "Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.",
+      "config2": "Mỗi vé dành cho một hành khách trong cabin 4 khách."
     },
+    "guestsPerRoom": "khách/phòng",
+    "perPerson": "/khách",
+    "amenities": "Tiện nghi",
+    "ctaTitle": "Sẵn sàng cho hành trình?",
+    "ctaSubtitle": "Đặt vé ngay hôm nay và trải nghiệm du lịch đường sắt đẳng cấp cùng Violette Train.",
+    "ctaButton": "Đặt vé ngay",
     "bookNow": "Đặt ngay"
   },
   "booking": {
@@ -172,7 +221,6 @@
       "selectRoute": "Chọn hành trình",
       "selectCabin": "Chọn hạng ghế",
       "passengerInfo": "Thông tin khách",
-      "payment": "Thanh toán",
       "confirmation": "Hoàn tất"
     },
     "oneWay": "Một chiều",
@@ -182,8 +230,7 @@
     "swapStations": "Đổi điểm đi/đến",
     "searching": "Đang tìm kiếm...",
     "searchTrains": "Tìm chuyến tàu",
-    "continueToPayment": "Tiếp tục thanh toán",
-    "confirmPayment": "Xác nhận thanh toán",
+    "confirmBooking": "Xác nhận đặt vé",
     "processing": "Đang xử lý...",
     "apply": "Áp dụng",
     "noSchedules": "Không có chuyến tàu cho tuyến này vào ngày đã chọn.",
@@ -193,7 +240,7 @@
     "soldOut": "Hết vé",
     "selectCabinClass": "Chọn hạng ghế",
     "available": "chỗ trống",
-    "perGuest": "/khách",
+    "perGuest": "/vé",
     "form": {
       "from": "Điểm đi",
       "to": "Điểm đến",
@@ -237,44 +284,54 @@
       "tax": "Thuế (10%)",
       "total": "Tổng cộng"
     },
-    "payment": {
-      "title": "Phương thức thanh toán",
-      "vnpay": "VNPay QR",
-      "momo": "MoMo",
-      "card": "Thẻ Visa/Mastercard",
-      "bank": "Chuyển khoản ngân hàng",
-      "payNow": "Thanh toán ngay",
-      "securePayment": "Thanh toán an toàn & bảo mật",
-      "sslEncrypted": "Mọi giao dịch được mã hóa SSL 256-bit",
-      "selectedMethod": "Phương thức đã chọn:",
-      "scanQR": "Quét mã QR VNPay",
-      "payMoMo": "Thanh toán qua ví MoMo",
-      "cardTypes": "Visa, Mastercard, JCB",
-      "bankTransfer": "Chuyển khoản ngân hàng"
-    },
     "confirmation": {
-      "title": "Đặt vé thành công!",
-      "subtitle": "Cảm ơn bạn đã đặt vé với Violette Train. Thông tin đặt vé đã được gửi đến email của bạn.",
+      "title": "Yêu cầu đặt vé đã được gửi!",
+      "subtitle": "Cảm ơn bạn đã gửi yêu cầu đặt vé. Nhân viên Violette Train sẽ liên hệ bạn qua email hoặc điện thoại để xác nhận trong thời gian sớm nhất.",
       "bookingRef": "Mã đặt vé",
       "printTicket": "In vé",
       "backHome": "Về trang chủ",
       "emailSent": "Email xác nhận đã được gửi đến địa chỉ email của bạn."
     }
   },
-  "blog": {
-    "title": "Blog",
-    "subtitle": "Cảm hứng du lịch, destination guides và những câu chuyện từ Violette Train.",
-    "categories": {
-      "all": "Tất cả",
-      "travel": "Du lịch",
-      "tips": "Mẹo hay",
-      "culture": "Văn hóa",
-      "food": "Ẩm thực",
-      "testimonial": "Cảm nhận"
+    "blog": {
+      "title": "Blog",
+      "subtitle": "Cảm hứng du lịch, destination guides và những câu chuyện từ Violette Train.",
+      "categories": {
+        "all": "Tất cả",
+        "travel": "Du lịch",
+        "tips": "Mẹo hay",
+        "culture": "Văn hóa",
+        "food": "Ẩm thực",
+        "testimonial": "Cảm nhận",
+        "news": "Tin tức",
+        "policy": "Chính sách",
+        "announcement": "Thông báo"
+      },
+      "readMore": "Đọc tiếp",
+      "minRead": "phút đọc",
+      "heroTitle": "Blog & Cảm hứng du lịch",
+      "heroSubtitle": "Khám phá những câu chuyện du lịch, destination guides và trải nghiệm từ Violette Train.",
+      "allArticles": "Tất cả",
+      "relatedArticles": "Bài viết liên quan",
+      "tags": "Chủ đề:",
+      "share": "Chia sẻ:",
+      "readyTitle": "Sẵn sàng cho hành trình của bạn?",
+      "readySubtitle": "Đặt vé tàu Violette Train ngay hôm nay và bắt đầu cuộc phiêu lưu của bạn.",
+      "bookNow": "Đặt vé ngay",
+      "subscribeTitle": "Đăng ký nhận tin mới",
+      "subscribeDesc": "Nhận thông tin về các bài viết mới và ưu đãi đặc biệt từ Violette Train.",
+      "noPosts": "Không có bài viết nào",
+      "noPostsDesc": "Không có bài viết nào trong danh mục này.",
+      "newsletter": {
+        "title": "Đăng ký nhận tin mới",
+        "desc": "Nhận thông tin về các bài viết mới và ưu đãi đặc biệt từ Violette Train.",
+        "placeholder": "Nhập email của bạn",
+        "submit": "Đăng ký",
+        "success": "Đăng ký thành công!",
+        "error": "Có lỗi xảy ra.",
+        "networkError": "Không thể đăng ký. Vui lòng thử lại."
+      }
     },
-    "readMore": "Đọc tiếp",
-    "minRead": "phút đọc"
-  },
   "about": {
     "title": "Giới thiệu",
     "subtitle": "Khám phá câu chuyện đằng sau Violette Train — thương hiệu tàu lửa du lịch sang trọng hàng đầu Việt Nam.",
@@ -285,7 +342,19 @@
     "mission": {
       "title": "Sứ mệnh",
       "text": "Mang đến trải nghiệm du lịch đường sắt đẳng cấp, khám phá vẻ đẹp Việt Nam qua mỗi chuyến tàu."
-    }
+    },
+    "coreValues": "Giá trị cốt lõi",
+    "uniqueTitle": "Độc đáo & Tiên phong",
+    "uniqueDesc": "Thiết kế tàu tinh xảo với hoa văn thổ cẩm H'Mong và tranh Đông Hồ, mang đậm bản sắc văn hóa Việt Nam.",
+    "professionalTitle": "Chuyên nghiệp & Tận tâm",
+    "professionalDesc": "Đội ngũ nhân viên phục vụ 24/7 quanh năm, kể cả ngày lễ Tết, cam kết mang đến dịch vụ nhanh chóng và đáng tin cậy.",
+    "sustainableTitle": "Bền vững & Đổi mới",
+    "sustainableDesc": "Cam kết bảo vệ môi trường với các sản phẩm thân thiện, hỗ trợ cộng đồng địa phương và gìn giữ di sản văn hóa.",
+    "heroTitle": "Giới thiệu",
+    "heroSubtitle": "Khám phá câu chuyện đằng sau Violette Train",
+    "readyTitle": "Sẵn sàng cho hành trình?",
+    "readySubtitle": "Đặt vé ngay hôm nay và trải nghiệm du lịch đường sắt đẳng cấp cùng Violette Train.",
+    "bookNow": "Đặt vé ngay"
   },
   "admin": {
     "nav": {
@@ -385,6 +454,21 @@
       "phone": "Điện thoại",
       "email": "Email",
       "hours": "Giờ làm việc"
-    }
+    },
+    "contactInfo": "Thông tin liên hệ",
+    "sendMessage": "Gửi tin nhắn",
+    "bookViaMessage": "Đặt vé qua tin nhắn",
+    "whatsappZalo": "WhatsApp / Zalo",
+    "checkInPoint": "Điểm check-in",
+    "checkInAddress": "Gate 16, Hall C, Floor 1, 120 Le Duan",
+    "checkInNote": "(Ga Hà Nội)",
+    "operatingHours": "24/7 — Kể cả ngày lễ",
+    "operatingHoursNote": "Kể cả ngày lễ",
+    "officeAddress": "11 Thanh Nien Street, Ba Dinh, Ha Noi",
+    "officeLabel": "Văn phòng Violette Train"
+  },
+  "notFound": {
+    "title": "Trang không tìm thấy",
+    "returnHome": "Về trang chủ"
   }
 }

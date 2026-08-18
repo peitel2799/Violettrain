@@ -1,18 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getRoutePricing } from '@/lib/dsvn'
+import { NextResponse } from 'next/server'
+import { CABIN_PRODUCTS } from '@/lib/cabin-products'
+import { getProductPricing } from '@/lib/product-pricing'
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const from = searchParams.get('from')
-  const to = searchParams.get('to')
+export const dynamic = 'force-dynamic'
 
-  if (!from || !to) {
-    return NextResponse.json(
-      { error: 'Missing required parameters: from, to' },
-      { status: 400 }
-    )
-  }
+export async function GET() {
+  const savedPrices = getProductPricing()
+  const pricing = savedPrices.map((entry) => {
+    const product = CABIN_PRODUCTS[entry.cabinClassId]
+    return {
+      seatClass: entry.cabinClassId,
+      seatClassVi: product.nameVi,
+      seatClassEn: product.nameEn,
+      basePrice: entry.ticketPrice,
+      peakPrice: entry.ticketPrice,
+    }
+  })
 
-  const pricing = getRoutePricing(from, to)
-  return NextResponse.json({ pricing })
+  return NextResponse.json({ pricing }, { headers: { 'Cache-Control': 'no-store' } })
 }

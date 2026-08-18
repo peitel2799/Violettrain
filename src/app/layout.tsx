@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Playfair_Display, DM_Sans, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
 
@@ -23,7 +23,6 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://violettetrain.com'),
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
   title: {
     template: '%s | Violette Train',
     default: 'Violette Train — Luxury Train Travel in Vietnam',
@@ -73,9 +72,9 @@ export const metadata: Metadata = {
     description: 'Violette Train offers luxury train travel experiences in Vietnam. Book your Hanoi to Sapa, Ninh Binh, Hue, Da Nang journey today.',
     images: [
       {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
+        url: '/premium_room/outside2.JPG',
+        width: 2560,
+        height: 1920,
         alt: 'Violette Train — Luxury Train Travel in Vietnam',
       },
     ],
@@ -84,7 +83,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Violette Train — Luxury Train Travel in Vietnam',
     description: 'Violette Train offers luxury train travel experiences in Vietnam.',
-    images: ['/og-image.jpg'],
+    images: ['/premium_room/outside2.JPG'],
     creator: '@violettetrain',
   },
   alternates: {
@@ -94,9 +93,13 @@ export const metadata: Metadata = {
       'en': '/en',
     },
   },
-  verification: {
-    google: 'your-google-site-verification-code',
-  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#1a0a2e',
 }
 
 export default function RootLayout({

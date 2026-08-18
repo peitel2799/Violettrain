@@ -28,7 +28,7 @@ export default function AdminRoutesPage() {
   const [routes, setRoutes] = useState<RouteData[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editValues, setEditValues] = useState<{ duration?: string; departureTime?: string; arrivalTime?: string; basePrice?: number }>({})
+  const [editValues, setEditValues] = useState<{ duration?: string; departureTime?: string; arrivalTime?: string }>({})
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -54,7 +54,6 @@ export default function AdminRoutesPage() {
       duration: route.duration,
       departureTime: route.departureTime,
       arrivalTime: route.arrivalTime,
-      basePrice: route.basePrice,
     })
     setMessage('')
   }
@@ -90,7 +89,7 @@ export default function AdminRoutesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-serif)' }}>Tuyến đường</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Quản lý tuyến tàu, lịch trình và giá cơ bản.</p>
+          <p className="text-sm text-gray-500 mt-0.5">Quản lý tuyến tàu và lịch trình. Giá vé cố định được quản lý tại mục Giá vé.</p>
         </div>
         <div className="flex items-center gap-3">
           {message && (
@@ -124,7 +123,7 @@ export default function AdminRoutesPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <div className="p-3 bg-gray-50 rounded-xl">
                       <p className="text-xs text-gray-400 flex items-center gap-1"><Clock className="w-3 h-3" /> Thời gian</p>
                       {editingId === route.id ? (
@@ -156,19 +155,6 @@ export default function AdminRoutesPage() {
                         />
                       ) : (
                         <p className="font-medium text-gray-900 mt-1 text-sm">{route.arrivalTime}</p>
-                      )}
-                    </div>
-                    <div className="p-3 bg-gold-50 rounded-xl">
-                      <p className="text-xs text-gold-600">Giá cơ bản</p>
-                      {editingId === route.id ? (
-                        <input type="number" value={editValues.basePrice || 0}
-                          onChange={(e) => setEditValues((v) => ({ ...v, basePrice: Number(e.target.value) }))}
-                          className="mt-1 w-full border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                        />
-                      ) : (
-                        <p className="font-bold text-gray-900 mt-1 text-sm">
-                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(route.basePrice)}
-                        </p>
                       )}
                     </div>
                   </div>

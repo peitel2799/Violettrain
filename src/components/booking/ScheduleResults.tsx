@@ -156,7 +156,7 @@ function ScheduleCard({
                   {formatCurrency(bestSeat.price)}
                 </p>
                 <p className="text-xs text-gray-400">
-                  {locale === 'vi' ? 'Giá từ' : 'Price from'} {bestSeat.seatClassVi}
+                  {locale === 'vi' ? 'Giá vé' : 'Ticket price'} {locale === 'vi' ? bestSeat.seatClassVi : bestSeat.seatClassEn}
                 </p>
               </>
             ) : (
@@ -221,6 +221,9 @@ function ScheduleCard({
                   <p className="text-xs text-gray-400 mt-0.5">
                     <Users className="w-3 h-3 inline mr-0.5" />
                     {seat.available} {t('available')}
+                  </p>
+                  <p className="mt-1 text-[11px] text-violet-600">
+                    {locale === 'vi' ? 'Mua 4 vé để có cabin riêng' : 'Buy 4 tickets for a private cabin'}
                   </p>
                 </div>
                 <div className="text-right">

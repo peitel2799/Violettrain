@@ -1,5 +1,6 @@
 import type { Route, CabinClass, Testimonial, BlogPost } from './types'
 import { STATIONS } from './dsvn-client'
+import { CABIN_PRODUCTS } from './cabin-products'
 
 // Bookable stations for the booking widget (Violette's primary routes)
 export const BOOKABLE_STATIONS = ['hanoi', 'ninhbinh', 'donghoi', 'hue', 'danang'] as const
@@ -27,7 +28,8 @@ export const CATEGORY_COLORS: Record<string, string> = {
   announcement: 'bg-red-50 text-red-600',
 }
 
-export const CATEGORIES = ['travel', 'tips', 'culture', 'food', 'testimonial'] as const
+// Expand CATEGORIES to include all NewsCategory values
+export const CATEGORIES = ['travel', 'tips', 'culture', 'food', 'testimonial', 'news', 'policy', 'announcement'] as const
 
 export const BADGE_VARIANTS = {
   default: 'bg-gray-100 text-gray-700 border-gray-200',
@@ -169,18 +171,17 @@ export const ROUTES: Route[] = [
 export const CABIN_CLASSES: CabinClass[] = [
   {
     id: 'standard',
-    name: 'Standard',
-    abbr: 'STD',
-    taglineKey: 'cabins.standard.tagline',
-    descKey: 'cabins.standard.desc',
+    name: 'Fixed 4-Berth',
+    abbr: '4-BERTH',
+    taglineKey: 'standard.tagline',
+    descKey: 'standard.desc',
     maxBeds: 4,
     pushUpBeds: false,
     amenities: [
+      'Four fixed berths',
+      'Upper beds cannot be raised',
+      'Private cabin when buying 4 tickets',
       'Air conditioning',
-      'Power outlets',
-      'Reading lights',
-      'Shared restroom nearby',
-      'Luggage storage',
       'Bedding included',
     ],
     images: [
@@ -189,35 +190,29 @@ export const CABIN_CLASSES: CabinClass[] = [
       '/violette-cabin-standard-4.jpg',
     ],
     priceFactor: 1.0,
+    ticketPrice: CABIN_PRODUCTS.standard.ticketPrice,
     configs: [
       {
         maxPax: 4,
-        descKey: 'cabins.standard.config4',
+        descKey: 'standard.config4',
         priceMultiplier: 1.0,
-      },
-      {
-        maxPax: 2,
-        descKey: 'cabins.standard.config2',
-        priceMultiplier: 1.4,
       },
     ],
   },
   {
     id: 'premium',
-    name: 'Premium',
-    abbr: 'PRM',
-    taglineKey: 'cabins.premium.tagline',
-    descKey: 'cabins.premium.desc',
+    name: 'VIP 2',
+    abbr: 'VIP 2',
+    taglineKey: 'premium.tagline',
+    descKey: 'premium.desc',
     maxBeds: 4,
     pushUpBeds: true,
     amenities: [
-      'Push-up bunk beds (VIP seating)',
-      'En-suite restroom',
-      'Lockable cabin door',
-      'Personal AC',
-      'Premium bedding',
-      'Complimentary snacks & drinks',
-      'Luggage storage',
+      'Upper beds can be raised',
+      'More comfortable daytime space',
+      'Four-passenger cabin',
+      'Private cabin when buying 4 tickets',
+      'Air conditioning',
     ],
     images: [
       '/premium_room/4pax.JPG',
@@ -226,17 +221,14 @@ export const CABIN_CLASSES: CabinClass[] = [
       '/premium_room/outside1.JPG',
       '/premium_room/outside2.JPG',
     ],
-    priceFactor: 1.8,
+    priceFactor: 1.25,
+    ticketPrice: CABIN_PRODUCTS.premium.ticketPrice,
+    roomCount: CABIN_PRODUCTS.premium.roomCount,
     configs: [
       {
         maxPax: 4,
-        descKey: 'cabins.premium.config4',
+        descKey: 'premium.config4',
         priceMultiplier: 1.0,
-      },
-      {
-        maxPax: 2,
-        descKey: 'cabins.premium.config2',
-        priceMultiplier: 1.5,
       },
     ],
   },

@@ -5,18 +5,17 @@ import { useTranslations } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { ChevronLeft, ChevronRight, Check, Loader2, ArrowLeftRight } from 'lucide-react'
-import { cn, formatDate } from '@/lib/utils'
+import { cn, formatDate, generateBookingRef } from '@/lib/utils'
 import { BOOKABLE_STATIONS, STATION_NAMES } from '@/lib/constants'
 import ScheduleResults from '@/components/booking/ScheduleResults'
 import PassengerForm from '@/components/booking/PassengerForm'
 import BookingSummary from '@/components/booking/BookingSummary'
 import ConfirmationStep from '@/components/booking/ConfirmationStep'
 import type { DsvnSchedule, BookingPassenger, BookingStep } from '@/lib/types'
-import { searchSchedules } from '@/lib/dsvn-client'
 
 const STATIONS = BOOKABLE_STATIONS
 
-const STEPS: BookingStep[] = ['select', 'schedule', 'passenger', 'confirmation']
+const STEPS = ['select', 'schedule', 'passenger', 'confirmation'] as const
 
 function BookingContent({ locale }: { locale: string }) {
   const t = useTranslations('booking')
@@ -85,7 +84,13 @@ function BookingContent({ locale }: { locale: string }) {
     try {
       const fromCode = STATION_NAMES[from]?.dsvnCode || from.toUpperCase()
       const toCode = STATION_NAMES[to]?.dsvnCode || to.toUpperCase()
-      const results = searchSchedules(fromCode, toCode, departureDate, currentLocale)
+      const response = await fetch(
+        `/api/schedules?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(departureDate)}&locale=${currentLocale}`,
+        { cache: 'no-store' }
+      )
+      if (!response.ok) throw new Error('Unable to load schedules')
+      const data = await response.json()
+      const results = (data.schedules || []) as DsvnSchedule[]
 
       if (results.length > 0) {
         setSchedules(results)
@@ -120,20 +125,19 @@ function BookingContent({ locale }: { locale: string }) {
     if (!canProceed()) return
 
     setIsLoading(true)
-    const ref = generateRef()
+    const ref = generateBookingRef()
     const primaryEmail = passengers[0]?.email
     const primaryName = passengers[0]?.fullName || 'Valued Customer'
     const primaryPhone = passengers[0]?.phone || ''
 
     try {
-      // 1. Create confirmed booking
+      // 1. Create booking inquiry
       await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           reference: ref,
-          status: 'confirmed',
-          paymentStatus: 'pending',
+          status: 'pending',
           routeId: `${from}-${to}`,
           routeName: `${STATION_NAMES[from]?.[isVi ? 'vi' : 'en']} → ${STATION_NAMES[to]?.[isVi ? 'vi' : 'en']}`,
           cabinClassId: selectedSeatClass || '',
@@ -151,7 +155,6 @@ function BookingContent({ locale }: { locale: string }) {
             dateOfBirth: p.dateOfBirth,
           })),
           pricing: { subtotal, tax, total },
-          payment: { method: 'cash', paidAt: new Date().toISOString() },
           contact: { email: primaryEmail, phone: primaryPhone },
         }),
       })
@@ -184,7 +187,6 @@ function BookingContent({ locale }: { locale: string }) {
             subtotal,
             tax,
             total,
-            paymentMethod: 'cash',
             locale: currentLocale,
           }),
         })
@@ -208,11 +210,11 @@ function BookingContent({ locale }: { locale: string }) {
   const tax = Math.round(subtotal * 0.1)
   const total = subtotal + tax
 
-  const stepLabels: Record<BookingStep, string> = {
-    select: isVi ? 'Chọn hành trình' : 'Select Route',
-    schedule: isVi ? 'Chọn tàu' : 'Select Train',
-    passenger: isVi ? 'Thông tin khách' : 'Passenger Info',
-    confirmation: isVi ? 'Hoàn tất' : 'Confirmation',
+  const stepLabels: Record<string, string> = {
+    select: t('steps.selectRoute'),
+    schedule: t('steps.selectCabin'),
+    passenger: t('steps.passengerInfo'),
+    confirmation: t('steps.confirmation'),
   }
 
   return (
@@ -459,11 +461,11 @@ function BookingContent({ locale }: { locale: string }) {
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 )}
               >
-                {isLoading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" />{t('processing')}</>
-                ) : (
-                  <>{isVi ? 'Xác nhận đặt vé' : 'Confirm Booking'}<ChevronRight className="w-4 h-4" /></>
-                )}
+                  {isLoading ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" />{t('processing')}</>
+                  ) : (
+                    <>{t('confirmBooking')}<ChevronRight className="w-4 h-4" /></>
+                  )}
               </button>
             </div>
 
@@ -517,12 +519,3 @@ function BookingPageContent({ locale }: { locale: string }) {
 }
 
 export default BookingPageContent
-
-function generateRef(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let ref = 'VT-'
-  for (let i = 0; i < 8; i++) {
-    ref += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return ref
-}

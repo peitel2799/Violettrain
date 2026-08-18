@@ -1,0 +1,14 @@
+[
+  {
+    "cabinClassId": "standard",
+    "cabinClassName": "Cabin 4 giường cố định",
+    "ticketPrice": 2000000,
+    "lastUpdated": "2026-08-18T00:00:00.000Z"
+  },
+  {
+    "cabinClassId": "premium",
+    "cabinClassName": "VIP 2",
+    "ticketPrice": 2500000,
+    "lastUpdated": "2026-08-18T00:00:00.000Z"
+  }
+]

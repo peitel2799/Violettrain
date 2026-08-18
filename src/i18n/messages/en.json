@@ -8,8 +8,10 @@
       "booking": "Book Now",
       "blog": "Blog",
       "about": "About",
-      "contact": "Contact"
+      "contact": "Contact",
+      "news": "News"
     },
+    "skipLink": "Skip to main content",
     "cta": {
       "bookNow": "Book Now",
       "learnMore": "Learn More",
@@ -32,7 +34,9 @@
       "copyright": "Violette Train. All rights reserved.",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
-      "checkIn": "Check-in: Gate 16, Hall C, Floor 1, 120 Le Duan (Ha Noi Station)"
+      "checkIn": "Check-in: Gate 16, Hall C, Floor 1, 120 Le Duan (Ha Noi Station)",
+      "refundPolicy": "Refund Policy",
+      "termsOfService": "Terms of Service"
     },
     "locale": {
       "switch": "Switch language"
@@ -53,8 +57,8 @@
     "from": "From",
     "ticketPrice": "Ticket Price",
     "seatClass": {
-      "standard": "Standard Room",
-      "premium": "Premium Room"
+      "standard": "Fixed 4-Berth Cabin",
+      "premium": "VIP 2"
     },
     "categories": {
       "news": "News",
@@ -68,13 +72,17 @@
     "latestNews": "Latest News",
     "allNews": "All News",
     "readMore": "Read More",
-    "minRead": "min read"
+    "minRead": "min read",
+    "pageTitle": "News & Updates",
+    "pageSubtitle": "Stay updated with the latest schedules, policies and announcements from Violette Train and Vietnam Railway."
   },
   "home": {
     "hero": {
       "title": "Violette Train Vietnam",
       "subtitle": "Luxury journeys, unforgettable experiences. With Violette Train, every trip tells a story.",
-      "cta": "Begin Your Journey"
+      "cta": "Begin Your Journey",
+      "tagline": "Luxury Train Travel in Vietnam",
+      "exploreCabins": "Explore Cabins"
     },
     "booking": {
       "from": "From",
@@ -101,7 +109,7 @@
       "soldOut": "Sold out",
       "selectCabinClass": "Select cabin class",
       "available": "available",
-      "perGuest": "/guest"
+      "perGuest": "/ticket"
     },
     "whyUs": {
       "title": "Why Choose Violette Train",
@@ -114,9 +122,15 @@
     },
     "cabins": {
       "title": "Luxurious Resting Space",
-      "subtitle": "From budget-friendly Standard rooms to private Premium rooms — each room class offers a unique experience.",
-      "viewDetails": "View Details",
-      "startingFrom": "From"
+      "subtitle": "Fixed 4-berth cabins and 7 VIP 2 cabins with raisable upper beds — fixed fares on every route.",
+      "viewDetails": "Explore Cabins",
+      "startingFrom": "From",
+      "perPerson": "/guest",
+      "guestsPerRoom": "guests/room",
+      "amenities": "Amenities",
+      "ctaTitle": "Ready for Your Journey?",
+      "ctaSubtitle": "Book your ticket today and experience luxury train travel with Violette Train.",
+      "ctaButton": "Book Now"
     },
     "stats": {
       "passengers": "Passengers Served",
@@ -128,7 +142,9 @@
       "title": "Trip Inspiration",
       "subtitle": "Explore travel stories, destination guides, and experiences from Violette Train passengers.",
       "featuredTitle": "Unforgettable Journey on the Sapa Train",
-      "featuredDesc": "The most wonderful experiences when stepping on the Hanoi - Sapa night train."
+      "featuredDesc": "The most wonderful experiences when stepping on the Hanoi - Sapa night train.",
+      "viewAll": "View All",
+      "minRead": "min read"
     },
     "testimonials": {
       "title": "What Our Passengers Say",
@@ -139,49 +155,82 @@
       "text": "With over 119 years of history, Vietnam's railway system carries the charm of the past — including the distinctive clatter of the tracks, a nostalgic sound inseparable from the classic train experience. At Violette, we understand noise can affect rest. We've made every effort to minimize it by improving rail joints, upgrading carriages, and installing soundproof materials."
     },
     "cta": {
+      "label": "Start Your Journey",
       "title": "Ready for Adventure?",
-      "subtitle": "Whatever you want from your Vietnam tour, our expert travel designers are ready to help."
+      "subtitle": "Whatever you want from your Vietnam tour, our expert travel designers are ready to help.",
+      "bookNow": "Book Now",
+      "contactUs": "Contact Us"
+    },
+    "news": {
+      "title": "News & Updates",
+      "subtitle": "Latest schedules and policies updates."
+    },
+    "routes": {
+      "label": "Our Routes",
+      "title": "Explore Vietnam by Train",
+      "subtitle": "Each route is a unique journey, offering a luxury travel experience through Vietnam's most breathtaking landscapes.",
+      "viewAll": "View All Routes",
+      "stations": "Ha Noi Station → Lao Cai Station",
+      "bookNow": "Book Now",
+      "tags": {
+        "popular": "Popular",
+        "scenic": "Scenic",
+        "heritage": "Heritage",
+        "adventure": "Adventure",
+        "unesco": "UNESCO"
+      }
+    },
+    "carousel": {
+      "trainStation": "Train Station",
+      "previous": "Previous",
+      "next": "Next"
     }
   },
   "cabins": {
     "title": "Room Classes",
-    "subtitle": "Explore the room classes of Violette Train — each designed for a unique experience.",
+    "subtitle": "Two four-person cabin choices with fixed ticket prices on every route.",
     "standard": {
-      "name": "Standard",
-      "tagline": "Budget & Comfort",
-      "desc": "Shared 4-bed dormitory room, upper bunk cannot be pushed up. Ideal for groups or families seeking a quality train experience at great value. Booking all 4 tickets for a room grants full privacy of the entire space.",
+      "name": "Fixed 4-Berth Cabin",
+      "tagline": "Four fixed beds · Private when buying all 4 tickets",
+      "desc": "A four-person cabin with fixed upper berths that cannot be raised. Each ticket is 2,000,000 VND; buy all 4 tickets to use the entire cabin privately.",
       "capacity": "Up to 4 guests/room",
       "amenities": ["Air conditioning", "Power outlets", "Reading lights", "Shared restroom nearby", "Luggage storage", "Bedding included"],
-      "config4": "4 guests/room — Experience complete privacy at the best value price.",
-      "config2": "2 guests/room — More comfort with only one travel companion."
+      "config4": "Buy all 4 tickets to use the entire cabin privately.",
+      "config2": "Each ticket is for one passenger in a four-person cabin."
     },
     "premium": {
-      "name": "Premium",
-      "tagline": "Privacy & Upgraded",
-      "desc": "VIP room with push-up bunk beds (creating luxurious bus-style seating when desired), private lockable door, and en-suite restroom. Available in 2 or 4 guest configurations.",
+      "name": "VIP 2",
+      "tagline": "Raisable upper beds · Only 7 cabins",
+      "desc": "VIP 2 is a four-person cabin. Its upper berths can be raised to create a more comfortable daytime space. Only 7 cabins are available, priced at 2,500,000 VND per ticket.",
       "capacity": "Up to 4 guests/room",
-      "amenities": ["Push-up bunk beds (VIP seating)", "En-suite restroom", "Lockable door", "Personal AC", "Premium bedding", "Complimentary snacks & drinks", "Luggage storage"],
-      "config4": "4 guests/room — Spacious room for families or friend groups at a great rate.",
-      "config2": "2 guests/room (VIP) — Beds push up for luxurious seating, complete privacy."
+      "amenities": ["Upper berths can be raised", "More comfortable daytime space", "Only 7 VIP 2 cabins", "Air conditioning", "Bedding included", "Luggage storage"],
+      "config4": "Buy all 4 tickets to use the entire cabin privately.",
+      "config2": "Each ticket is for one passenger in a four-person cabin."
     },
+    "guestsPerRoom": "guests/room",
+    "perPerson": "/guest",
+    "amenities": "Amenities",
+    "ctaTitle": "Ready for Your Journey?",
+    "ctaSubtitle": "Book your ticket today and experience luxury train travel with Violette Train.",
+    "ctaButton": "Book Now",
     "bookNow": "Book Now"
   },
   "booking": {
     "title": "Book Your Journey",
+    "steps": {
+      "selectRoute": "Select Route",
+      "selectCabin": "Select Cabin",
+      "passengerInfo": "Passenger Info",
+      "confirmation": "Confirmation"
+    },
     "oneWay": "One Way",
     "roundTrip": "Round Trip",
-    "selectRoute": "Select Route",
-    "selectCabin": "Select Cabin",
-    "passengerInfo": "Passenger Info",
-    "payment": "Payment",
-    "confirmation": "Confirmation",
     "selectDeparture": "Select departure",
     "selectDestination": "Select destination",
     "swapStations": "Swap stations",
     "searching": "Searching...",
     "searchTrains": "Search Trains",
-    "continueToPayment": "Continue to Payment",
-    "confirmPayment": "Confirm Payment",
+    "confirmBooking": "Confirm Booking",
     "processing": "Processing...",
     "apply": "Apply",
     "noSchedules": "No trains available for this route on the selected date.",
@@ -191,7 +240,7 @@
     "soldOut": "Sold out",
     "selectCabinClass": "Select cabin class",
     "available": "available",
-    "perGuest": "/guest",
+    "perGuest": "/ticket",
     "form": {
       "from": "From",
       "to": "To",
@@ -235,24 +284,9 @@
       "tax": "Tax (10%)",
       "total": "Total"
     },
-    "payment": {
-      "title": "Payment Method",
-      "vnpay": "VNPay QR",
-      "momo": "MoMo",
-      "card": "Visa/Mastercard",
-      "bank": "Bank Transfer",
-      "payNow": "Pay Now",
-      "securePayment": "Secure Payment",
-      "sslEncrypted": "All transactions are encrypted with SSL 256-bit",
-      "selectedMethod": "Selected:",
-      "scanQR": "Scan VNPay QR code",
-      "payMoMo": "Pay via MoMo e-wallet",
-      "cardTypes": "Visa, Mastercard, JCB",
-      "bankTransfer": "Direct bank transfer"
-    },
     "confirmation": {
-      "title": "Booking Successful!",
-      "subtitle": "Thank you for booking with Violette Train. Your booking details have been sent to your email.",
+      "title": "Booking Request Received!",
+      "subtitle": "Thank you for submitting your booking request. Violette Train staff will contact you via email or phone to confirm your booking shortly.",
       "bookingRef": "Booking Reference",
       "printTicket": "Print Ticket",
       "backHome": "Back to Home",
@@ -262,17 +296,43 @@
   "blog": {
     "title": "Blog",
     "subtitle": "Travel inspiration, destination guides, and stories from Violette Train.",
-    "categories": {
-      "all": "All",
-      "travel": "Travel",
-      "tips": "Tips & Tricks",
-      "culture": "Culture",
-      "food": "Food",
-      "testimonial": "Guest Stories"
-    },
+      "categories": {
+        "all": "All",
+        "travel": "Travel",
+        "tips": "Tips & Tricks",
+        "culture": "Culture",
+        "food": "Food",
+        "testimonial": "Guest Stories",
+        "news": "News",
+        "policy": "Policy",
+        "announcement": "Announcement"
+      },
     "readMore": "Read More",
-    "minRead": "min read"
-  },
+    "minRead": "min read",
+    "heroTitle": "Blog & Travel Inspiration",
+      "heroSubtitle": "Discover travel stories, destination guides and experiences from Violette Train passengers.",
+      "allArticles": "Tất cả",
+      "allArticlesEn": "All Articles",
+      "relatedArticles": "Related Articles",
+      "tags": "Tags:",
+      "share": "Share:",
+      "readyTitle": "Ready for Your Journey?",
+      "readySubtitle": "Book your Violette Train ticket today and start your adventure.",
+      "bookNow": "Book Now",
+      "subscribeTitle": "Subscribe for Updates",
+      "subscribeDesc": "Get the latest travel articles and exclusive offers from Violette Train.",
+      "noPosts": "No posts found",
+      "noPostsDesc": "No posts in this category yet.",
+      "newsletter": {
+        "title": "Subscribe for Updates",
+        "desc": "Get the latest travel articles and exclusive offers from Violette Train.",
+        "placeholder": "Enter your email",
+        "submit": "Subscribe",
+        "success": "Subscribed successfully!",
+        "error": "An error occurred.",
+        "networkError": "Unable to subscribe. Please try again."
+      }
+    },
   "about": {
     "title": "About Us",
     "subtitle": "Discover the story behind Violette Train — Vietnam's leading luxury tourist train brand.",
@@ -283,7 +343,19 @@
     "mission": {
       "title": "Our Mission",
       "text": "To deliver luxury rail travel experiences and showcase the beauty of Vietnam through every train journey."
-    }
+    },
+    "coreValues": "Our Core Values",
+    "uniqueTitle": "Unique & Pioneering",
+    "uniqueDesc": "Train interiors featuring H'Mong brocade patterns and Dong Ho paintings, celebrating Vietnamese cultural heritage.",
+    "professionalTitle": "Professional & Dedicated",
+    "professionalDesc": "Our dedicated team provides 24/7 service year-round, including holidays, committed to fast and reliable service.",
+    "sustainableTitle": "Sustainable & Innovative",
+    "sustainableDesc": "Committed to environmental protection with eco-friendly products, supporting local communities and preserving cultural heritage.",
+    "heroTitle": "About Us",
+    "heroSubtitle": "Discover the story behind Violette Train",
+    "readyTitle": "Ready for Your Journey?",
+    "readySubtitle": "Book your ticket today and experience luxury train travel with Violette Train.",
+    "bookNow": "Book Now"
   },
   "admin": {
     "nav": {
@@ -383,6 +455,21 @@
       "phone": "Phone",
       "email": "Email",
       "hours": "Working Hours"
-    }
+    },
+    "contactInfo": "Contact Information",
+    "sendMessage": "Send a Message",
+    "bookViaMessage": "Book via Message",
+    "whatsappZalo": "WhatsApp / Zalo",
+    "checkInPoint": "Check-in Point",
+    "checkInAddress": "Gate 16, Hall C, Floor 1, 120 Le Duan",
+    "checkInNote": "(Ha Noi Station)",
+    "operatingHours": "24/7 — Including holidays",
+    "operatingHoursNote": "Including holidays",
+    "officeAddress": "11 Thanh Nien Street, Ba Dinh, Ha Noi",
+    "officeLabel": "Violette Train Office"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "returnHome": "Return Home"
   }
 }

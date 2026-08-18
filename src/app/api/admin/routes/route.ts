@@ -4,7 +4,7 @@
  *
  * PUT /api/admin/routes
  * Body: { id, updates }
- * Update route metadata (name, duration, times, basePrice, etc.)
+ * Update route schedule metadata. Product prices are managed by /api/admin/pricing.
  * Requires: Authorization: Bearer <ADMIN_SECRET_TOKEN>
  */
 
@@ -71,8 +71,13 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Route not found' }, { status: 404 })
     }
 
+    const allowedUpdates = {
+      ...(typeof updates?.duration === 'string' ? { duration: updates.duration } : {}),
+      ...(typeof updates?.departureTime === 'string' ? { departureTime: updates.departureTime } : {}),
+      ...(typeof updates?.arrivalTime === 'string' ? { arrivalTime: updates.arrivalTime } : {}),
+    }
     const custom = loadCustomRoutes()
-    custom[id] = { ...(custom[id] ?? {}), ...updates, lastUpdated: new Date().toISOString() }
+    custom[id] = { ...(custom[id] ?? {}), ...allowedUpdates, lastUpdated: new Date().toISOString() }
     saveCustomRoutes(custom)
 
     const updated = { ...route, ...custom[id] }

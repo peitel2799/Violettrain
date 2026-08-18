@@ -73,9 +73,9 @@ export async function generateMetadata({
         : 'Violette Train offers luxury train travel experiences in Vietnam. Book your Hanoi to Sapa, Ninh Binh, Hue, Da Nang journey today.',
       images: [
         {
-          url: '/og-image.jpg',
-          width: 1200,
-          height: 630,
+          url: '/premium_room/outside2.JPG',
+          width: 2560,
+          height: 1920,
           alt: 'Violette Train — Luxury Train Travel in Vietnam',
         },
       ],
@@ -88,7 +88,7 @@ export async function generateMetadata({
       description: isVi
         ? 'Violette Train mang đến trải nghiệm du lịch tàu đẳng cấp tại Việt Nam.'
         : 'Violette Train offers luxury train travel experiences in Vietnam.',
-      images: ['/og-image.jpg'],
+      images: ['/premium_room/outside2.JPG'],
       creator: '@violettetrain',
     },
     alternates: {
@@ -119,11 +119,12 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages()
+  const t = await getTranslations({ locale, namespace: 'common' })
 
   return (
     <NextIntlClientProvider messages={messages}>
       <a href="#main-content" className="skip-link">
-        Skip to main content
+        {t('skipLink')}
       </a>
       <Navbar />
       <main id="main-content" className="flex-1">{children}</main>

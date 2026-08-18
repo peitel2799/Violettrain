@@ -78,9 +78,10 @@
   }
 }
 
-/* Focus styles for accessibility */
+/* Visible keyboard focus without affecting pointer interactions */
 :focus-visible {
-  outline: none;
+  outline: 2px solid var(--color-gold-500);
+  outline-offset: 3px;
 }
 
 /* Skip link for keyboard navigation */
@@ -130,7 +131,7 @@
 
   /* Focus ring utilities */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2;
   }
 
   /* Text contrast utilities for WCAG AA compliance */
@@ -139,5 +140,20 @@
   }
   .text-contrast-medium {
     color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

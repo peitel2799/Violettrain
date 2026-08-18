@@ -34,6 +34,10 @@ export interface CabinClass {
   images: string[]
   /** Base price factor (used when no config specified) */
   priceFactor: number
+  /** Current public price for one passenger ticket */
+  ticketPrice: number
+  /** Number of physical rooms available for this product, when fixed */
+  roomCount?: number
   /** Available passenger configurations */
   configs: CabinConfig[]
 }
@@ -62,13 +66,6 @@ export interface Testimonial {
   title: string
   quote: string
   avatar: string
-}
-
-export interface DsvnStation {
-  code: string
-  name: string
-  nameVi: string
-  nameEn: string
 }
 
 export interface DsvnSeatAvailability {
@@ -132,17 +129,9 @@ export interface BookingState {
 export type BookingStep = 'select' | 'schedule' | 'passenger' | 'confirmation'
 
 export interface TicketRefundPolicy {
-  timeframe: string
   timeframeVi: string
   timeframeEn: string
   feePercent: number
-  notes: string
   notesVi: string
   notesEn: string
-}
-
-export interface RefundPolicySet {
-  regular: TicketRefundPolicy[]
-  peak: TicketRefundPolicy[]
-  noRefund: TicketRefundPolicy[]
 }

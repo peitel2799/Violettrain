@@ -7,6 +7,7 @@
  */
 
 import type { TrainSchedule, SeatAvailability } from './types'
+import { CABIN_PRODUCTS } from './cabin-products'
 
 // ---------------------------------------------------------------------------
 // Station definitions (5 bookable stations)
@@ -205,24 +206,22 @@ export const ROUTE_CODE_TO_KEY: Record<string, string> = {
 // Schedule helpers
 // ---------------------------------------------------------------------------
 function makeSeats(
-  stdPrice: number,
-  prmPrice: number,
   stdAvail = 24,
   prmAvail = 8
 ): SeatAvailability[] {
   return [
     {
       seatClass: 'standard',
-      seatClassVi: 'Phòng Standard',
-      seatClassEn: 'Standard Room',
-      price: stdPrice,
+      seatClassVi: CABIN_PRODUCTS.standard.nameVi,
+      seatClassEn: CABIN_PRODUCTS.standard.nameEn,
+      price: CABIN_PRODUCTS.standard.ticketPrice,
       available: stdAvail,
     },
     {
       seatClass: 'premium',
-      seatClassVi: 'Phòng Premium',
-      seatClassEn: 'Premium Room',
-      price: prmPrice,
+      seatClassVi: CABIN_PRODUCTS.premium.nameVi,
+      seatClassEn: CABIN_PRODUCTS.premium.nameEn,
+      price: CABIN_PRODUCTS.premium.ticketPrice,
       available: prmAvail,
     },
   ]
@@ -245,7 +244,7 @@ const ALL_SCHEDULES: (TrainSchedule & { routeId: string })[] = [
     arrivalTime: '12:30',
     duration: '17h 30m',
     departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    availableSeats: makeSeats(2_500_000, 4_500_000, 24, 10),
+    availableSeats: makeSeats(24, 10),
     hasLanding: true,
     hasRestaurant: true,
   },
@@ -258,7 +257,7 @@ const ALL_SCHEDULES: (TrainSchedule & { routeId: string })[] = [
     arrivalTime: '14:00',
     duration: '17h 30m',
     departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    availableSeats: makeSeats(2_500_000, 4_500_000, 16, 8),
+    availableSeats: makeSeats(16, 8),
     hasLanding: true,
     hasRestaurant: true,
   },
@@ -275,7 +274,75 @@ const ALL_SCHEDULES: (TrainSchedule & { routeId: string })[] = [
     arrivalTime: '11:30',
     duration: '7h 30m',
     departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    availableSeats: makeSeats(1_000_000, 1_800_000, 20, 8),
+    availableSeats: makeSeats(20, 8),
+    hasLanding: false,
+    hasRestaurant: true,
+  },
+
+  // ===================================================================
+  // HANOI — LAO CAI (SAPA)
+  // ===================================================================
+  {
+    routeId: 'hanoi-laocai',
+    trainNumber: 'SE19',
+    fromStation: 'Hà Nội',
+    toStation: 'Lào Cai',
+    departureTime: '22:00',
+    arrivalTime: '06:30',
+    duration: '8h 30m',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    availableSeats: makeSeats(32, 12),
+    hasLanding: true,
+    hasRestaurant: true,
+  },
+
+  // ===================================================================
+  // HANOI — NINH BINH
+  // ===================================================================
+  {
+    routeId: 'hanoi-ninhbinh',
+    trainNumber: 'SE5',
+    fromStation: 'Hà Nội',
+    toStation: 'Ninh Bình',
+    departureTime: '07:45',
+    arrivalTime: '09:45',
+    duration: '2h 00m',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    availableSeats: makeSeats(40, 16),
+    hasLanding: false,
+    hasRestaurant: false,
+  },
+
+  // ===================================================================
+  // HANOI — HUE
+  // ===================================================================
+  {
+    routeId: 'hanoi-hue',
+    trainNumber: 'SE1',
+    fromStation: 'Hà Nội',
+    toStation: 'Huế',
+    departureTime: '20:30',
+    arrivalTime: '08:45',
+    duration: '12h 15m',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    availableSeats: makeSeats(28, 10),
+    hasLanding: true,
+    hasRestaurant: true,
+  },
+
+  // ===================================================================
+  // HANOI — DONG HOI (PHONG NHA)
+  // ===================================================================
+  {
+    routeId: 'hanoi-donghoi',
+    trainNumber: 'SE3',
+    fromStation: 'Hà Nội',
+    toStation: 'Đồng Hới',
+    departureTime: '19:00',
+    arrivalTime: '01:00',
+    duration: '6h 00m',
+    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    availableSeats: makeSeats(36, 14),
     hasLanding: false,
     hasRestaurant: true,
   },
@@ -306,10 +373,11 @@ export function searchSchedules(
   const fromKey = ROUTE_CODE_TO_KEY[fromCode.toUpperCase()] || fromCode.toLowerCase()
   const toKey = ROUTE_CODE_TO_KEY[toCode.toUpperCase()] || toCode.toLowerCase()
   const routeId = `${fromKey}-${toKey}`
+  const reverseRouteId = `${toKey}-${fromKey}`
   const departureDate = new Date(date + 'T00:00:00')
 
   return ALL_SCHEDULES.filter((s) => {
-    if (s.routeId !== routeId) return false
+    if (s.routeId !== routeId && s.routeId !== reverseRouteId) return false
     return isDepartureDay(s.departureDays, departureDate)
   })
 }
@@ -485,65 +553,38 @@ export function getRoutePricing(fromCode: string, toCode: string): RoutePricing[
   return [
     {
       seatClass: 'standard',
-      seatClassVi: 'Phòng Standard',
-      seatClassEn: 'Standard Room',
+      seatClassVi: CABIN_PRODUCTS.standard.nameVi,
+      seatClassEn: CABIN_PRODUCTS.standard.nameEn,
       basePrice: stdPrice,
-      peakPrice: Math.round(stdPrice * 1.2),
+      peakPrice: stdPrice,
     },
     {
       seatClass: 'premium',
-      seatClassVi: 'Phòng Premium',
-      seatClassEn: 'Premium Room',
+      seatClassVi: CABIN_PRODUCTS.premium.nameVi,
+      seatClassEn: CABIN_PRODUCTS.premium.nameEn,
       basePrice: prmPrice,
-      peakPrice: Math.round(prmPrice * 1.2),
+      peakPrice: prmPrice,
     },
   ]
 }
 
-function getFallbackPricing(routeId: string): RoutePricing[] {
-  const fallbackPrices: Record<string, RoutePricing[]> = {
-    'hanoi-ninhbinh': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 500_000, peakPrice: 600_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 900_000, peakPrice: 1_080_000 },
-    ],
-    'hanoi-donghoi': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 900_000, peakPrice: 1_080_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 1_620_000, peakPrice: 1_944_000 },
-    ],
-    'hanoi-hue': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 2_000_000, peakPrice: 2_400_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 3_600_000, peakPrice: 4_320_000 },
-    ],
-    'hanoi-danang': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 2_500_000, peakPrice: 3_000_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 4_500_000, peakPrice: 5_400_000 },
-    ],
-    'hue-danang': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 600_000, peakPrice: 720_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 1_080_000, peakPrice: 1_296_000 },
-    ],
-    'danang-hanoi': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 2_500_000, peakPrice: 3_000_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 4_500_000, peakPrice: 5_400_000 },
-    ],
-    'donghoi-hue': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 700_000, peakPrice: 840_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 1_260_000, peakPrice: 1_512_000 },
-    ],
-    'donghoi-danang': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 1_000_000, peakPrice: 1_200_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 1_800_000, peakPrice: 2_160_000 },
-    ],
-    'ninhbinh-hue': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 1_600_000, peakPrice: 1_920_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 2_880_000, peakPrice: 3_456_000 },
-    ],
-    'ninhbinh-danang': [
-      { seatClass: 'standard', seatClassVi: 'Phòng Standard', seatClassEn: 'Standard Room', basePrice: 2_200_000, peakPrice: 2_640_000 },
-      { seatClass: 'premium', seatClassVi: 'Phòng Premium', seatClassEn: 'Premium Room', basePrice: 3_960_000, peakPrice: 4_752_000 },
-    ],
-  }
-  return fallbackPrices[routeId] || fallbackPrices['hanoi-danang']
+function getFallbackPricing(_routeId: string): RoutePricing[] {
+  return [
+    {
+      seatClass: 'standard',
+      seatClassVi: CABIN_PRODUCTS.standard.nameVi,
+      seatClassEn: CABIN_PRODUCTS.standard.nameEn,
+      basePrice: CABIN_PRODUCTS.standard.ticketPrice,
+      peakPrice: CABIN_PRODUCTS.standard.ticketPrice,
+    },
+    {
+      seatClass: 'premium',
+      seatClassVi: CABIN_PRODUCTS.premium.nameVi,
+      seatClassEn: CABIN_PRODUCTS.premium.nameEn,
+      basePrice: CABIN_PRODUCTS.premium.ticketPrice,
+      peakPrice: CABIN_PRODUCTS.premium.ticketPrice,
+    },
+  ]
 }
 
 // ---------------------------------------------------------------------------

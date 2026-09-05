@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -8,8 +8,6 @@ import { ChevronDown } from 'lucide-react'
 
 export default function HeroSection() {
   const t = useTranslations('home.hero')
-  const locale = useLocale()
-  const tagline = locale === 'vi' ? 'Du lịch đường sắt sang trọng tại Việt Nam' : 'Luxury Train Travel in Vietnam'
 
   return (
     <section className="relative h-screen min-h-[500px] sm:min-h-[600px] flex items-center justify-center overflow-hidden">
@@ -44,7 +42,7 @@ export default function HeroSection() {
         >
           <span className="w-1.5 h-1.5 rounded-full bg-gold-400 animate-pulse" />
           <span className="text-white/70 text-xs font-medium tracking-widest uppercase">
-            {tagline}
+            {t('tagline')}
           </span>
         </motion.div>
 
@@ -89,7 +87,7 @@ export default function HeroSection() {
             href="/cabins"
             className="inline-flex items-center gap-2 border border-white/30 hover:border-white/60 text-white/80 hover:text-white font-medium text-base px-6 py-3.5 rounded-lg transition-all duration-200 hover:bg-white/5"
           >
-            Khám phá cabin
+            {t('exploreCabins')}
           </Link>
         </motion.div>
       </div>

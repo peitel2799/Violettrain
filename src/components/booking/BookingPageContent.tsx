@@ -2,10 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { ChevronLeft, ChevronRight, Check, Loader2, ArrowLeftRight } from 'lucide-react'
-import { cn, formatDate, generateBookingRef } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
 import { BOOKABLE_STATIONS, STATION_NAMES } from '@/lib/constants'
 import ScheduleResults from '@/components/booking/ScheduleResults'
 import PassengerForm from '@/components/booking/PassengerForm'
@@ -20,7 +20,6 @@ const STEPS = ['select', 'schedule', 'passenger', 'confirmation'] as const
 function BookingContent({ locale }: { locale: string }) {
   const t = useTranslations('booking')
   const tForm = useTranslations('booking.form')
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   const [step, setStep] = useState<BookingStep>('select')
@@ -125,25 +124,20 @@ function BookingContent({ locale }: { locale: string }) {
     if (!canProceed()) return
 
     setIsLoading(true)
-    const ref = generateBookingRef()
+    setError('')
     const primaryEmail = passengers[0]?.email
     const primaryName = passengers[0]?.fullName || 'Valued Customer'
     const primaryPhone = passengers[0]?.phone || ''
 
     try {
-      // 1. Create booking inquiry
-      await fetch('/api/bookings', {
+      // The server validates the selected DSVN service and recalculates the route fare.
+      const bookingResponse = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          reference: ref,
-          status: 'pending',
           routeId: `${from}-${to}`,
-          routeName: `${STATION_NAMES[from]?.[isVi ? 'vi' : 'en']} → ${STATION_NAMES[to]?.[isVi ? 'vi' : 'en']}`,
           cabinClassId: selectedSeatClass || '',
-          cabinClassName: selectedSeatClassVi || selectedSeatClass || '',
           departureDate,
-          departureTime: selectedSchedule?.departureTime || '',
           trainNumber: selectedSchedule?.trainNumber || '',
           isRoundTrip: tripType === 'roundTrip',
           returnDate: tripType === 'roundTrip' ? returnDate : undefined,
@@ -154,51 +148,64 @@ function BookingContent({ locale }: { locale: string }) {
             phone: p.phone,
             dateOfBirth: p.dateOfBirth,
           })),
-          pricing: { subtotal, tax, total },
           contact: { email: primaryEmail, phone: primaryPhone },
         }),
       })
+      const bookingResult = await bookingResponse.json()
+      if (!bookingResponse.ok || !bookingResult.booking?.reference) {
+        throw new Error(bookingResult.error || 'Unable to save booking request')
+      }
 
-      // 2. Send confirmation email
+      const ref = bookingResult.booking.reference as string
+      const trustedPricing = bookingResult.booking.pricing as {
+        subtotal: number
+        tax: number
+        total: number
+      }
       setBookingRef(ref)
-      setEmailStatus('sending')
 
       if (primaryEmail) {
-        await fetch('/api/booking/email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            bookingRef: ref,
-            customerName: primaryName,
-            customerEmail: primaryEmail,
-            customerPhone: primaryPhone,
-            trainNumber: selectedSchedule?.trainNumber || '',
-            fromStation: selectedSchedule?.fromStation || '',
-            toStation: selectedSchedule?.toStation || '',
-            departureDate,
-            departureTime: selectedSchedule?.departureTime || '',
-            arrivalTime: selectedSchedule?.arrivalTime || '',
-            seatClass: selectedSeatClass || '',
-            seatClassVi: selectedSeatClassVi || '',
-            seatClassEn: selectedSeatClassEn || '',
-            passengers: passengers.map((p) => ({ name: p.fullName, type: p.type })),
-            isRoundTrip: tripType === 'roundTrip',
-            returnDate: tripType === 'roundTrip' ? returnDate : undefined,
-            subtotal,
-            tax,
-            total,
-            locale: currentLocale,
-          }),
-        })
-        setEmailStatus('sent')
+        setEmailStatus('sending')
+        try {
+          const emailResponse = await fetch('/api/booking/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              bookingRef: ref,
+              customerName: primaryName,
+              customerEmail: primaryEmail,
+              customerPhone: primaryPhone,
+              trainNumber: selectedSchedule?.trainNumber || '',
+              fromStation: selectedSchedule?.fromStation || '',
+              toStation: selectedSchedule?.toStation || '',
+              departureDate,
+              departureTime: selectedSchedule?.departureTime || '',
+              arrivalTime: selectedSchedule?.arrivalTime || '',
+              seatClass: selectedSeatClass || '',
+              seatClassVi: selectedSeatClassVi || '',
+              seatClassEn: selectedSeatClassEn || '',
+              passengers: passengers.map((p) => ({ name: p.fullName, type: p.type })),
+              isRoundTrip: tripType === 'roundTrip',
+              returnDate: tripType === 'roundTrip' ? returnDate : undefined,
+              subtotal: trustedPricing.subtotal,
+              tax: trustedPricing.tax,
+              total: trustedPricing.total,
+              locale: currentLocale,
+            }),
+          })
+          if (!emailResponse.ok) throw new Error('Unable to send receipt email')
+          setEmailStatus('sent')
+        } catch {
+          setEmailStatus('failed')
+        }
       }
 
       setStep('confirmation')
     } catch (err) {
       console.error('[handleConfirmBooking]', err)
-      setEmailStatus('failed')
-      setBookingRef(ref)
-      setStep('confirmation')
+      setError(isVi
+        ? 'Không thể lưu yêu cầu đặt vé. Vui lòng kiểm tra thông tin và thử lại.'
+        : 'We could not save your booking request. Please check the details and try again.')
     } finally {
       setIsLoading(false)
     }
@@ -467,6 +474,9 @@ function BookingContent({ locale }: { locale: string }) {
                     <>{t('confirmBooking')}<ChevronRight className="w-4 h-4" /></>
                   )}
               </button>
+              {error && (
+                <p role="alert" className="text-center text-sm text-red-600">{error}</p>
+              )}
             </div>
 
             <div>

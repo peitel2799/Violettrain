@@ -43,12 +43,12 @@ export default function ConfirmationStep({
       </div>
 
       <h2 className="text-2xl font-bold text-gray-900 mb-2">
-        {isVi ? 'Đặt vé thành công!' : 'Booking Confirmed!'}
+        {isVi ? 'Yêu cầu đặt vé đã được gửi!' : 'Booking Request Received!'}
       </h2>
       <p className="text-gray-500 mb-6">
         {isVi
-          ? 'Cảm ơn bạn đã đặt vé. Nhân viên Violette Train sẽ liên hệ bạn sớm nhất để xác nhận và hướng dẫn thanh toán.'
-          : 'Thank you for your booking. Violette Train staff will contact you soon to confirm and guide you through payment.'}
+          ? 'Cảm ơn bạn đã gửi yêu cầu đặt vé. Nhân viên Violette Train sẽ liên hệ bạn qua email hoặc điện thoại để xác nhận trong thời gian sớm nhất.'
+          : 'Thank you for submitting your booking request. Violette Train staff will contact you via email or phone to confirm your booking shortly.'}
       </p>
 
       {/* Booking Reference */}
@@ -129,8 +129,8 @@ export default function ConfirmationStep({
         <Phone className="w-5 h-5 text-amber-500 flex-shrink-0" />
         <p className="text-sm text-amber-800">
           {isVi
-            ? 'Nhân viên Violette Train sẽ liên hệ bạn qua email hoặc điện thoại để xác nhận và hướng dẫn thanh toán trong vòng 24 giờ.'
-            : 'Violette Train staff will contact you via email or phone within 24 hours to confirm and guide you through payment.'}
+            ? 'Nhân viên Violette Train sẽ liên hệ bạn qua email hoặc điện thoại trong vòng 24 giờ để xác nhận yêu cầu đặt vé của bạn.'
+            : 'Violette Train staff will contact you via email or phone within 24 hours to confirm your booking request.'}
         </p>
       </div>
 
@@ -166,8 +166,8 @@ export default function ConfirmationStep({
       {/* Contact */}
       <p className="text-xs text-gray-400 mt-8">
         {isVi
-          ? 'Cần hỗ trợ? Liên hệ 1900 2695 hoặc info@violettetrain.vn'
-          : 'Need help? Call 1900 2695 or email info@violettetrain.vn'}
+          ? 'Cần hỗ trợ? Liên hệ 091 582 3667 / 0947 163 497 hoặc violettetrains@gmail.com'
+          : 'Need help? Call 091 582 3667 / 0947 163 497 or email violettetrains@gmail.com'}
       </p>
     </div>
   )

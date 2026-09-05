@@ -122,7 +122,7 @@
     },
     "cabins": {
       "title": "Không gian nghỉ ngơi đẳng cấp",
-      "subtitle": "Cabin 4 giường cố định và 7 cabin VIP 2 có giường trên nâng được — giá vé cố định trên mọi tuyến.",
+      "subtitle": "Cabin 4 giường cố định và 7 cabin VIP 2 có giường trên nâng được — giá vé được tính theo tuyến.",
       "viewDetails": "Khám phá cabin",
       "startingFrom": "Từ",
       "perPerson": "/khách",
@@ -188,7 +188,7 @@
   },
   "cabins": {
     "title": "Hạng phòng",
-    "subtitle": "Hai lựa chọn cabin 4 khách với giá vé cố định trên tất cả các tuyến.",
+    "subtitle": "Hai lựa chọn cabin 4 khách với giá vé được tính theo tuyến đã chọn.",
     "standard": {
       "name": "Cabin 4 giường cố định",
       "tagline": "4 giường cố định · Riêng tư khi mua đủ 4 vé",

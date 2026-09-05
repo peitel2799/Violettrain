@@ -41,7 +41,6 @@ export interface BookingEmailData {
   discount: number
   tax: number
   total: number
-  paymentMethod: string
   locale: 'vi' | 'en'
 }
 
@@ -127,17 +126,6 @@ function formatDateDisplay(dateStr: string, locale: 'vi' | 'en'): string {
 
 function buildBookingConfirmationHTML(data: BookingEmailData): string {
   const isVi = data.locale === 'vi'
-
-  const paymentMethodLabels: Record<string, { vi: string; en: string }> = {
-    vnpay: { vi: 'VNPay', en: 'VNPay' },
-    momo: { vi: 'MoMo', en: 'MoMo' },
-    card: { vi: 'Thẻ quốc tế', en: 'International Card' },
-    bank: { vi: 'Chuyển khoản ngân hàng', en: 'Bank Transfer' },
-    cash: { vi: 'Thanh toán khi nhận vé', en: 'Pay on Arrival' },
-  }
-  const paymentLabel = paymentMethodLabels[data.paymentMethod]
-    ? paymentMethodLabels[data.paymentMethod][isVi ? 'vi' : 'en']
-    : data.paymentMethod
 
   const passengersHTML = data.passengers
     .map(
@@ -293,8 +281,8 @@ function buildBookingConfirmationHTML(data: BookingEmailData): string {
           </tbody>
         </table>
 
-        <!-- Payment Summary -->
-        <div class="section-title">${isVi ? 'Thông tin thanh toán' : 'Payment Information'}</div>
+        <!-- Pricing Summary -->
+        <div class="section-title">${isVi ? 'Thông tin giá vé' : 'Pricing Information'}</div>
         <div class="info-card">
           <div class="info-card-body">
             <div class="info-row">
@@ -325,8 +313,8 @@ function buildBookingConfirmationHTML(data: BookingEmailData): string {
           </p>
           <p style="margin: 0; color: #7C2D12; font-size: 13px; line-height: 1.7;">
             ${isVi
-              ? 'Nhân viên Violette Train sẽ liên hệ bạn qua email hoặc điện thoại trong vòng 24 giờ để xác nhận đặt vé và hướng dẫn thanh toán. Vui lòng giữ email này làm bằng chứng đặt chỗ.'
-              : 'Violette Train staff will contact you via email or phone within 24 hours to confirm your booking and guide you through payment. Please keep this email as your booking reference.'}
+              ? 'Nhân viên Violette Train sẽ liên hệ bạn qua email hoặc điện thoại trong vòng 24 giờ để xác nhận yêu cầu đặt vé. Vui lòng giữ email này làm bằng chứng đặt chỗ.'
+              : 'Violette Train staff will contact you via email or phone within 24 hours to confirm your booking request. Please keep this email as your booking reference.'}
           </p>
         </div>
 
@@ -341,8 +329,8 @@ function buildBookingConfirmationHTML(data: BookingEmailData): string {
       <div class="email-footer">
         <div class="footer-brand">VIOLETTE TRAIN</div>
         <p style="margin: 4px 0;">
-          📞 1900 2695 &nbsp;|&nbsp;
-          ✉️ <a href="mailto:info@violettetrain.vn" style="color: rgba(255,255,255,0.8);">info@violettetrain.vn</a>
+          📞 091 582 3667 / 0947 163 497 &nbsp;|&nbsp;
+          ✉️ <a href="mailto:violettetrains@gmail.com" style="color: rgba(255,255,255,0.8);">violettetrains@gmail.com</a>
         </p>
         <p style="margin: 8px 0 0 0; opacity: 0.6; font-size: 12px;">
           © ${new Date().getFullYear()} Violette Train. ${isVi ? 'Tất cả quyền được bảo lưu.' : 'All rights reserved.'}
@@ -386,7 +374,7 @@ function buildBookingConfirmationText(data: BookingEmailData): string {
       `${i + 1}. ${p.name} (${p.type === 'child' ? (isVi ? 'Tre em' : 'Child') : (isVi ? 'Nguoi lon' : 'Adult')})`
     ),
     '',
-    isVi ? '--- THANH TOAN ---' : '--- PAYMENT ---',
+    isVi ? '--- GIA VE ---' : '--- PRICING ---',
     isVi ? 'Tam tinh:' : 'Subtotal:', formatVND(data.subtotal),
     data.discount > 0 ? `${isVi ? 'Giam gia:' : 'Discount:'} -${formatVND(data.discount)}` : '',
     isVi ? 'Thue (VAT 10%):' : 'Tax (VAT 10%):', formatVND(data.tax),
@@ -394,12 +382,12 @@ function buildBookingConfirmationText(data: BookingEmailData): string {
     '',
     isVi ? 'NHAN VIEN SE LIEN HE BAN TRONG 24H' : 'STAFF WILL CONTACT YOU WITHIN 24H',
     isVi
-      ? 'Nhan vien Violette Train se lien he qua email hoac dien thoai de xac nhan dat ve va huong dan thanh toan.'
-      : 'Violette Train staff will contact you via email or phone to confirm your booking and guide you through payment.',
+      ? 'Nhan vien Violette Train se lien he qua email hoac dien thoai trong vong 24 gio de xac nhan yeu cau dat ve.'
+      : 'Violette Train staff will contact you via email or phone within 24 hours to confirm your booking request.',
     '',
     isVi ? '--- LIEN HE HO TRO ---' : '--- SUPPORT ---',
-    'Hotline: 1900 2695',
-    'Email: info@violettetrain.vn',
+    'Hotline: 091 582 3667 / 0947 163 497',
+    'Email: violettetrains@gmail.com',
     'Website: https://violettetrain.vn',
   ].filter(Boolean)
 

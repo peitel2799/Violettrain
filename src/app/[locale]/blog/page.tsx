@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Link } from '@/i18n/routing'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock, Tag } from 'lucide-react'
 import { BLOG_POSTS, CATEGORIES, CATEGORY_COLORS } from '@/lib/constants'
@@ -21,6 +21,7 @@ const CATEGORY_LABELS: Record<string, { vi: string; en: string }> = {
 
 export default function BlogPage() {
   const locale = useLocale()
+  const t = useTranslations('blog')
   const isVi = locale === 'vi'
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
@@ -29,15 +30,7 @@ export default function BlogPage() {
     : BLOG_POSTS
 
   const featured = BLOG_POSTS.find((p) => p.featured) || BLOG_POSTS[0]
-  const rest = filtered.filter((p) => p.id !== featured.id || activeCategory !== null)
-
-  const categoryLabels: Record<string, { vi: string; en: string }> = {
-    travel: { vi: 'Du lịch', en: 'Travel' },
-    tips: { vi: 'Mẹo hay', en: 'Tips' },
-    culture: { vi: 'Văn hóa', en: 'Culture' },
-    food: { vi: 'Ẩm thực', en: 'Food' },
-    testimonial: { vi: 'Cảm nhận', en: 'Guest Stories' },
-  }
+  const rest = filtered.filter((p) => p.id !== featured.id)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -48,12 +41,10 @@ export default function BlogPage() {
             className="text-3xl md:text-4xl font-bold mb-3"
             style={{ fontFamily: 'var(--font-serif)' }}
           >
-            {isVi ? 'Blog & Cảm hứng du lịch' : 'Blog & Travel Inspiration'}
+            {t('heroTitle')}
           </h1>
           <p className="text-violet-200 max-w-xl mx-auto">
-            {isVi
-              ? 'Khám phá những câu chuyện du lịch, destination guides và trải nghiệm từ Violette Train.'
-              : 'Discover travel stories, destination guides and experiences from Violette Train passengers.'}
+            {t('heroSubtitle')}
           </p>
         </div>
       </div>
@@ -89,7 +80,7 @@ export default function BlogPage() {
                   {isVi ? featured.excerpt : featured.excerptEn}
                 </p>
                 <span className="inline-flex items-center gap-1 text-gold-400 text-sm font-medium">
-                  {isVi ? 'Đọc tiếp' : 'Read More'}
+                  {t('readMore')}
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
@@ -109,7 +100,7 @@ export default function BlogPage() {
                 : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
             }`}
           >
-            {isVi ? 'Tất cả' : 'All'}
+            {t('categories.all')}
           </button>
           {CATEGORIES.map((cat) => (
             <button
@@ -121,7 +112,7 @@ export default function BlogPage() {
                   : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              {categoryLabels[cat]?.[isVi ? 'vi' : 'en'] || cat}
+              {CATEGORY_LABELS[cat]?.[isVi ? 'vi' : 'en'] || cat}
             </button>
           ))}
         </div>
@@ -132,8 +123,8 @@ export default function BlogPage() {
         {rest.length === 0 ? (
           <EmptyState
             icon="search"
-            title={isVi ? 'Không có bài viết nào' : 'No posts found'}
-            description={isVi ? 'Không có bài viết nào trong danh mục này.' : 'No posts in this category yet.'}
+            title={t('noPosts')}
+            description={t('noPostsDesc')}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -163,7 +154,7 @@ export default function BlogPage() {
                           }`}
                         >
                           <Tag className="w-3 h-3" />
-                          {categoryLabels[post.category.toLowerCase()]?.[isVi ? 'vi' : 'en'] || post.category}
+                          {CATEGORY_LABELS[post.category.toLowerCase()]?.[isVi ? 'vi' : 'en'] || post.category}
                         </span>
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-violet-600 transition-colors">
@@ -175,7 +166,7 @@ export default function BlogPage() {
                       <div className="flex items-center gap-3 text-xs text-gray-400">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" />
-                          {post.readTime} min
+                          {post.readTime} {t('minRead')}
                         </span>
                         <span>·</span>
                         <span>{formatDate(post.publishedAt, isVi ? 'vi-VN' : 'en-US')}</span>
@@ -193,12 +184,10 @@ export default function BlogPage() {
       <div className="bg-violet-950 py-16">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="font-serif text-2xl text-white font-bold mb-3">
-            {isVi ? 'Đăng ký nhận tin mới' : 'Subscribe for Updates'}
+            {t('subscribeTitle')}
           </h2>
           <p className="text-white/60 mb-6">
-            {isVi
-              ? 'Nhận thông tin về các bài viết mới và ưu đãi đặc biệt từ Violette Train.'
-              : 'Get the latest travel articles and exclusive offers from Violette Train.'}
+            {t('subscribeDesc')}
           </p>
           <NewsletterForm />
         </div>

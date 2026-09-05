@@ -2,10 +2,10 @@
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ArrowDown, ArrowRight, BedDouble, TrainFront } from 'lucide-react'
+import { ArrowDown, ArrowRight, MapPin, TrainFront } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { useLocale } from 'next-intl'
-import { useProductPricing } from '@/hooks/useProductPricing'
+import { getRouteFare } from '@/lib/train-database'
 
 function formatVnd(amount: number) {
   return new Intl.NumberFormat('vi-VN').format(amount) + '₫'
@@ -13,7 +13,11 @@ function formatVnd(amount: number) {
 
 export default function VietnamMapHero() {
   const isVi = useLocale() === 'vi'
-  const prices = useProductPricing()
+  const routeFares = [
+    { labelVi: 'Đồng Hới', labelEn: 'Dong Hoi', price: getRouteFare('hanoi', 'donghoi') ?? 0 },
+    { labelVi: 'Huế', labelEn: 'Hue', price: getRouteFare('hanoi', 'hue') ?? 0 },
+    { labelVi: 'Đà Nẵng', labelEn: 'Da Nang', price: getRouteFare('hanoi', 'danang') ?? 0 },
+  ]
 
   return (
     <section className="relative flex h-[100svh] min-h-[720px] max-h-[920px] items-center overflow-hidden bg-violet-950">
@@ -72,36 +76,31 @@ export default function VietnamMapHero() {
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-400">
-                  {isVi ? 'Giá vé cố định' : 'Fixed ticket fares'}
+                  {isVi ? 'Giá vé từ Hà Nội' : 'Fares from Hanoi'}
                 </p>
                 <p className="mt-1 text-sm font-medium text-white">
-                  {isVi ? 'Áp dụng cho tất cả các tuyến' : 'The same on every route'}
+                  {isVi ? 'Theo từng hành trình' : 'Priced by journey'}
                 </p>
               </div>
               <TrainFront className="h-6 w-6 shrink-0 text-white/45" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-white/10 px-3 py-3">
-                <p className="flex items-center gap-1.5 text-xs text-white/55">
-                  <BedDouble className="h-3.5 w-3.5" /> {isVi ? 'Cabin 4 giường' : 'Fixed 4-Berth'}
-                </p>
-                <p className="mt-1 font-serif text-xl font-bold text-white sm:text-2xl">
-                  {formatVnd(prices.standard)}
-                </p>
-              </div>
-              <div className="rounded-xl bg-white/10 px-3 py-3">
-                <p className="flex items-center gap-1.5 text-xs text-white/55">
-                  <BedDouble className="h-3.5 w-3.5" /> VIP 2
-                </p>
-                <p className="mt-1 font-serif text-xl font-bold text-white sm:text-2xl">
-                  {formatVnd(prices.premium)}
-                </p>
-              </div>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {routeFares.map((fare) => (
+                <div key={fare.labelEn} className="min-w-0 rounded-xl bg-white/10 px-2 py-3 sm:px-3">
+                  <p className="flex items-center gap-1 text-[10px] text-white/55 sm:text-xs">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{isVi ? fare.labelVi : fare.labelEn}</span>
+                  </p>
+                  <p className="mt-1 whitespace-nowrap font-serif text-sm font-bold text-white sm:text-lg">
+                    {formatVnd(fare.price)}
+                  </p>
+                </div>
+              ))}
             </div>
             <p className="mt-3 text-[11px] leading-relaxed text-white/40">
               {isVi
-                ? 'Giá cho mỗi vé. Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.'
-                : 'Price per ticket. Buy all 4 tickets for a private cabin.'}
+                ? 'Giá cơ bản mỗi vé cabin 4 giường. VIP 2 được tính theo hạng cabin.'
+                : 'Base fare per fixed 4-berth ticket. VIP 2 is priced by cabin class.'}
             </p>
           </div>
         </motion.div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Clock, Train, Utensils, MapPin, ArrowRight, Users, Star } from 'lucide-react'
+import { Train, Utensils, ArrowRight, Users, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils'
 import type { DsvnSchedule } from '@/lib/types'
@@ -66,11 +66,24 @@ export default function ScheduleResults({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-sm text-gray-500">
-          {locale === 'vi'
-            ? `Tìm thấy ${schedules.length} chuyến tàu`
-            : `Found ${schedules.length} train(s)`}
-        </p>
+        <div>
+          <p className="text-sm text-gray-500">
+            {locale === 'vi'
+              ? `Tìm thấy ${schedules.length} chuyến tàu`
+              : `Found ${schedules.length} train(s)`}
+          </p>
+          {schedules[0]?.sourceUrl && (
+            <a
+              href={schedules[0].sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-block text-xs text-violet-600 underline-offset-2 hover:underline"
+            >
+              {locale === 'vi' ? 'Giờ tàu theo DSVN' : 'Timetable from DSVN'}
+              {schedules[0].sourceVerifiedOn ? ` · ${schedules[0].sourceVerifiedOn}` : ''}
+            </a>
+          )}
+        </div>
         <div className="flex items-center gap-1 text-xs text-gold-500">
           <Star className="w-3 h-3 fill-current" />
           <span>{locale === 'vi' ? 'Giá tốt nhất' : 'Best price'}</span>
@@ -79,7 +92,7 @@ export default function ScheduleResults({
 
       {schedules.map((schedule, idx) => (
         <ScheduleCard
-          key={`${schedule.trainNumber}-${idx}`}
+          key={schedule.scheduleId ?? `${schedule.trainNumber}-${idx}`}
           schedule={schedule}
           locale={locale}
           onSelect={onSelect}
@@ -101,7 +114,7 @@ function ScheduleCard({
   const t = useTranslations('booking')
   const [expanded, setExpanded] = useState(false)
   const bestSeat = schedule.availableSeats
-    .filter((s) => s.available > 0)
+    .filter((s) => s.available === null || s.available > 0)
     .sort((a, b) => a.price - b.price)[0]
 
   return (
@@ -143,7 +156,14 @@ function ScheduleCard({
             </div>
 
             <div className="text-center">
-              <p className="text-xl font-bold text-gray-900">{schedule.arrivalTime}</p>
+              <p className="text-xl font-bold text-gray-900">
+                {schedule.arrivalTime}
+                {schedule.arrivalDayOffset ? (
+                  <span className="ml-1 align-top text-[10px] font-semibold text-violet-600">
+                    +{schedule.arrivalDayOffset}
+                  </span>
+                ) : null}
+              </p>
               <p className="text-xs text-gray-400">{schedule.toStation}</p>
             </div>
           </div>
@@ -180,14 +200,18 @@ function ScheduleCard({
               key={seat.seatClass}
               className={cn(
                 'text-xs px-2 py-1 rounded-full',
-                seat.available > 5
+                seat.available === null
+                  ? 'bg-violet-50 text-violet-600'
+                  : seat.available > 5
                   ? 'bg-green-50 text-green-600'
                   : seat.available > 0
                     ? 'bg-amber-50 text-amber-600'
                     : 'bg-gray-100 text-gray-400'
               )}
             >
-              {seat.available} {seat.seatClassVi}
+              {seat.available === null
+                ? (locale === 'vi' ? 'Kiểm tra chỗ khi gửi yêu cầu' : 'Availability checked after request')
+                : `${seat.available} ${locale === 'vi' ? seat.seatClassVi : seat.seatClassEn}`}
             </span>
           ))}
         </div>
@@ -204,7 +228,7 @@ function ScheduleCard({
               <button
                 key={seat.seatClass}
                 onClick={() =>
-                  seat.available > 0 && onSelect(schedule, seat.seatClass, seat.price, seat.seatClassVi, seat.seatClassEn)
+                  seat.available !== 0 && onSelect(schedule, seat.seatClass, seat.price, seat.seatClassVi, seat.seatClassEn)
                 }
                 disabled={seat.available === 0}
                 className={cn(
@@ -220,7 +244,9 @@ function ScheduleCard({
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
                     <Users className="w-3 h-3 inline mr-0.5" />
-                    {seat.available} {t('available')}
+                    {seat.available === null
+                      ? (locale === 'vi' ? 'Chờ xác nhận chỗ' : 'Subject to confirmation')
+                      : `${seat.available} ${t('available')}`}
                   </p>
                   <p className="mt-1 text-[11px] text-violet-600">
                     {locale === 'vi' ? 'Mua 4 vé để có cabin riêng' : 'Buy 4 tickets for a private cabin'}

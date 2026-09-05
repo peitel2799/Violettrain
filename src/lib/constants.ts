@@ -1,6 +1,11 @@
 import type { Route, CabinClass, Testimonial, BlogPost } from './types'
 import { STATIONS } from './dsvn-client'
 import { CABIN_PRODUCTS } from './cabin-products'
+import {
+  TRAIN_ROUTES,
+  getRouteScheduleSummary,
+  getTrainStation,
+} from './train-database'
 
 // Bookable stations for the booking widget (Violette's primary routes)
 export const BOOKABLE_STATIONS = ['hanoi', 'ninhbinh', 'donghoi', 'hue', 'danang'] as const
@@ -57,116 +62,29 @@ export const TRANSITION = {
   spring: 'transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)',
 } as const
 
-export const ROUTES: Route[] = [
-  {
-    id: 'HNO-NBI',
-    from: 'hanoi',
-    to: 'ninhbinh',
-    fromStation: 'Ga Hà Nội',
-    toStation: 'Ga Ninh Bình',
-    duration: '~2 tiếng',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '06:30 / 19:00',
-    arrivalTime: '08:30 / 21:00',
-    basePrice: 500000,
-  },
-  {
-    id: 'HNO-DHO',
-    from: 'hanoi',
-    to: 'donghoi',
-    fromStation: 'Ga Hà Nội',
-    toStation: 'Ga Đồng Hới (Phong Nha)',
-    duration: '~6 tiếng',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '19:30 / 21:00',
-    arrivalTime: '01:30 / 03:00',
-    basePrice: 900000,
-  },
-  {
-    id: 'HNO-HUE',
-    from: 'hanoi',
-    to: 'hue',
-    fromStation: 'Ga Hà Nội',
-    toStation: 'Ga Huế',
-    duration: '~12 tiếng',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '19:00 / 21:30',
-    arrivalTime: '07:00 / 09:30',
-    basePrice: 2000000,
-  },
-  {
-    id: 'HNO-DNA',
-    from: 'hanoi',
-    to: 'danang',
-    fromStation: 'Ga Hà Nội',
-    toStation: 'Ga Đà Nẵng',
-    duration: '~17 tiếng 30 phút',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '19:00 / 20:30 / 22:00',
-    arrivalTime: '12:30 / 14:00 / 15:30',
-    basePrice: 2500000,
-  },
-  {
-    id: 'DNA-HUE',
-    from: 'danang',
-    to: 'hue',
-    fromStation: 'Ga Đà Nẵng',
-    toStation: 'Ga Huế',
-    duration: '~2 tiếng 30 phút',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '07:30 / 16:30',
-    arrivalTime: '10:00 / 19:00',
-    basePrice: 600000,
-  },
-  {
-    id: 'DHO-HUE',
-    from: 'donghoi',
-    to: 'hue',
-    fromStation: 'Ga Đồng Hới (Phong Nha)',
-    toStation: 'Ga Huế',
-    duration: '~4 tiếng 30 phút',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '05:30 / 23:00',
-    arrivalTime: '10:00 / 03:30',
-    basePrice: 700000,
-  },
-  {
-    id: 'DHO-DNA',
-    from: 'donghoi',
-    to: 'danang',
-    fromStation: 'Ga Đồng Hới (Phong Nha)',
-    toStation: 'Ga Đà Nẵng',
-    duration: '~7 tiếng 30 phút',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '04:00 / 20:00',
-    arrivalTime: '11:30 / 03:30',
-    basePrice: 1000000,
-  },
-  {
-    id: 'NBI-HUE',
-    from: 'ninhbinh',
-    to: 'hue',
-    fromStation: 'Ga Ninh Bình',
-    toStation: 'Ga Huế',
-    duration: '~10 tiếng',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '22:00',
-    arrivalTime: '08:00',
-    basePrice: 1600000,
-  },
-  {
-    id: 'NBI-DNA',
-    from: 'ninhbinh',
-    to: 'danang',
-    fromStation: 'Ga Ninh Bình',
-    toStation: 'Ga Đà Nẵng',
-    duration: '~15 tiếng',
-    departureDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-    departureTime: '19:00 / 21:00',
-    arrivalTime: '10:00 / 12:00',
-    basePrice: 2200000,
-  },
+const EVERY_DAY: Route['departureDays'] = [
+  'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun',
 ]
+
+/** Public route summaries derived from the versioned DSVN train database. */
+export const ROUTES: Route[] = TRAIN_ROUTES.map((route) => {
+  const fromStation = getTrainStation(route.from)
+  const toStation = getTrainStation(route.to)
+  const schedule = getRouteScheduleSummary(route.from, route.to)
+
+  return {
+    id: route.code,
+    from: route.from,
+    to: route.to,
+    fromStation: `Ga ${fromStation?.nameVi ?? route.from}`,
+    toStation: `Ga ${toStation?.nameVi ?? route.to}${route.to === 'donghoi' ? ' (Phong Nha)' : ''}`,
+    duration: schedule.duration,
+    departureDays: [...EVERY_DAY],
+    departureTime: schedule.departureTime,
+    arrivalTime: schedule.arrivalTime,
+    basePrice: route.baseFareVnd,
+  }
+})
 
 export const CABIN_CLASSES: CabinClass[] = [
   {

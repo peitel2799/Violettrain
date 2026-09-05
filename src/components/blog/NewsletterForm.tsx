@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { useLocale } from 'next-intl'
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
+import { Loader2, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function NewsletterForm() {
   const locale = useLocale()
-  const isVi = locale === 'vi'
+  const t = useTranslations('blog.newsletter')
 
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -34,11 +34,11 @@ export default function NewsletterForm() {
         setStatus('success')
         setEmail('')
       } else {
-        setErrorMsg(data.error || (isVi ? 'Có lỗi xảy ra.' : 'An error occurred.'))
+        setErrorMsg(t('error'))
         setStatus('error')
       }
     } catch {
-      setErrorMsg(isVi ? 'Không thể đăng ký. Vui lòng thử lại.' : 'Unable to subscribe. Please try again.')
+      setErrorMsg(t('networkError'))
       setStatus('error')
     }
   }
@@ -48,7 +48,7 @@ export default function NewsletterForm() {
       <div className="text-center py-4">
         <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
         <p className="text-green-200 text-sm font-medium">
-          {isVi ? 'Đăng ký thành công!' : 'Subscribed successfully!'}
+          {t('success')}
         </p>
       </div>
     )
@@ -62,7 +62,7 @@ export default function NewsletterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          placeholder={isVi ? 'Nhập email của bạn' : 'Enter your email'}
+          placeholder={t('placeholder')}
           className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
         />
       </div>
@@ -81,7 +81,7 @@ export default function NewsletterForm() {
             <Loader2 className="w-4 h-4 animate-spin" />
           </>
         ) : (
-          isVi ? 'Đăng ký' : 'Subscribe'
+          t('submit')
         )}
       </button>
     </form>

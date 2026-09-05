@@ -24,6 +24,7 @@ export default async function NewsPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'news' })
 
   const categories: { id: NewsCategory; label: string }[] = [
     { id: 'news', label: locale === 'vi' ? 'Tin tức' : 'News' },
@@ -38,12 +39,10 @@ export default async function NewsPage({
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <Bell className="w-12 h-12 mx-auto text-gold-400 mb-4" />
           <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
-            {locale === 'vi' ? 'Tin tức & Thông báo' : 'News & Updates'}
+            {t('pageTitle')}
           </h1>
           <p className="text-violet-200 max-w-2xl mx-auto">
-            {locale === 'vi'
-              ? 'Cập nhật lịch trình, chính sách và thông báo mới nhất từ Violette Train và đường sắt Việt Nam.'
-              : 'Stay updated with the latest schedules, policies and announcements from Violette Train and Vietnam Railway.'}
+            {t('pageSubtitle')}
           </p>
         </div>
       </div>

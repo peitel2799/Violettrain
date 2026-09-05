@@ -1,6 +1,6 @@
 'use client'
 
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Link } from '@/i18n/routing'
 import { motion } from 'framer-motion'
@@ -25,7 +25,7 @@ const ROUTES = [
     taglineVi: 'Cầu Rồng & Bãi Biển Mỹ Khê',
     taglineEn: 'Dragon Bridge & My Khe Beach',
     image: '/stations/DaNangStation.JPG',
-    duration: '17h 30m',
+    duration: '15h 23m–17h 03m',
     tag: 'scenic',
     icon: Waves,
   },
@@ -36,7 +36,7 @@ const ROUTES = [
     taglineVi: 'Cố đô kinh đô ngàn năm',
     taglineEn: 'Imperial Capital of a Thousand Years',
     image: '/stations/HueStation.JPG',
-    duration: '12h 15m',
+    duration: '12h 35m–14h 12m',
     tag: 'heritage',
     icon: Landmark,
   },
@@ -47,7 +47,7 @@ const ROUTES = [
     taglineVi: 'Vương quốc hang động kỳ vĩ',
     taglineEn: 'Kingdom of Spectacular Caves',
     image: '/stations/DongHoiStation.jpg',
-    duration: '6h',
+    duration: '9h 37m–10h 57m',
     tag: 'adventure',
     icon: MapPin,
   },
@@ -58,7 +58,7 @@ const ROUTES = [
     taglineVi: 'Di sản thế giới Tràng An',
     taglineEn: 'UNESCO World Heritage Trang An',
     image: '/stations/NinhBinhStation.webp',
-    duration: '2h',
+    duration: '2h 16m–2h 18m',
     tag: 'unesco',
     icon: Mountain,
   },
@@ -73,6 +73,7 @@ const TAG_CONFIG: Record<string, { labelVi: string; labelEn: string; color: stri
 }
 
 export default function RouteShowcase() {
+  const t = useTranslations('home.routes')
   const locale = useLocale()
   const isVi = locale === 'vi'
 
@@ -88,15 +89,13 @@ export default function RouteShowcase() {
           className="text-center mb-16"
         >
           <span className="inline-block text-gold-500 text-sm font-semibold tracking-widest uppercase mb-4">
-            {isVi ? 'Các tuyến đường' : 'Our Routes'}
+            {t('label')}
           </span>
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-gray-900 font-bold mb-4">
-            {isVi ? 'Khám phá Việt Nam bằng tàu' : 'Explore Vietnam by Train'}
+            {t('title')}
           </h2>
           <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-            {isVi
-              ? 'Mỗi tuyến tàu là một hành trình độc đáo, mang đến trải nghiệm du lịch đẳng cấp qua những cảnh quan tuyệt đẹp của Việt Nam.'
-              : 'Each route is a unique journey, offering a luxury travel experience through Vietnam\'s most breathtaking landscapes.'}
+            {t('subtitle')}
           </p>
           <div className="w-16 h-1 bg-gold-500 mx-auto rounded-full mt-6" />
         </motion.div>
@@ -126,7 +125,7 @@ export default function RouteShowcase() {
                 {/* Tag */}
                 <div className="absolute top-4 left-4">
                   <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide ${TAG_CONFIG[ROUTES[0].tag].color}`}>
-                    {isVi ? TAG_CONFIG[ROUTES[0].tag].labelVi : TAG_CONFIG[ROUTES[0].tag].labelEn}
+                    {t(`tags.${ROUTES[0].tag}`)}
                   </span>
                 </div>
 
@@ -136,7 +135,7 @@ export default function RouteShowcase() {
                     <Clock className="w-3.5 h-3.5" />
                     <span>{ROUTES[0].duration}</span>
                     <span className="mx-1">·</span>
-                    <span>Ga Hà Nội → Ga Lào Cai</span>
+                    <span>{t('stations')}</span>
                   </div>
                   <h3 className="font-serif text-2xl lg:text-3xl text-white font-bold mb-2">
                     {ROUTES[0].name}
@@ -145,7 +144,7 @@ export default function RouteShowcase() {
                     {isVi ? ROUTES[0].taglineVi : ROUTES[0].taglineEn}
                   </p>
                   <div className="flex items-center gap-1 text-gold-400 font-medium text-sm group-hover:gap-2 transition-all">
-                    <span>{isVi ? 'Đặt vé' : 'Book Now'}</span>
+                    <span>{t('bookNow')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
@@ -173,7 +172,7 @@ export default function RouteShowcase() {
                 <div className="absolute inset-0 bg-gradient-to-t from-violet-950/90 via-violet-950/20 to-transparent" />
                 <div className="absolute top-4 left-4">
                   <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide ${TAG_CONFIG[ROUTES[1].tag].color}`}>
-                    {isVi ? TAG_CONFIG[ROUTES[1].tag].labelEn : TAG_CONFIG[ROUTES[1].tag].labelEn}
+                    {t(`tags.${ROUTES[1].tag}`)}
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -208,7 +207,7 @@ export default function RouteShowcase() {
                 <div className="absolute inset-0 bg-gradient-to-t from-violet-950/90 via-violet-950/20 to-transparent" />
                 <div className="absolute top-4 left-4">
                   <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide ${TAG_CONFIG[ROUTES[2].tag].color}`}>
-                    {isVi ? TAG_CONFIG[ROUTES[2].tag].labelVi : TAG_CONFIG[ROUTES[2].tag].labelEn}
+                    {t(`tags.${ROUTES[2].tag}`)}
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -243,7 +242,7 @@ export default function RouteShowcase() {
                 <div className="absolute inset-0 bg-gradient-to-t from-violet-950/90 via-violet-950/20 to-transparent" />
                 <div className="absolute top-4 left-4">
                   <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide ${TAG_CONFIG[ROUTES[3].tag].color}`}>
-                    {isVi ? TAG_CONFIG[ROUTES[3].tag].labelVi : TAG_CONFIG[ROUTES[3].tag].labelEn}
+                    {t(`tags.${ROUTES[3].tag}`)}
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -276,7 +275,7 @@ export default function RouteShowcase() {
                 <div className="absolute inset-0 bg-gradient-to-t from-violet-950/90 via-violet-950/20 to-transparent" />
                 <div className="absolute top-4 left-4">
                   <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide ${TAG_CONFIG[ROUTES[4].tag].color}`}>
-                    {isVi ? TAG_CONFIG[ROUTES[4].tag].labelVi : TAG_CONFIG[ROUTES[4].tag].labelEn}
+                    {t(`tags.${ROUTES[4].tag}`)}
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -303,7 +302,7 @@ export default function RouteShowcase() {
             href="/booking"
             className="inline-flex items-center gap-2 bg-violet-950 hover:bg-violet-900 text-white font-semibold text-base px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-violet-950/20"
           >
-            {isVi ? 'Xem tất cả tuyến đường' : 'View All Routes'}
+            {t('viewAll')}
             <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>

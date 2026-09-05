@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Database, Server, RefreshCw, Save, ExternalLink, HardDrive, FileJson } from 'lucide-react'
+import { Database, Server, RefreshCw, Save, ExternalLink, HardDrive, FileJson, Mail, Send } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DataStats {
@@ -19,6 +19,8 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const [testEmailAddr, setTestEmailAddr] = useState('')
+  const [testEmailStatus, setTestEmailStatus] = useState<{ type: 'idle' | 'sending' | 'success' | 'error'; message: string }>({ type: 'idle', message: '' })
 
   const [envVars, setEnvVars] = useState({
     ADMIN_SECRET_TOKEN: '',
@@ -27,14 +29,6 @@ export default function AdminSettingsPage() {
     SMTP_USER: '',
     SMTP_PASS: '',
     EMAIL_FROM: 'noreply@violettetrain.vn',
-    VNP_TMN_CODE: '',
-    VNP_HASH_SECRET: '',
-    VNP_URL: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-    VNP_RETURN_URL: 'http://localhost:3000/api/payments/vnpay/return',
-    MOMO_PARTNER_CODE: '',
-    MOMO_ACCESS_KEY: '',
-    MOMO_SECRET_KEY: '',
-    MOMO_ENDPOINT: 'https://test-payment.momo.vn/v2/gateway/api/create',
     NEXT_PUBLIC_BOOKING_ENABLED: 'true',
   })
 
@@ -69,6 +63,30 @@ export default function AdminSettingsPage() {
       setMessage('Không thể lưu cấu hình')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleTestEmail = async () => {
+    if (!testEmailAddr) return
+    setTestEmailStatus({ type: 'sending', message: '' })
+    try {
+      const token = localStorage.getItem('admin_token') || ''
+      const res = await fetch('/api/admin/test-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ testEmail: testEmailAddr }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setTestEmailStatus({ type: 'success', message: data.message || 'Đã gửi email test!' })
+      } else {
+        setTestEmailStatus({ type: 'error', message: data.error || 'Gửi email thất bại' })
+      }
+    } catch {
+      setTestEmailStatus({ type: 'error', message: 'Lỗi mạng — không thể kết nối server' })
     }
   }
 
@@ -238,57 +256,43 @@ export default function AdminSettingsPage() {
                   placeholder="noreply@violettetrain.vn" />
               </div>
             </div>
-          </div>
 
-          <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Cổng thanh toán VNPay</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">VNP_TMN_CODE</label>
-                <input type="text" value={envVars.VNP_TMN_CODE}
-                  onChange={(e) => setEnvVars((v) => ({ ...v, VNP_TMN_CODE: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                  placeholder="Mã terminal VNPay của bạn" />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">VNP_HASH_SECRET</label>
-                <input type="password" value={envVars.VNP_HASH_SECRET}
-                  onChange={(e) => setEnvVars((v) => ({ ...v, VNP_HASH_SECRET: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                  placeholder="Khóa bí mật hash" />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-xs text-gray-500 mb-1">VNP_URL</label>
-                <input type="text" value={envVars.VNP_URL}
-                  onChange={(e) => setEnvVars((v) => ({ ...v, VNP_URL: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Cổng thanh toán MoMo</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">MOMO_PARTNER_CODE</label>
-                <input type="text" value={envVars.MOMO_PARTNER_CODE}
-                  onChange={(e) => setEnvVars((v) => ({ ...v, MOMO_PARTNER_CODE: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                  placeholder="MOMO_PARTNER_CODE" />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">MOMO_ACCESS_KEY</label>
-                <input type="text" value={envVars.MOMO_ACCESS_KEY}
-                  onChange={(e) => setEnvVars((v) => ({ ...v, MOMO_ACCESS_KEY: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                  placeholder="MOMO_ACCESS_KEY" />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">MOMO_SECRET_KEY</label>
-                <input type="password" value={envVars.MOMO_SECRET_KEY}
-                  onChange={(e) => setEnvVars((v) => ({ ...v, MOMO_SECRET_KEY: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                  placeholder="MOMO_SECRET_KEY" />
+            {/* Email Test */}
+            <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-blue-900 mb-1">Kiểm tra cấu hình Email</p>
+                  <p className="text-xs text-blue-700 mb-3">
+                    Nhập địa chỉ email để gửi email test và xác minh cài đặt SMTP hoạt động đúng.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={testEmailAddr}
+                      onChange={(e) => setTestEmailAddr(e.target.value)}
+                      placeholder="your@email.com"
+                      className="flex-1 min-w-0 px-3 py-2 border border-blue-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <button
+                      onClick={handleTestEmail}
+                      disabled={!testEmailAddr || testEmailStatus.type === 'sending'}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                    >
+                      {testEmailStatus.type === 'sending' ? (
+                        <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Đang gửi...</>
+                      ) : (
+                        <><Send className="w-4 h-4" /> Gửi Test Email</>
+                      )}
+                    </button>
+                  </div>
+                  {testEmailStatus.type === 'success' && (
+                    <p className="mt-2 text-xs text-green-700 font-medium">{testEmailStatus.message}</p>
+                  )}
+                  {testEmailStatus.type === 'error' && (
+                    <p className="mt-2 text-xs text-red-700 font-medium">{testEmailStatus.message}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

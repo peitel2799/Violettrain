@@ -73,23 +73,30 @@ export interface DsvnSeatAvailability {
   seatClassVi: string
   seatClassEn: string
   price: number
-  available: number
+  /** Null when DSVN publishes a timetable but no live inventory for this request. */
+  available: number | null
 }
 
 /** Alias for DsvnSeatAvailability — used by schedule data */
 export type SeatAvailability = DsvnSeatAvailability
 
 export interface DsvnSchedule {
+  scheduleId?: string
   trainNumber: string
   fromStation: string
   toStation: string
   departureTime: string
   arrivalTime: string
+  /** Number of calendar days after departure; 1 means arrival is the next day. */
+  arrivalDayOffset?: number
   duration: string
   departureDays: string[]
   availableSeats: SeatAvailability[]
   hasLanding: boolean
   hasRestaurant: boolean
+  sourceName?: string
+  sourceUrl?: string
+  sourceVerifiedOn?: string
   stops?: Stop[]
 }
 

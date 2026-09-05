@@ -1,419 +1,358 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import {
-  Ticket,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  RefreshCw,
-  Eye,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
+declare global {
+  interface Window {
+    _bookingSearch?: number
+    _debtSearch?: number
+  }
+}
+
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { Plus, Pencil, Trash2, Search, RefreshCw, Download, Upload, ChevronUp, ChevronDown, X } from 'lucide-react'
+import { Modal } from '@/components/admin/ui/Modal'
+import { ConfirmDialog } from '@/components/admin/ui/Modal'
+import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/admin/ui/Badge'
+import { toast, useToast } from '@/components/admin/ui/Toast'
+import { listBookings, createBooking, updateBooking, deleteBooking, exportBookingsCSV } from '@/lib/booking-api'
+import type { Booking, BookingStatus } from '@/lib/booking-types'
 import { cn } from '@/lib/utils'
 
-interface Booking {
-  id: string
-  reference: string
-  status: 'pending' | 'confirmed' | 'cancelled' | 'refunded' | 'completed'
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded'
-  routeId: string
-  routeName: string
-  cabinClassId: string
-  cabinClassName: string
-  departureDate: string
-  departureTime: string
-  trainNumber: string
-  passengers: Array<{
-    type: 'adult' | 'child'
-    fullName: string
-    email: string
-    phone: string
-  }>
-  pricing: { subtotal: number; discount: number; tax: number; total: number }
-  payment: { method: string; transactionId?: string }
-  createdAt: string
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+function fmt(n: number): string {
+  return new Intl.NumberFormat('vi-VN').format(Math.round(n))
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-50 text-amber-700 border-amber-200',
-  confirmed: 'bg-green-50 text-green-700 border-green-200',
-  cancelled: 'bg-red-50 text-red-700 border-red-200',
-  refunded: 'bg-gray-50 text-gray-600 border-gray-200',
-  completed: 'bg-blue-50 text-blue-700 border-blue-200',
+function fmtDate(d: string): string {
+  if (!d) return '—'
+  try { return new Date(d).toLocaleDateString('vi-VN') } catch { return d }
 }
 
-const PAYMENT_COLORS: Record<string, string> = {
-  pending: 'bg-amber-50 text-amber-700',
-  paid: 'bg-green-50 text-green-700',
-  failed: 'bg-red-50 text-red-700',
-  refunded: 'bg-gray-50 text-gray-600',
+const STATUS_CONFIG: Record<BookingStatus, { label: string; color: string; bg: string }> = {
+  pending: { label: 'Chưa thanh toán', color: 'text-red-600', bg: 'bg-red-50' },
+  partial: { label: 'Thanh toán một phần', color: 'text-amber-600', bg: 'bg-amber-50' },
+  paid: { label: 'Đã thanh toán đủ', color: 'text-green-600', bg: 'bg-green-50' },
+  cancelled: { label: 'Đã hủy', color: 'text-gray-500', bg: 'bg-gray-100' },
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const labels: Record<string, string> = {
-    pending: 'Đang chờ',
-    confirmed: 'Đã xác nhận',
-    cancelled: 'Đã hủy',
-    refunded: 'Đã hoàn tiền',
-    completed: 'Hoàn tất',
-  }
-  const cls = STATUS_COLORS[status] || 'bg-gray-50 text-gray-600 border-gray-200'
-  return (
-    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium border ${cls}`}>
-      {labels[status] || status}
-    </span>
-  )
-}
+const STATUS_OPTIONS: BookingStatus[] = ['pending', 'partial', 'paid', 'cancelled']
 
-function PaymentBadge({ status }: { status: string }) {
-  const labels: Record<string, string> = {
-    pending: 'Chưa thanh toán',
-    paid: 'Đã thanh toán',
-    failed: 'Thất bại',
-    refunded: 'Đã hoàn tiền',
-  }
-  const cls = PAYMENT_COLORS[status] || 'bg-gray-50 text-gray-600'
-  return (
-    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>
-      {labels[status] || status}
-    </span>
-  )
-}
+// ─── Booking Form ────────────────────────────────────────────────────────
 
-function BookingDetailModal({ booking, onClose }: { booking: Booking; onClose: () => void }) {
-  const router = useRouter()
+function BookingForm({ booking, onSave, onClose }: {
+  booking: Partial<Booking> | null
+  onSave: (b: Partial<Booking>) => Promise<void>
+  onClose: () => void
+}) {
+  const [form, setForm] = useState<Partial<Booking>>({})
+  const [saving, setSaving] = useState(false)
 
-  const handleStatusChange = async (newStatus: string) => {
-    const token = localStorage.getItem('admin_token') || ''
-    await fetch('/api/admin/bookings', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ reference: booking.reference, status: newStatus }),
-    })
-    onClose()
-    router.refresh()
-  }
+  useEffect(() => { if (booking !== null) setForm({ ...booking }) }, [booking])
+
+  const set = (k: keyof Booking, v: unknown) => setForm((f) => ({ ...f, [k]: v }))
+
+  const totalTickets = Number(form.totalTickets) || 0
+  const unitPrice = Number(form.unitPrice) || 0
+  const totalAmount = totalTickets * unitPrice
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
-      <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-          <div>
-            <p className="font-mono text-sm text-violet-600 font-bold">{booking.reference}</p>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {new Date(booking.createdAt).toLocaleString('vi-VN')}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <StatusBadge status={booking.status} />
-            <PaymentBadge status={booking.paymentStatus} />
+    <Modal open={!!(booking !== null)} onClose={onClose} title={form.id ? 'Sửa đoàn' : 'Thêm đoàn mới'} size="xl"
+      footer={<><Button variant="secondary" onClick={onClose} disabled={saving}>Hủy</Button><Button variant="primary" onClick={async () => { setSaving(true); try { await onSave(form) } finally { setSaving(false) } }} loading={saving}>{form.id ? 'Lưu' : 'Thêm'}</Button></>}
+    >
+      <div className="grid grid-cols-2 gap-4">
+        {/* Company Info */}
+        <div className="col-span-2">
+          <h3 className="text-xs font-bold text-gray-400 uppercase mb-3">Thông tin công ty / đại lý</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-gray-500 mb-1">Tên công ty / Đại lý *</label>
+              <input value={form.companyName || ''} onChange={(e) => set('companyName', e.target.value)} required
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Công ty ABC, Đất Xanh, Đại lý XYZ..." />
+            </div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Người liên hệ</label><input value={form.companyContact || ''} onChange={(e) => set('companyContact', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Số điện thoại</label><input value={form.companyPhone || ''} onChange={(e) => set('companyPhone', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Email</label><input type="email" value={form.companyEmail || ''} onChange={(e) => set('companyEmail', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Mã số thuế (MST)</label><input value={form.taxCode || ''} onChange={(e) => set('taxCode', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-violet-50 rounded-xl p-4">
-              <p className="text-xs text-violet-500 font-medium mb-1">Tuyến đường</p>
-              <p className="font-semibold text-gray-900">{booking.routeName}</p>
-              <p className="text-sm text-gray-500 mt-1">
-                {booking.trainNumber} &middot; {booking.departureDate} lúc {booking.departureTime}
-              </p>
-            </div>
-            <div className="bg-gold-50 rounded-xl p-4">
-              <p className="text-xs text-gold-600 font-medium mb-1">Tổng số tiền</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(booking.pricing.total)}</p>
-              <p className="text-xs text-gray-500 mt-1">
-                Phụ: {formatCurrency(booking.pricing.subtotal)} &middot; Giảm: -{formatCurrency(booking.pricing.discount)} &middot; Thuế: {formatCurrency(booking.pricing.tax)}
-              </p>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Hành khách ({booking.passengers.length})</h4>
-            <div className="space-y-2">
-              {booking.passengers.map((p, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                  <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-xs font-bold text-violet-600">
-                    {p.fullName.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{p.fullName}</p>
-                    <p className="text-xs text-gray-500">{p.email} &middot; {p.phone}</p>
-                  </div>
-                  <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{p.type === 'adult' ? 'Người lớn' : 'Trẻ em'}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Thanh toán</h4>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="p-3 bg-gray-50 rounded-xl">
-                <p className="text-xs text-gray-400">Phương thức</p>
-                <p className="font-medium text-gray-700">{booking.payment.method}</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-xl">
-                <p className="text-xs text-gray-400">Mã giao dịch</p>
-                <p className="font-mono text-xs text-gray-700">{booking.payment.transactionId || 'N/A'}</p>
-              </div>
+        {/* Booking Details */}
+        <div className="col-span-2">
+          <h3 className="text-xs font-bold text-gray-400 uppercase mb-3">Chi tiết đoàn</h3>
+          <div className="grid grid-cols-3 gap-3">
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Ngày đặt</label><input type="date" value={form.bookingDate || ''} onChange={(e) => set('bookingDate', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Ngày khởi hành *</label><input type="date" value={form.departureDate || ''} onChange={(e) => set('departureDate', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Số hiệu tàu</label><input value={form.trainNumber || ''} onChange={(e) => set('trainNumber', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Tuyến đường</label><input value={form.route || ''} onChange={(e) => set('route', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Toa</label><input value={form.carriage || ''} onChange={(e) => set('carriage', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Phương thức</label>
+              <select value={form.paymentMethod || 'CK'} onChange={(e) => set('paymentMethod', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                <option>CK</option><option>TM</option><option>CARD</option><option>MoMo</option><option>VNPay</option>
+              </select>
             </div>
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-between">
-          <div className="flex gap-2">
-            {booking.status === 'pending' && (
-              <>
-                <button
-                  onClick={() => handleStatusChange('confirmed')}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-colors"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  Xác nhận
-                </button>
-                <button
-                  onClick={() => handleStatusChange('cancelled')}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium transition-colors"
-                >
-                  <XCircle className="w-4 h-4" />
-                  Hủy
-                </button>
-              </>
-            )}
-            {booking.status === 'confirmed' && (
-              <button
-                onClick={() => handleStatusChange('completed')}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-colors"
-              >
-                <CheckCircle className="w-4 h-4" />
-                Đánh dấu hoàn tất
-              </button>
-            )}
+        {/* Financial */}
+        <div className="col-span-2">
+          <h3 className="text-xs font-bold text-gray-400 uppercase mb-3">Thanh toán</h3>
+          <div className="grid grid-cols-4 gap-3">
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Số vé</label><input type="number" value={form.totalTickets || ''} onChange={(e) => set('totalTickets', Number(e.target.value))} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Đơn giá (VND)</label><input type="number" value={form.unitPrice || ''} onChange={(e) => set('unitPrice', Number(e.target.value))} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Tổng tiền (VND)</label><input type="number" value={form.totalAmount || totalAmount} onChange={(e) => set('totalAmount', Number(e.target.value))} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
+            <div><label className="block text-xs font-medium text-gray-500 mb-1">Đã thanh toán (VND)</label><input type="number" value={form.paidAmount || ''} onChange={(e) => set('paidAmount', Number(e.target.value))} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" /></div>
           </div>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-          >
-            Đóng
+          <div className="flex items-center justify-between mt-3 p-3 bg-violet-50 rounded-lg">
+            <span className="text-sm text-gray-600">Số tiền còn nợ:</span>
+            <span className="text-lg font-bold text-red-600">{fmt((form.totalAmount || totalAmount) - (form.paidAmount || 0))} đ</span>
+          </div>
+        </div>
+
+        {/* Notes */}
+        <div className="col-span-2">
+          <label className="block text-xs font-medium text-gray-500 mb-1">Ghi chú</label>
+          <textarea value={form.notes || ''} onChange={(e) => set('notes', e.target.value)} rows={2}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Ghi chú thêm..." />
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+// ─── Main Page ──────────────────────────────────────────────────────────
+
+export default function BookingsPage() {
+  const { toasts, removeToast } = useToast()
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [pages, setPages] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [sortField, setSortField] = useState('departureDate')
+  const [sortDir, setSortDir] = useState('desc')
+  const [stats, setStats] = useState<{ totalAmount: number; totalPaid: number; totalDebt: number } | null>(null)
+  const [editBooking, setEditBooking] = useState<Partial<Booking> | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Booking | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [localSearch, setLocalSearch] = useState('')
+
+  const load = useCallback(async (p = 1, q = search, status = statusFilter) => {
+    setLoading(true)
+    try {
+      const result = await listBookings({ page: p, search: q, status, sortField, sortDir })
+      setBookings(result.items || [])
+      setPage(result.page)
+      setPages(result.pages)
+      setTotal(result.total)
+      setStats(result.stats)
+    } catch { toast('Không thể tải danh sách đoàn', 'error') }
+    finally { setLoading(false) }
+  }, [search, statusFilter, sortField, sortDir])
+
+  useEffect(() => { load() }, [load])
+
+  const handleSearch = (q: string) => {
+    setSearch(q)
+    clearTimeout(window._bookingSearch as unknown as number)
+    window._bookingSearch = setTimeout(() => load(1, q, statusFilter), 400) as unknown as number
+  }
+
+  const handleSave = async (form: Partial<Booking>) => {
+    setSaving(true)
+    try {
+      if (form.id) {
+        await updateBooking(form.id, form)
+        toast('Cập nhật thành công', 'success')
+      } else {
+        await createBooking(form)
+        toast('Thêm đoàn thành công', 'success')
+      }
+      setEditBooking(null)
+      load(page)
+    } catch (e) { toast('Lỗi: ' + String(e), 'error') }
+    finally { setSaving(false) }
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      await deleteBooking(deleteTarget.id)
+      toast('Đã hủy đoàn', 'success')
+      setDeleteTarget(null)
+      load(page)
+    } catch (e) { toast('Lỗi: ' + String(e), 'error') }
+  }
+
+  const COLS = [
+    { key: 'companyName', label: 'Công ty / Đại lý', width: '180px' },
+    { key: 'departureDate', label: 'Ngày KH', width: '100px' },
+    { key: 'trainNumber', label: 'Tàu', width: '80px' },
+    { key: 'route', label: 'Tuyến', width: '80px' },
+    { key: 'totalTickets', label: 'Vé', width: '60px', align: 'center' as const },
+    { key: 'totalAmount', label: 'Tổng tiền', width: '120px', align: 'right' as const },
+    { key: 'paidAmount', label: 'Đã TT', width: '110px', align: 'right' as const },
+    { key: 'debt', label: 'Còn nợ', width: '110px', align: 'right' as const },
+    { key: 'status', label: 'Trạng thái', width: '140px', align: 'center' as const },
+    { key: 'notes', label: 'Ghi chú', width: '150px' },
+  ]
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-serif)' }}>Quản lý đoàn</h1>
+          <p className="text-sm text-gray-500">Theo dõi đoàn khách, công nợ, và đối soát thanh toán</p>
+        </div>
+        <Button variant="primary" onClick={() => setEditBooking({})}>
+          <Plus className="w-4 h-4" /> Thêm đoàn
+        </Button>
+      </div>
+
+      {/* KPI Stats */}
+      {stats && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+            <p className="text-xs font-medium text-gray-400 uppercase">Tổng giá trị đoàn</p>
+            <p className="text-2xl font-bold text-gray-900 mt-1">{fmt(stats.totalAmount)} đ</p>
+            <p className="text-xs text-gray-400">{total} đoàn</p>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+            <p className="text-xs font-medium text-gray-400 uppercase">Đã thanh toán</p>
+            <p className="text-2xl font-bold text-green-600 mt-1">{fmt(stats.totalPaid)} đ</p>
+            <p className="text-xs text-gray-400">{fmt(stats.totalPaid > 0 ? (stats.totalPaid / stats.totalAmount * 100) : 0)}%</p>
+          </div>
+          <div className="bg-white rounded-xl border border-red-100 p-5 shadow-sm bg-red-50">
+            <p className="text-xs font-medium text-red-400 uppercase">Còn nợ</p>
+            <p className="text-2xl font-bold text-red-600 mt-1">{fmt(stats.totalDebt)} đ</p>
+            <p className="text-xs text-red-400">{stats.totalDebt > 0 ? 'Cần theo dõi' : 'Đã thanh toán hết'}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-3 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input type="text" value={localSearch} onChange={(e) => setLocalSearch(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch(localSearch)}
+            placeholder="Tìm công ty, tàu, tuyến..." className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+        </div>
+
+        <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); load(1, search, e.target.value) }}
+          className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+          <option value="">Tất cả trạng thái</option>
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+          ))}
+        </select>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <button onClick={() => exportBookingsCSV(bookings)} className="flex items-center gap-1.5 px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">
+            <Download className="w-4 h-4" /> Xuất CSV
+          </button>
+          <button onClick={() => load(page)} className="flex items-center gap-1.5 px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </div>
-    </div>
-  )
-}
 
-export default function AdminBookingsPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const initialRef = searchParams.get('ref')
-
-  const [bookings, setBookings] = useState<Booking[]>([])
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
-
-  const getToken = () => localStorage.getItem('admin_token') || ''
-
-  const fetchBookings = useCallback(async () => {
-    setLoading(true)
-    const token = getToken()
-    try {
-      const params = new URLSearchParams({ page: String(page), limit: '15' })
-      if (statusFilter) params.set('status', statusFilter)
-      const res = await fetch(`/api/admin/bookings?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (res.status === 401) {
-        localStorage.removeItem('admin_token')
-        localStorage.removeItem('admin_user')
-        router.push('/admin/login')
-        return
-      }
-      const data = await res.json()
-      setBookings(data.bookings || [])
-      setTotal(data.total || 0)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }, [page, statusFilter, router])
-
-  useEffect(() => { fetchBookings() }, [fetchBookings])
-
-  useEffect(() => {
-    if (initialRef) {
-      fetch(`/api/admin/bookings?ref=${initialRef}`, {
-        headers: { Authorization: `Bearer ${getToken()}` },
-      })
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.booking) setSelectedBooking(d.booking)
-        })
-      const url = new URL(window.location.href)
-      url.searchParams.delete('ref')
-      window.history.replaceState({}, '', url.pathname)
-    }
-  }, [initialRef])
-
-  const filtered = search
-    ? bookings.filter(
-        (b) =>
-          b.reference.toLowerCase().includes(search.toLowerCase()) ||
-          b.passengers.some((p) => p.fullName.toLowerCase().includes(search.toLowerCase())) ||
-          b.routeName.toLowerCase().includes(search.toLowerCase())
-      )
-    : bookings
-
-  const totalPages = Math.ceil(total / 15)
-
-  return (
-    <div className="p-6 lg:p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-serif)' }}>
-            Đặt vé
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">{total} đặt vé</p>
-        </div>
-        <button
-          onClick={fetchBookings}
-          className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Làm mới
-        </button>
-      </div>
-
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="relative flex-1 min-w-[240px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm theo mã đặt vé, tên, tuyến đường..."
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-          />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-          className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="pending">Đang chờ</option>
-          <option value="confirmed">Đã xác nhận</option>
-          <option value="completed">Hoàn tất</option>
-          <option value="cancelled">Đã hủy</option>
-          <option value="refunded">Đã hoàn tiền</option>
-        </select>
-      </div>
-
+      {/* Table */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="w-8 h-8 border-4 border-violet-600 border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-16">
-            <Ticket className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-            <p className="text-gray-400 text-sm">Không tìm thấy đặt vé nào</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-gray-500 uppercase bg-gray-50">
-                  <th className="px-5 py-3 font-medium">Mã đặt vé</th>
-                  <th className="px-5 py-3 font-medium">Tuyến đường</th>
-                  <th className="px-5 py-3 font-medium">Ngày</th>
-                  <th className="px-5 py-3 font-medium">Hành khách</th>
-                  <th className="px-5 py-3 font-medium">Số tiền</th>
-                  <th className="px-5 py-3 font-medium">Trạng thái đặt vé</th>
-                  <th className="px-5 py-3 font-medium">Thanh toán</th>
-                  <th className="px-5 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {filtered.map((b) => (
-                  <tr key={b.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-3.5 font-mono text-xs text-violet-600 font-bold">{b.reference}</td>
-                    <td className="px-5 py-3.5">
-                      <div className="text-sm font-medium text-gray-700">{b.routeName}</div>
-                      <div className="text-xs text-gray-400">{b.trainNumber}</div>
-                    </td>
-                    <td className="px-5 py-3.5 text-xs text-gray-600">
-                      <div>{b.departureDate}</div>
-                      <div className="text-gray-400">{b.departureTime}</div>
-                    </td>
-                    <td className="px-5 py-3.5 text-xs text-gray-600">
-                      {b.passengers.map((p) => p.fullName).join(', ')}
-                    </td>
-                    <td className="px-5 py-3.5 font-semibold text-gray-900">
-                      {formatCurrency(b.pricing.total)}
-                    </td>
-                    <td className="px-5 py-3.5"><StatusBadge status={b.status} /></td>
-                    <td className="px-5 py-3.5"><PaymentBadge status={b.paymentStatus} /></td>
-                    <td className="px-5 py-3.5">
-                      <button
-                        onClick={() => setSelectedBooking(b)}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-violet-600 transition-colors"
-                        title="Xem chi tiết"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                {COLS.map((col) => (
+                  <th key={col.key}
+                    className={cn('px-3 py-3 text-xs font-semibold text-gray-500 uppercase whitespace-nowrap',
+                      col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
+                    )}
+                    style={{ minWidth: col.width, width: col.width }}
+                  >
+                    <button onClick={() => { setSortField(col.key); setSortDir(sortField === col.key && sortDir === 'asc' ? 'desc' : 'asc'); load(page) }}
+                      className={cn('flex items-center gap-1 hover:text-violet-600',
+                        col.align === 'right' && 'ml-auto', col.align === 'center' && 'mx-auto')}>
+                      {col.label}
+                      {sortField === col.key && (sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                    </button>
+                  </th>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                <th className="px-3 py-3 text-xs font-semibold text-gray-500 uppercase w-20 text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={COLS.length + 1} className="text-center py-20">
+                  <div className="w-8 h-8 border-4 border-violet-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                </td></tr>
+              ) : bookings.length === 0 ? (
+                <tr><td colSpan={COLS.length + 1} className="text-center py-20 text-gray-400">Chưa có đoàn nào. Nhấn "Thêm đoàn" để bắt đầu.</td></tr>
+              ) : (
+                bookings.map((b) => {
+                  const debt = b.totalAmount - b.paidAmount
+                  const cfg = STATUS_CONFIG[b.status]
+                  return (
+                    <tr key={b.id} className="border-b border-gray-50 hover:bg-violet-50/10 transition-colors group">
+                      {COLS.map((col) => {
+                        if (col.key === 'companyName') return (
+                          <td key="companyName" className="px-3 py-3 font-medium text-gray-800">{b.companyName}</td>
+                        )
+                        if (col.key === 'departureDate') return (
+                          <td className="px-3 py-3 text-gray-600">{fmtDate(b.departureDate)}</td>
+                        )
+                        if (col.key === 'totalAmount' || col.key === 'paidAmount') {
+                          const v = col.key === 'totalAmount' ? b.totalAmount : b.paidAmount
+                          return <td className="px-3 py-3 text-right font-semibold text-gray-900">{fmt(v)} đ</td>
+                        }
+                        if (col.key === 'debt') return (
+                          <td className={cn('px-3 py-3 text-right font-bold', debt > 0 ? 'text-red-600' : 'text-green-600')}>
+                            {fmt(debt)} đ
+                          </td>
+                        )
+                        if (col.key === 'status') return (
+                          <td className="px-3 py-3 text-center">
+                            <span className={cn('px-2 py-1 rounded-full text-xs font-medium', cfg.bg, cfg.color)}>{cfg.label}</span>
+                          </td>
+                        )
+                        if (col.key === 'totalTickets') return <td className="px-3 py-3 text-center font-semibold">{b.totalTickets}</td>
+                        return (
+                          <td className="px-3 py-3 text-gray-600 truncate max-w-[150px]" title={String((b as unknown as Record<string, unknown>)[col.key] ?? '')}>
+                            {String((b as unknown as Record<string, unknown>)[col.key] ?? '')}
+                          </td>
+                        )
+                      })}
+                      <td className="px-3 py-3 text-center">
+                        <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setEditBooking(b)} className="p-1 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded" title="Sửa"><Pencil className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => setDeleteTarget(b)} className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded" title="Hủy"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
 
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-4 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
-              Hiển thị {(page - 1) * 15 + 1}-{Math.min(page * 15, total)} của {total}
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="text-sm text-gray-600">Trang {page} / {totalPages}</span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+        {pages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t text-sm text-gray-500">
+            <span>{(page - 1) * 50 + 1}–{Math.min(page * 50, total)} / {total} đoàn</span>
+            <div className="flex items-center gap-1">
+              <button onClick={() => load(page - 1)} disabled={page <= 1} className="px-3 py-1.5 rounded border hover:bg-gray-50 disabled:opacity-30">‹</button>
+              <span className="px-3 py-1.5 font-medium">Trang {page} / {pages}</span>
+              <button onClick={() => load(page + 1)} disabled={page >= pages} className="px-3 py-1.5 rounded border hover:bg-gray-50 disabled:opacity-30">›</button>
             </div>
           </div>
         )}
       </div>
 
-      {selectedBooking && (
-        <BookingDetailModal booking={selectedBooking} onClose={() => setSelectedBooking(null)} />
-      )}
+      <BookingForm booking={editBooking} onSave={handleSave} onClose={() => setEditBooking(null)} />
+      <ConfirmDialog open={!!deleteTarget} title="Hủy đoàn?" message={`Hủy đoàn "${deleteTarget?.companyName}"?`} confirmLabel="Hủy" danger onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} />
     </div>
   )
 }

@@ -90,7 +90,7 @@ export default async function CabinsPage() {
                         </div>
                         <div className="text-right flex-shrink-0">
                           <span className="font-semibold text-gray-900 text-sm sm:text-base">
-                            <ProductTicketPrice cabinClassId={cabin.id as CabinProductId} />
+                            {t('startingFrom')} <ProductTicketPrice cabinClassId={cabin.id as CabinProductId} />
                           </span>
                           <span className="text-xs text-gray-400 block">{t('perPerson')}</span>
                         </div>

@@ -122,7 +122,7 @@
     },
     "cabins": {
       "title": "Luxurious Resting Space",
-      "subtitle": "Fixed 4-berth cabins and 7 VIP 2 cabins with raisable upper beds — fixed fares on every route.",
+      "subtitle": "Fixed 4-berth cabins and 7 VIP 2 cabins with raisable upper beds — fares are priced by route.",
       "viewDetails": "Explore Cabins",
       "startingFrom": "From",
       "perPerson": "/guest",
@@ -188,7 +188,7 @@
   },
   "cabins": {
     "title": "Room Classes",
-    "subtitle": "Two four-person cabin choices with fixed ticket prices on every route.",
+    "subtitle": "Two four-person cabin choices with fares based on the selected route.",
     "standard": {
       "name": "Fixed 4-Berth Cabin",
       "tagline": "Four fixed beds · Private when buying all 4 tickets",

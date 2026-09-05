@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
       'subtotal',
       'tax',
       'total',
-      'paymentMethod',
       'locale',
     ]
 
@@ -80,7 +79,6 @@ export async function POST(request: NextRequest) {
       discount: Number(body.discount || 0),
       tax: Number(body.tax),
       total: Number(body.total),
-      paymentMethod: body.paymentMethod,
       locale: body.locale === 'en' ? 'en' : 'vi',
     }
 

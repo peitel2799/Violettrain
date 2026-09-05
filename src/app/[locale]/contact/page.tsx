@@ -26,7 +26,6 @@ export default async function ContactPage({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'contact' })
   const tFooter = await getTranslations({ locale, namespace: 'common.footer' })
-  const isVi = locale === 'vi'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -48,7 +47,7 @@ export default async function ContactPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <div>
             <h2 className="font-serif text-2xl font-bold text-gray-900 mb-6">
-              {isVi ? 'Thông tin liên hệ' : 'Contact Information'}
+              {t('contactInfo')}
             </h2>
             <div className="space-y-5">
               <div className="flex items-start gap-4">
@@ -57,7 +56,7 @@ export default async function ContactPage({
                 </div>
                 <div>
                   <p className="font-medium text-gray-800 mb-0.5">{t('info.address')}</p>
-                  <p className="text-gray-500 text-sm">11 Thanh Nien Street, Ba Dinh, Ha Noi</p>
+                  <p className="text-gray-500 text-sm">{t('officeAddress')}</p>
                 </div>
               </div>
 
@@ -105,10 +104,10 @@ export default async function ContactPage({
                 </div>
                 <div>
                   <p className="font-medium text-gray-800 mb-0.5">
-                    {isVi ? 'Đặt vé qua tin nhắn' : 'Book via Message'}
+                    {t('bookViaMessage')}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    {isVi ? 'WhatsApp / Zalo' : 'WhatsApp / Zalo'}: 091 582 3667
+                    {t('whatsappZalo')}: 091 582 3667
                   </p>
                 </div>
               </div>
@@ -119,13 +118,13 @@ export default async function ContactPage({
                 </div>
                 <div>
                   <p className="font-medium text-gray-800 mb-0.5">
-                    {isVi ? 'Điểm check-in' : 'Check-in Point'}
+                    {t('checkInPoint')}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    Gate 16, Hall C, Floor 1, 120 Le Duan
+                    {t('checkInAddress')}
                   </p>
                   <p className="text-gray-400 text-xs mt-0.5">
-                    {isVi ? '(Ga Hà Nội)' : '(Ha Noi Station)'}
+                    {t('checkInNote')}
                   </p>
                 </div>
               </div>
@@ -137,7 +136,7 @@ export default async function ContactPage({
                 <div>
                   <p className="font-medium text-gray-800 mb-0.5">{t('info.hours')}</p>
                   <p className="text-gray-500 text-sm">
-                    24/7 — {isVi ? 'Kể cả ngày lễ' : 'Including holidays'}
+                    {t('operatingHours')}
                   </p>
                 </div>
               </div>
@@ -147,10 +146,10 @@ export default async function ContactPage({
               <div className="text-center">
                 <MapPin className="w-8 h-8 text-violet-400 mx-auto mb-2" />
                 <p className="text-sm text-violet-500 font-medium">
-                  11 Thanh Nien Street, Ba Dinh, Ha Noi
+                  {t('officeAddress')}
                 </p>
                 <p className="text-xs text-violet-400 mt-1">
-                  {isVi ? 'Văn phòng Violette Train' : 'Violette Train Office'}
+                  {t('officeLabel')}
                 </p>
               </div>
             </div>
@@ -158,7 +157,7 @@ export default async function ContactPage({
 
           <div>
             <h2 className="font-serif text-2xl font-bold text-gray-900 mb-6">
-              {isVi ? 'Gửi tin nhắn' : 'Send a Message'}
+              {t('sendMessage')}
             </h2>
             <ContactForm locale={locale} />
           </div>

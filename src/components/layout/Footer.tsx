@@ -13,16 +13,15 @@ export default function Footer() {
     { href: '/', label: tNav('home') },
     { href: '/booking', label: tNav('booking') },
     { href: '/cabins', label: tNav('cabins') },
-    { href: '/news', label: 'News' },
+    { href: '/news', label: tNav('news') },
     { href: '/blog', label: tNav('blog') },
   ]
 
   const supportLinks = [
     { href: '/about', label: tNav('about') },
     { href: '/contact', label: tNav('contact') },
-    { href: '#', label: 'Refund Policy' },
-    { href: '#', label: 'Terms of Service' },
-    { href: '#', label: 'Privacy Policy' },
+    { href: '/#refund-policy', label: t('refundPolicy') },
+    { href: '/#terms', label: t('termsOfService') },
   ]
 
   return (
@@ -43,13 +42,13 @@ export default function Footer() {
               {t('about')}
             </p>
             <div className="flex items-center gap-3">
-              <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 hover:text-violet-950 transition-all">
+              <a href="https://facebook.com/violettetrain" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 hover:text-violet-950 transition-all">
                 <Facebook className="w-4 h-4" />
               </a>
-              <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 hover:text-violet-950 transition-all">
+              <a href="https://instagram.com/violettetrain" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 hover:text-violet-950 transition-all">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" aria-label="YouTube" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 hover:text-violet-950 transition-all">
+              <a href="https://youtube.com/@violettetrain" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold-500 hover:text-violet-950 transition-all">
                 <Youtube className="w-4 h-4" />
               </a>
             </div>
@@ -113,7 +112,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2 mt-2">
                 <span className="text-gold-400 text-xs font-medium bg-gold-500/10 px-2 py-0.5 rounded whitespace-nowrap">
-                  Check-in
+                  {t('checkIn').split(':')[0]}
                 </span>
                 <span className="text-white/50 text-xs leading-relaxed">
                   {t('checkIn')}
@@ -130,10 +129,10 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} {t('copyright')}
           </p>
           <div className="flex items-center gap-5">
-            <Link href="#" className="text-white/50 hover:text-gold-400 text-xs transition-colors">
+            <Link href="/#privacy-policy" className="text-white/50 hover:text-gold-400 text-xs transition-colors">
               {t('privacy')}
             </Link>
-            <Link href="#" className="text-white/50 hover:text-gold-400 text-xs transition-colors">
+            <Link href="/#terms" className="text-white/50 hover:text-gold-400 text-xs transition-colors">
               {t('terms')}
             </Link>
           </div>

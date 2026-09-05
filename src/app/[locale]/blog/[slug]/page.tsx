@@ -86,13 +86,13 @@ const ARTICLE_CONTENT: Record<string, { vi: string[]; en: string[] }> = {
       'Phong Nha — Kẻ Bàng, Di sản Thiên nhiên Thế giới UNESCO từ 2003, là quần thể hang động lớn nhất thế giới.',
       'Động Phong Nha — cửa hang rộng nhất và đẹp nhất — là điểm khởi đầu hoàn hảo.',
       'Hang Sơn Đoòng — hang động lớn nhất thế giới — là đỉnh cao của trải nghiệm Phong Nha.',
-      'Di chuyển bằng tàu Violette SE11/SE13 từ Hà Nội đến Đồng Hới (6 tiếng), sau đó ô tô khoảng 50km đến khu vực Phong Nha.',
+      'Theo giờ tàu DSVN hiện hành, các tàu Thống Nhất SE7, SE5, SE9, SE3 và SE1 đi từ Hà Nội đến Đồng Hới trong khoảng 9 giờ 37 phút đến 10 giờ 57 phút. Từ Đồng Hới, tiếp tục đi ô tô khoảng 50 km đến khu vực Phong Nha.',
     ],
     en: [
       'Phong Nha — Ke Bang, a UNESCO World Natural Heritage Site since 2003, is the largest cave system in the world.',
       'Phong Nha Cave — the widest and most beautiful entrance — is the perfect starting point.',
       'Hang Son Doong — the largest cave in the world — is the pinnacle of the Phong Nha experience.',
-      'Travel by Violette train SE11/SE13 from Hanoi to Dong Hoi (6 hours), then a 50km car ride to the Phong Nha area.',
+      'Under the current DSVN timetable, Reunification services SE7, SE5, SE9, SE3 and SE1 travel from Hanoi to Dong Hoi in about 9h 37m to 10h 57m. From Dong Hoi, continue roughly 50 km by road to Phong Nha.',
     ],
   },
   'hanoi-night-train-experience': {
@@ -114,13 +114,13 @@ const ARTICLE_CONTENT: Record<string, { vi: string[]; en: string[] }> = {
       'Huế — Cố đô của Việt Nam — là một trong những trung tâm văn hóa, tâm linh và ẩm thực đặc sắc nhất Việt Nam.',
       'Di sản Cố đô Huế được UNESCO công nhận gồm: Quần thể di tích Cố đô Huế (1993) và Nhạc cung đình Huế (2003).',
       'Cách tốt nhất để khám phá Huế là bắt đầu từ Đại Nội — kinh đô của triều Nguyễn.',
-      'Tàu lửa Violette SE7 và SE9 khởi hành từ Hà Nội lúc 19:00 và 21:00, đến Huế lúc 07:15 và 09:15.',
+      'Theo giờ tàu DSVN hiện hành, các tàu SE7, SE5, SE9, SE3 và SE1 rời Hà Nội lần lượt lúc 06:00, 08:00, 13:00, 19:20 và 21:45; đến Huế lúc 19:43, 21:40, 03:12, 07:55 và 10:30 (ba giờ đến cuối là ngày hôm sau).',
     ],
     en: [
       'Hue — the former imperial capital of Vietnam — is one of the most distinctive cultural, spiritual, and culinary centers in Vietnam.',
       'Hue Imperial Heritage sites recognized by UNESCO include: Complex of Hue Monuments (1993) and Hue Imperial Court Music (2003).',
       'The best way to explore Hue is starting from the Imperial City — the capital of the Nguyen Dynasty.',
-      'Violette trains SE7 and SE9 depart Hanoi at 19:00 and 21:00, arriving in Hue at 07:15 and 09:15.',
+      'Under the current DSVN timetable, trains SE7, SE5, SE9, SE3 and SE1 leave Hanoi at 06:00, 08:00, 13:00, 19:20 and 21:45, arriving in Hue at 19:43, 21:40, 03:12, 07:55 and 10:30 respectively (the final three arrivals are the next day).',
     ],
   },
 }

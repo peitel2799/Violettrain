@@ -5,7 +5,7 @@ import { useLocale } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock3, Sparkles } from 'lucide-react'
 import { Link } from '@/i18n/routing'
-import { useProductPricing } from '@/hooks/useProductPricing'
+import { getRoutePricing } from '@/lib/train-database'
 
 const FARES = [
   {
@@ -13,8 +13,8 @@ const FARES = [
     to: 'ninhbinh',
     nameVi: 'Hà Nội → Ninh Bình',
     nameEn: 'Hanoi → Ninh Binh',
-    durationVi: 'Khoảng 2 giờ',
-    durationEn: 'About 2 hours',
+    durationVi: '2 giờ 16–18 phút',
+    durationEn: '2h 16–18m',
     image: '/stations/NinhBinhStation.webp',
   },
   {
@@ -22,8 +22,8 @@ const FARES = [
     to: 'donghoi',
     nameVi: 'Hà Nội → Đồng Hới',
     nameEn: 'Hanoi → Dong Hoi',
-    durationVi: 'Khoảng 6 giờ',
-    durationEn: 'About 6 hours',
+    durationVi: '9 giờ 37 phút–10 giờ 57 phút',
+    durationEn: '9h 37m–10h 57m',
     image: '/stations/DongHoiStation.jpg',
   },
   {
@@ -31,8 +31,8 @@ const FARES = [
     to: 'hue',
     nameVi: 'Hà Nội → Huế',
     nameEn: 'Hanoi → Hue',
-    durationVi: 'Khoảng 12 giờ',
-    durationEn: 'About 12 hours',
+    durationVi: '12 giờ 35 phút–14 giờ 12 phút',
+    durationEn: '12h 35m–14h 12m',
     image: '/stations/HueStation.JPG',
   },
   {
@@ -40,8 +40,8 @@ const FARES = [
     to: 'danang',
     nameVi: 'Hà Nội → Đà Nẵng',
     nameEn: 'Hanoi → Da Nang',
-    durationVi: 'Khoảng 17 giờ 30 phút',
-    durationEn: 'About 17 hours 30 minutes',
+    durationVi: '15 giờ 23 phút–17 giờ 03 phút',
+    durationEn: '15h 23m–17h 03m',
     image: '/stations/DaNangStation.JPG',
     featured: true,
   },
@@ -54,7 +54,6 @@ function formatVnd(amount: number) {
 export default function PopularFaresSection() {
   const locale = useLocale()
   const isVi = locale === 'vi'
-  const prices = useProductPricing()
 
   return (
     <section id="fares" className="relative z-20 bg-[#fbfaf8] py-20 md:py-28">
@@ -75,8 +74,8 @@ export default function PopularFaresSection() {
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500 sm:text-base">
               {isVi
-                ? 'Hai sản phẩm cabin có giá cố định, áp dụng giống nhau trên mọi tuyến.'
-                : 'Both cabin products have fixed prices that apply to every route.'}
+                ? 'Giá vé thay đổi theo tuyến; chọn hành trình để xem đúng giá và giờ tàu.'
+                : 'Fares vary by route; choose a journey to see its exact fare and timetable.'}
             </p>
           </div>
           <p className="max-w-sm text-xs leading-relaxed text-gray-400 md:text-right">
@@ -88,6 +87,10 @@ export default function PopularFaresSection() {
 
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {FARES.map((fare, index) => {
+            const pricing = getRoutePricing(fare.from, fare.to)
+            const standardPrice = pricing.find((entry) => entry.seatClass === 'standard')?.basePrice
+            const premiumPrice = pricing.find((entry) => entry.seatClass === 'premium')?.basePrice
+
             return (
               <motion.article
                 key={`${fare.from}-${fare.to}`}
@@ -132,7 +135,7 @@ export default function PopularFaresSection() {
                           {isVi ? 'Mỗi vé' : 'Per ticket'}
                         </span>
                         <strong className="font-serif text-xl text-violet-950">
-                          {formatVnd(prices.standard)}
+                          {standardPrice ? formatVnd(standardPrice) : '—'}
                         </strong>
                       </div>
                     </div>
@@ -143,7 +146,7 @@ export default function PopularFaresSection() {
                           {isVi ? 'Mỗi vé' : 'Per ticket'}
                         </span>
                         <strong className="font-serif text-xl text-violet-950">
-                          {formatVnd(prices.premium)}
+                          {premiumPrice ? formatVnd(premiumPrice) : '—'}
                         </strong>
                       </div>
                     </div>

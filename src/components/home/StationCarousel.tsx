@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
@@ -56,6 +56,7 @@ export default function StationCarousel() {
   const [direction, setDirection] = useState(0)
   const locale = useLocale()
   const isVi = locale === 'vi'
+  const t = useTranslations('home.carousel')
 
   const goToNext = useCallback(() => {
     setDirection(1)
@@ -146,7 +147,7 @@ export default function StationCarousel() {
             >
               <MapPin className="w-4 h-4 text-gold-400" />
               <span className="text-white/80 text-sm font-medium tracking-wide">
-                {isVi ? 'Ga tàu' : 'Train Station'}
+                {t('trainStation')}
               </span>
             </motion.div>
 
@@ -177,14 +178,14 @@ export default function StationCarousel() {
       <button
         onClick={goToPrev}
         className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center hover:scale-110"
-        aria-label={isVi ? 'Trước' : 'Previous'}
+        aria-label={t('previous')}
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
       <button
         onClick={goToNext}
         className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center hover:scale-110"
-        aria-label={isVi ? 'Tiếp' : 'Next'}
+        aria-label={t('next')}
       >
         <ChevronRight className="w-6 h-6" />
       </button>

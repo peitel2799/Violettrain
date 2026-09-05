@@ -25,15 +25,16 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ username, password }),
       })
 
-      if (res.status === 401) {
-        setError('Tên đăng nhập hoặc mật khẩu không đúng.')
-      } else if (res.ok) {
-        const data = await res.json()
+      const data = await res.json()
+
+      if (res.ok) {
         localStorage.setItem('admin_token', data.token)
         localStorage.setItem('admin_user', data.username)
+        localStorage.setItem('vm_token', data.token)
+        localStorage.setItem('vm_user', JSON.stringify({ username: data.username, role: data.role || 'admin' }))
         router.push('/admin')
       } else {
-        setError('Lỗi kết nối. Vui lòng thử lại.')
+        setError(data.error || 'Tên đăng nhập hoặc mật khẩu không đúng.')
       }
     } catch {
       setError('Lỗi kết nối. Vui lòng thử lại.')
@@ -122,7 +123,10 @@ export default function AdminLoginPage() {
 
           <div className="mt-6 pt-6 border-t border-gray-100">
             <p className="text-xs text-gray-400 text-center">
-              Tài khoản mặc định: <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">violet</code> / <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">violet</code>
+              Tài khoản mặc định: <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">admin</code> / <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">violet</code>
+            </p>
+            <p className="text-xs text-gray-300 text-center mt-1">
+              Thay đổi bằng <code className="bg-gray-100 px-1 py-0.5 rounded font-mono">ADMIN_USERNAME</code> / <code className="bg-gray-100 px-1 py-0.5 rounded font-mono">ADMIN_PASSWORD</code> trong <code className="bg-gray-100 px-1 py-0.5 rounded font-mono">.env.local</code>
             </p>
           </div>
         </div>

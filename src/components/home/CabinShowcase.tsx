@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Link } from '@/i18n/routing'
 import { motion } from 'framer-motion'
 import { ArrowRight, Check, Users, BedDouble } from 'lucide-react'
-import { useProductPricing } from '@/hooks/useProductPricing'
+import { getLowestRouteFare } from '@/lib/train-database'
 
 const CABINS = [
   {
@@ -38,7 +38,6 @@ function formatVnd(amount: number) {
 
 export default function CabinShowcase() {
   const isVi = useLocale() === 'vi'
-  const prices = useProductPricing()
 
   return (
     <section id="cabins" className="overflow-hidden bg-white py-20 md:py-28">
@@ -129,13 +128,13 @@ export default function CabinShowcase() {
 
                 <div className="mt-8 border-t border-gray-100 pt-7">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
-                    {isVi ? 'Giá cố định / 1 vé' : 'Fixed price / ticket'}
+                    {isVi ? 'Giá từ / 1 vé' : 'Fare from / ticket'}
                   </p>
                   <p className="mt-1 font-serif text-3xl font-bold text-violet-950">
-                    {formatVnd(prices[cabin.id])}
+                    {formatVnd(getLowestRouteFare(cabin.id))}
                   </p>
                   <p className="mt-1 text-xs text-gray-400">
-                    {isVi ? 'áp dụng cho tất cả các tuyến' : 'the same on every route'}
+                    {isVi ? 'giá cuối cùng phụ thuộc vào tuyến đã chọn' : 'final fare depends on the selected route'}
                   </p>
 
                   <div className="mt-6 flex flex-wrap gap-3">

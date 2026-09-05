@@ -7,6 +7,12 @@
 
 import fs from 'fs'
 import path from 'path'
+import {
+  TRAIN_DATABASE_SOURCE,
+  TRAIN_ROUTES,
+  getTrainStation,
+  searchSchedules,
+} from './train-database'
 
 const DATA_DIR = path.join(process.cwd(), 'data')
 const SCHEDULES_FILE = path.join(DATA_DIR, 'schedules.json')
@@ -243,76 +249,29 @@ export function getDashboardStats(): DashboardStats {
 // ─── Seed Data ────────────────────────────────────────────────────────────────
 
 function getDefaultSchedules(): AdminSchedule[] {
-  return [
-    {
-      id: 'HNO-LCA-001',
-      trainNumber: 'SP1',
-      routeId: 'HNO-LCA',
-      fromStation: 'Ga Hà Nội',
-      toStation: 'Ga Lào Cai (Sapa)',
-      departureTime: '21:00',
-      arrivalTime: '05:00',
-      days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-      cabinAvailability: { deluxe: 8, vip: 4, suite: 2, grandSuite: 1 },
-      hasLanding: true,
-      hasRestaurant: true,
-      active: true,
-    },
-    {
-      id: 'HNO-NBI-001',
-      trainNumber: 'SE2',
-      routeId: 'HNO-NBI',
-      fromStation: 'Ga Hà Nội',
-      toStation: 'Ga Ninh Bình',
-      departureTime: '06:30',
-      arrivalTime: '08:30',
-      days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-      cabinAvailability: { deluxe: 6, vip: 3, suite: 1 },
+  return TRAIN_ROUTES.flatMap((route) => [
+    [route.from, route.to],
+    [route.to, route.from],
+  ].flatMap(([from, to]) => {
+    const fromStation = getTrainStation(from)
+    const toStation = getTrainStation(to)
+    if (!fromStation || !toStation) return []
+
+    return searchSchedules(from, to, TRAIN_DATABASE_SOURCE.verifiedOn, 'vi').map((schedule) => ({
+      id: schedule.scheduleId ?? `${schedule.trainNumber}-${fromStation.code}-${toStation.code}`,
+      trainNumber: schedule.trainNumber,
+      routeId: `${fromStation.code}-${toStation.code}`,
+      fromStation: `Ga ${fromStation.nameVi}`,
+      toStation: `Ga ${toStation.nameVi}`,
+      departureTime: schedule.departureTime,
+      arrivalTime: `${schedule.arrivalTime}${schedule.arrivalDayOffset ? ` (+${schedule.arrivalDayOffset})` : ''}`,
+      duration: schedule.duration,
+      days: schedule.departureDays as AdminSchedule['days'],
+      cabinAvailability: { standard: 0, premium: 0 },
       hasLanding: true,
       hasRestaurant: false,
       active: true,
-    },
-    {
-      id: 'HNO-DHO-001',
-      trainNumber: 'SE4',
-      routeId: 'HNO-DHO',
-      fromStation: 'Ga Hà Nội',
-      toStation: 'Ga Đồng Hới (Phong Nha)',
-      departureTime: '19:30',
-      arrivalTime: '01:30',
-      days: ['thu', 'sat', 'sun'],
-      cabinAvailability: { deluxe: 10, vip: 5, suite: 3, grandSuite: 2 },
-      hasLanding: true,
-      hasRestaurant: true,
-      active: true,
-    },
-    {
-      id: 'HNO-HUE-001',
-      trainNumber: 'SE6',
-      routeId: 'HNO-HUE',
-      fromStation: 'Ga Hà Nội',
-      toStation: 'Ga Huế',
-      departureTime: '19:00',
-      arrivalTime: '07:00',
-      days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-      cabinAvailability: { deluxe: 12, vip: 6, suite: 4, grandSuite: 2 },
-      hasLanding: true,
-      hasRestaurant: true,
-      active: true,
-    },
-    {
-      id: 'HNO-DNA-001',
-      trainNumber: 'SE8',
-      routeId: 'HNO-DNA',
-      fromStation: 'Ga Hà Nội',
-      toStation: 'Ga Đà Nẵng',
-      departureTime: '19:30',
-      arrivalTime: '12:30',
-      days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-      cabinAvailability: { deluxe: 15, vip: 8, suite: 5, grandSuite: 3 },
-      hasLanding: true,
-      hasRestaurant: true,
-      active: true,
-    },
-  ]
+      notes: `DSVN timetable verified ${TRAIN_DATABASE_SOURCE.verifiedOn}; live seat inventory is not synchronized.`,
+    }))
+  }))
 }

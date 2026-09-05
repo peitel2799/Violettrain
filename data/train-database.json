@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "Đường sắt Việt Nam (DSVN)",
+    "url": "https://giotaugiave.dsvn.vn/",
+    "verifiedOn": "2026-09-06",
+    "timezone": "Asia/Ho_Chi_Minh",
+    "scope": "Giờ tàu Thống Nhất published by DSVN",
+    "notes": "This is a versioned timetable snapshot, not live seat inventory. Re-check DSVN before travel because railway timetables can change."
+  },
+  "cabinPriceFactors": {
+    "standard": 1,
+    "premium": 1.25
+  },
+  "stations": [
+    {
+      "id": "hanoi",
+      "code": "HNO",
+      "nameVi": "Hà Nội",
+      "nameEn": "Hanoi",
+      "kmFromHanoi": 0,
+      "orderFromHanoi": 0
+    },
+    {
+      "id": "ninhbinh",
+      "code": "NBI",
+      "nameVi": "Ninh Bình",
+      "nameEn": "Ninh Binh",
+      "kmFromHanoi": 115,
+      "orderFromHanoi": 1
+    },
+    {
+      "id": "donghoi",
+      "code": "DHO",
+      "nameVi": "Đồng Hới",
+      "nameEn": "Dong Hoi",
+      "kmFromHanoi": 522,
+      "orderFromHanoi": 2
+    },
+    {
+      "id": "hue",
+      "code": "HUE",
+      "nameVi": "Huế",
+      "nameEn": "Hue",
+      "kmFromHanoi": 688,
+      "orderFromHanoi": 3
+    },
+    {
+      "id": "danang",
+      "code": "DNA",
+      "nameVi": "Đà Nẵng",
+      "nameEn": "Da Nang",
+      "kmFromHanoi": 791,
+      "orderFromHanoi": 4
+    }
+  ],
+  "routes": [
+    {
+      "id": "hanoi-ninhbinh",
+      "code": "HNO-NBI",
+      "from": "hanoi",
+      "to": "ninhbinh",
+      "distanceKm": 115,
+      "baseFareVnd": 500000,
+      "fareSource": "existing-project-fare"
+    },
+    {
+      "id": "hanoi-donghoi",
+      "code": "HNO-DHO",
+      "from": "hanoi",
+      "to": "donghoi",
+      "distanceKm": 522,
+      "baseFareVnd": 1900000,
+      "fareSource": "owner-provided-2026-09-06"
+    },
+    {
+      "id": "hanoi-hue",
+      "code": "HNO-HUE",
+      "from": "hanoi",
+      "to": "hue",
+      "distanceKm": 688,
+      "baseFareVnd": 2000000,
+      "fareSource": "owner-provided-2026-09-06"
+    },
+    {
+      "id": "hanoi-danang",
+      "code": "HNO-DNA",
+      "from": "hanoi",
+      "to": "danang",
+      "distanceKm": 791,
+      "baseFareVnd": 2100000,
+      "fareSource": "owner-provided-2026-09-06"
+    },
+    {
+      "id": "ninhbinh-hue",
+      "code": "NBI-HUE",
+      "from": "ninhbinh",
+      "to": "hue",
+      "distanceKm": 573,
+      "baseFareVnd": 1600000,
+      "fareSource": "existing-project-fare"
+    },
+    {
+      "id": "ninhbinh-danang",
+      "code": "NBI-DNA",
+      "from": "ninhbinh",
+      "to": "danang",
+      "distanceKm": 676,
+      "baseFareVnd": 2200000,
+      "fareSource": "existing-project-fare"
+    },
+    {
+      "id": "donghoi-hue",
+      "code": "DHO-HUE",
+      "from": "donghoi",
+      "to": "hue",
+      "distanceKm": 166,
+      "baseFareVnd": 700000,
+      "fareSource": "existing-project-fare"
+    },
+    {
+      "id": "donghoi-danang",
+      "code": "DHO-DNA",
+      "from": "donghoi",
+      "to": "danang",
+      "distanceKm": 269,
+      "baseFareVnd": 1000000,
+      "fareSource": "existing-project-fare"
+    },
+    {
+      "id": "hue-danang",
+      "code": "HUE-DNA",
+      "from": "hue",
+      "to": "danang",
+      "distanceKm": 103,
+      "baseFareVnd": 600000,
+      "fareSource": "existing-project-fare"
+    }
+  ],
+  "services": [
+    {
+      "trainNumber": "SE7",
+      "direction": "southbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "hanoi", "time": "06:00", "dayOffset": 0 },
+        { "stationId": "ninhbinh", "time": "08:16", "dayOffset": 0 },
+        { "stationId": "donghoi", "time": "16:27", "dayOffset": 0 },
+        { "stationId": "hue", "time": "19:43", "dayOffset": 0 },
+        { "stationId": "danang", "time": "22:30", "dayOffset": 0 }
+      ]
+    },
+    {
+      "trainNumber": "SE5",
+      "direction": "southbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "hanoi", "time": "08:00", "dayOffset": 0 },
+        { "stationId": "ninhbinh", "time": "10:16", "dayOffset": 0 },
+        { "stationId": "donghoi", "time": "18:11", "dayOffset": 0 },
+        { "stationId": "hue", "time": "21:40", "dayOffset": 0 },
+        { "stationId": "danang", "time": "00:36", "dayOffset": 1 }
+      ]
+    },
+    {
+      "trainNumber": "SE9",
+      "direction": "southbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "hanoi", "time": "13:00", "dayOffset": 0 },
+        { "stationId": "ninhbinh", "time": "15:17", "dayOffset": 0 },
+        { "stationId": "donghoi", "time": "23:57", "dayOffset": 0 },
+        { "stationId": "hue", "time": "03:12", "dayOffset": 1 },
+        { "stationId": "danang", "time": "06:03", "dayOffset": 1 }
+      ]
+    },
+    {
+      "trainNumber": "SE3",
+      "direction": "southbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "hanoi", "time": "19:20", "dayOffset": 0 },
+        { "stationId": "ninhbinh", "time": "21:36", "dayOffset": 0 },
+        { "stationId": "donghoi", "time": "04:57", "dayOffset": 1 },
+        { "stationId": "hue", "time": "07:55", "dayOffset": 1 },
+        { "stationId": "danang", "time": "10:43", "dayOffset": 1 }
+      ]
+    },
+    {
+      "trainNumber": "SE1",
+      "direction": "southbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "hanoi", "time": "21:45", "dayOffset": 0 },
+        { "stationId": "ninhbinh", "time": "00:03", "dayOffset": 1 },
+        { "stationId": "donghoi", "time": "07:33", "dayOffset": 1 },
+        { "stationId": "hue", "time": "10:30", "dayOffset": 1 },
+        { "stationId": "danang", "time": "13:29", "dayOffset": 1 }
+      ]
+    },
+    {
+      "trainNumber": "SE8",
+      "direction": "northbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "danang", "time": "23:41", "dayOffset": 0 },
+        { "stationId": "hue", "time": "02:17", "dayOffset": 1 },
+        { "stationId": "donghoi", "time": "05:34", "dayOffset": 1 },
+        { "stationId": "ninhbinh", "time": "13:59", "dayOffset": 1 },
+        { "stationId": "hanoi", "time": "16:20", "dayOffset": 1 }
+      ]
+    },
+    {
+      "trainNumber": "SE6",
+      "direction": "northbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "danang", "time": "02:01", "dayOffset": 1 },
+        { "stationId": "hue", "time": "04:49", "dayOffset": 1 },
+        { "stationId": "donghoi", "time": "08:25", "dayOffset": 1 },
+        { "stationId": "ninhbinh", "time": "16:55", "dayOffset": 1 },
+        { "stationId": "hanoi", "time": "19:14", "dayOffset": 1 }
+      ]
+    },
+    {
+      "trainNumber": "SE10",
+      "direction": "northbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "danang", "time": "08:59", "dayOffset": 1 },
+        { "stationId": "hue", "time": "12:15", "dayOffset": 1 },
+        { "stationId": "donghoi", "time": "15:30", "dayOffset": 1 },
+        { "stationId": "hanoi", "time": "03:40", "dayOffset": 2 }
+      ]
+    },
+    {
+      "trainNumber": "SE4",
+      "direction": "northbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "danang", "time": "12:28", "dayOffset": 1 },
+        { "stationId": "hue", "time": "15:10", "dayOffset": 1 },
+        { "stationId": "donghoi", "time": "18:18", "dayOffset": 1 },
+        { "stationId": "ninhbinh", "time": "02:14", "dayOffset": 2 },
+        { "stationId": "hanoi", "time": "04:36", "dayOffset": 2 }
+      ]
+    },
+    {
+      "trainNumber": "SE2",
+      "direction": "northbound",
+      "operatingDays": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "stops": [
+        { "stationId": "danang", "time": "13:21", "dayOffset": 1 },
+        { "stationId": "hue", "time": "15:54", "dayOffset": 1 },
+        { "stationId": "donghoi", "time": "19:08", "dayOffset": 1 },
+        { "stationId": "ninhbinh", "time": "03:24", "dayOffset": 2 },
+        { "stationId": "hanoi", "time": "05:42", "dayOffset": 2 }
+      ]
+    }
+  ]
+}

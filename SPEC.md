@@ -136,10 +136,12 @@ Contact form + office locations + phone/email/social links.
 | Route | From | To | Duration | Departures |
 |-------|------|----|---------|-----------|
 | HN-LC | Hanoi | Lao Cai (Sapa) | ~8h | Daily, 21:00 |
-| HN-NB | Hanoi | Ninh Binh | ~2h | Daily, 06:30 / 19:00 |
-| HN-DH | Hanoi | Dong Hoi (Phong Nha) | ~6h | Thu, Sat, Sun |
-| HN-H | Hanoi | Hue | ~12h | Daily, 19:00 |
-| HN-DN | Hanoi | Da Nang | ~17h | Daily, 19:30 |
+| HN-NB | Hanoi | Ninh Binh | 2h16–2h18 | Daily, 06:00 / 08:00 / 13:00 / 19:20 / 21:45 |
+| HN-DH | Hanoi | Dong Hoi (Phong Nha) | 9h37–10h57 | Daily, 06:00 / 08:00 / 13:00 / 19:20 / 21:45 |
+| HN-H | Hanoi | Hue | 12h35–14h12 | Daily, 06:00 / 08:00 / 13:00 / 19:20 / 21:45 |
+| HN-DN | Hanoi | Da Nang | 15h23–17h03 | Daily, 06:00 / 08:00 / 13:00 / 19:20 / 21:45 |
+
+Current timetable source: DSVN `https://giotaugiave.dsvn.vn/`, verified 2026-09-06. Re-check before travel because railway timetables can change.
 
 ---
 

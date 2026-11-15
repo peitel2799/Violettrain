@@ -57,8 +57,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Recalculate status if amount changes
-    let newPaid = parseNum(updates.paidAmount ?? old.paidAmount)
-    let newTotal = parseNum(updates.totalAmount ?? old.totalAmount)
+    const newPaid = parseNum(updates.paidAmount ?? old.paidAmount)
+    const newTotal = parseNum(updates.totalAmount ?? old.totalAmount)
     const newStatus = calcStatus(newPaid, newTotal)
 
     // Add audit entry

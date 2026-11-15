@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { BarChart3, TrendingUp, Users, Train, Calendar, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react'
+import { TrendingUp, Users, Train, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { listData } from '@/lib/admin-data-api'
 import { cn } from '@/lib/utils'
-import { toast, useToast } from '@/components/admin/ui/Toast'
+import { toast } from '@/components/admin/ui/Toast'
 
 // ─── Chart components (inline, no external chart lib dependency) ───────────────
 
@@ -135,7 +135,6 @@ function StatCard({ label, value, icon: Icon, sub, trend }: {
 // ─── Main Statistics Page ─────────────────────────────────────────────────────
 
 export default function AdminStatsPage() {
-  const { toasts, removeToast } = useToast()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<{
     totalRevenue: number
@@ -146,7 +145,7 @@ export default function AdminStatsPage() {
   } | null>(null)
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
-  const [filterSource, setFilterSource] = useState('')
+  const [filterSource] = useState('')
 
   const load = useCallback(async () => {
     setLoading(true)

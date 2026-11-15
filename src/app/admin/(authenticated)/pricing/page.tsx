@@ -81,9 +81,9 @@ export default function AdminPricingPage() {
     <div className="p-6 lg:p-8">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-serif)' }}>Giá vé sản phẩm</h1>
+          <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-serif)' }}>Giá cabin</h1>
           <p className="mt-1 max-w-2xl text-sm text-gray-500">
-            Mỗi sản phẩm có một giá cố định cho tất cả tuyến. Thay đổi tại đây sẽ áp dụng cho trang giới thiệu và kết quả đặt vé.
+            Nhập đơn giá của 1 vé. Hệ thống chỉ bán trọn cabin và tính giá bằng đơn giá × 4 vé.
           </p>
         </div>
         <button onClick={fetchPricing} className="flex w-fit items-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm hover:bg-gray-50">
@@ -107,14 +107,14 @@ export default function AdminPricingPage() {
             return (
               <section key={entry.cabinClassId} className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
                 <div className={isVip ? 'bg-violet-700 px-6 py-5 text-white' : 'bg-slate-800 px-6 py-5 text-white'}>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em]">{isVip ? '7 cabin · 4 khách' : 'Cabin 4 khách'}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em]">{isVip ? '1 cabin · chỉ tàu SE19' : 'Full Cabin · 4 vé'}</p>
                   <h2 className="mt-1 text-xl font-bold">{entry.cabinClassName}</h2>
                   <p className="mt-1 text-sm text-white/75">
-                    {isVip ? 'Giường tầng trên có thể nâng lên.' : 'Giường tầng trên cố định, không thể nâng lên.'}
+                    {isVip ? 'Hai giường tầng trên có thể gập lên.' : 'Giường tầng trên cố định, không thể gập lên.'}
                   </p>
                 </div>
                 <div className="p-6">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Giá cố định / 1 vé</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Đơn giá / 1 vé</p>
                   {editing ? (
                     <div className="mt-3 flex flex-wrap items-center gap-3">
                       <input
@@ -129,9 +129,15 @@ export default function AdminPricingPage() {
                       <span className="font-semibold text-gray-500">VND</span>
                     </div>
                   ) : (
-                    <p className="mt-2 text-3xl font-bold text-gray-900">{formatCurrency(entry.ticketPrice)}</p>
+                    <p className="mt-2 text-2xl font-bold text-gray-700">{formatCurrency(entry.ticketPrice)}</p>
                   )}
-                  <p className="mt-3 text-sm text-gray-500">Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.</p>
+                  <div className="mt-4 rounded-xl border border-gold-200 bg-gold-50 p-4">
+                    <p className="text-xs font-bold uppercase tracking-wider text-gold-700">Giá bán 1 cabin · 4 vé</p>
+                    <p className="mt-1 text-3xl font-bold text-violet-950 sm:text-4xl">
+                      {formatCurrency((editing ? editPrice : entry.ticketPrice) * 4)}
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-violet-700">Đơn giá 1 vé × 4</p>
+                  </div>
                   <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
                     <span className="text-xs text-gray-400">
                       Cập nhật: {new Date(entry.lastUpdated).toLocaleDateString('vi-VN')}

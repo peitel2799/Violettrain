@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useForm, useFieldArray, Controller } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslations } from 'next-intl'
@@ -29,7 +29,7 @@ const passengerSchema = z.object({
 })
 
 const schema = z.object({
-  passengers: z.array(passengerSchema).min(1).max(6),
+  passengers: z.array(passengerSchema).min(1).max(4),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -88,7 +88,7 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
   }
 
   return (
-    <form onSubmit={handleSubmit(onValid)} className="space-y-6">
+    <form onSubmit={handleSubmit(onValid)} className="space-y-5">
       {fields.map((field, idx) => {
         const fieldErrors = errors.passengers?.[idx]
         const hasErrors = !!fieldErrors
@@ -97,13 +97,13 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
           <div
             key={field.id}
             className={cn(
-              'bg-white rounded-xl border p-5 shadow-sm transition-colors',
-              hasErrors ? 'border-red-200 bg-red-50/30' : 'border-gray-100'
+              'rounded-[22px] border bg-white p-5 shadow-[0_12px_35px_rgba(37,25,43,.06)] transition-colors sm:p-6',
+              hasErrors ? 'border-red-200 bg-red-50/30' : 'border-[#dfd9e2]'
             )}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                <User className="w-4 h-4 text-violet-500" />
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="flex items-center gap-2.5 font-extrabold text-[#2b1538]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f0e8f2] text-[#633671]"><User className="h-4 w-4" /></span>
                 {t('passenger')} {idx + 1}
                 {watchedPassengers?.[idx]?.type === 'child' && (
                   <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
@@ -115,7 +115,7 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
                 <button
                   type="button"
                   onClick={() => remove(idx)}
-                  className="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
+                  className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
                   title={t('removePassenger')}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -126,12 +126,12 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Type */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="mb-1.5 block text-xs font-bold text-[#6f6674]">
                   {t('passengerType')}
                 </label>
                 <select
                   {...register(`passengers.${idx}.type`)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2"
+                  className="h-12 w-full rounded-xl border border-[#dcd6de] bg-[#faf9fa] px-4 text-sm font-semibold text-[#302535] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c] focus-visible:ring-offset-2"
                 >
                   <option value="adult">{t('adult')}</option>
                   <option value="child">{t('child')}</option>
@@ -140,12 +140,12 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
 
               {/* Gender */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="mb-1.5 block text-xs font-bold text-[#6f6674]">
                   {t('gender')}
                 </label>
                 <select
                   {...register(`passengers.${idx}.gender`)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2"
+                  className="h-12 w-full rounded-xl border border-[#dcd6de] bg-[#faf9fa] px-4 text-sm font-semibold text-[#302535] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c] focus-visible:ring-offset-2"
                 >
                   <option value="">{t('selectOption')}</option>
                   <option value="male">{t('male')}</option>
@@ -156,7 +156,7 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
 
               {/* Full Name */}
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="mb-1.5 block text-xs font-bold text-[#6f6674]">
                   {t('fullName')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -166,8 +166,8 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
                     {...register(`passengers.${idx}.fullName`)}
                     placeholder={isVi ? 'Nhập họ và tên đầy đủ' : 'Enter full name'}
                     className={cn(
-                      'w-full pl-9 pr-4 py-2.5 rounded-lg border text-sm bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2',
-                      fieldErrors?.fullName ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      'h-12 w-full rounded-xl border bg-[#faf9fa] pl-10 pr-4 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c] focus-visible:ring-offset-2',
+                      fieldErrors?.fullName ? 'border-red-300 bg-red-50' : 'border-[#dcd6de]'
                     )}
                   />
                 </div>
@@ -181,7 +181,7 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="mb-1.5 block text-xs font-bold text-[#6f6674]">
                   {t('email')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -191,8 +191,8 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
                     {...register(`passengers.${idx}.email`)}
                     placeholder="email@example.com"
                     className={cn(
-                      'w-full pl-9 pr-4 py-2.5 rounded-lg border text-sm bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2',
-                      fieldErrors?.email ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      'h-12 w-full rounded-xl border bg-[#faf9fa] pl-10 pr-4 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c] focus-visible:ring-offset-2',
+                      fieldErrors?.email ? 'border-red-300 bg-red-50' : 'border-[#dcd6de]'
                     )}
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="mb-1.5 block text-xs font-bold text-[#6f6674]">
                   {t('phone')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -216,8 +216,8 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
                     {...register(`passengers.${idx}.phone`)}
                     placeholder="090 123 4567"
                     className={cn(
-                      'w-full pl-9 pr-4 py-2.5 rounded-lg border text-sm bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2',
-                      fieldErrors?.phone ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      'h-12 w-full rounded-xl border bg-[#faf9fa] pl-10 pr-4 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c] focus-visible:ring-offset-2',
+                      fieldErrors?.phone ? 'border-red-300 bg-red-50' : 'border-[#dcd6de]'
                     )}
                   />
                 </div>
@@ -231,26 +231,26 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
 
               {/* Date of Birth */}
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="mb-1.5 block text-xs font-bold text-[#6f6674]">
                   {t('dateOfBirth')}
                 </label>
                 <input
                   type="date"
                   {...register(`passengers.${idx}.dateOfBirth`)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2"
+                  className="h-12 w-full min-w-0 appearance-none rounded-xl border border-[#dcd6de] bg-[#faf9fa] px-4 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c] focus-visible:ring-offset-2 [color-scheme:light]"
                 />
               </div>
 
               {/* Special Requests */}
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="mb-1.5 block text-xs font-bold text-[#6f6674]">
                   {t('specialRequests')}
                 </label>
                 <textarea
                   {...register(`passengers.${idx}.specialRequests`)}
                   placeholder={t('specialRequestsPlaceholder')}
                   rows={2}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 resize-none"
+                  className="w-full resize-none rounded-xl border border-[#dcd6de] bg-[#faf9fa] px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c] focus-visible:ring-offset-2"
                 />
               </div>
             </div>
@@ -259,13 +259,13 @@ export default function PassengerForm({ passengers, locale, onUpdate }: Passenge
       })}
 
       {/* Add Passenger */}
-      {fields.length < 6 && (
+      {fields.length < 4 && (
         <button
           type="button"
           onClick={() =>
             append({ type: 'adult', gender: '', fullName: '', email: '', phone: '', dateOfBirth: '', specialRequests: '' })
           }
-          className="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-violet-400 hover:text-violet-600 transition-all flex items-center justify-center gap-2"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#bfaec4] bg-white text-sm font-bold text-[#633671] transition-colors hover:border-[#8b6594] hover:bg-[#faf7fb]"
         >
           <Plus className="w-4 h-4" />
           + {t('addPassenger')}

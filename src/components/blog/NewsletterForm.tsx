@@ -84,6 +84,7 @@ export default function NewsletterForm() {
           t('submit')
         )}
       </button>
+      {status === 'error' ? <p role="alert" className="sr-only">{errorMsg}</p> : null}
     </form>
   )
 }

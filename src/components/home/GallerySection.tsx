@@ -13,8 +13,8 @@ const GALLERY = [
   },
   {
     src: '/premium_room/room1.JPG',
-    altVi: 'Cabin VIP 2 với giường trên có thể nâng lên',
-    altEn: 'VIP 2 cabin with raisable upper berths',
+    altVi: 'Cabin VIP 2 trên tàu SE19 với hai giường trên gập được',
+    altEn: 'VIP 2 cabin on SE19 with two fold-up upper berths',
     className: 'lg:col-span-5 min-h-[270px]',
   },
   {

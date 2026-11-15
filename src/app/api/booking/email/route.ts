@@ -1,104 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { triggerBookingEmail, type BookingEmailData } from '@/lib/email'
+import { requireAdminApi } from '@/lib/admin-session'
+import { BodyTooLargeError, readJsonBody } from '@/lib/security/request'
+
+/**
+ * Legacy confirmation-email sender. It accepts free-form booking details, so it
+ * is restricted to signed-in staff: left public it would let anyone send
+ * Violette-branded emails (for example fake payment instructions) to any address.
+ * Customer emails for real orders are sent from the order data in booking-mail.ts.
+ */
+
+const text = (max: number) => z.string().trim().min(1).max(max)
+
+const emailSchema = z.object({
+  bookingRef: z.string().trim().regex(/^VT-[A-Z0-9]{6,16}$/i),
+  customerName: text(120),
+  customerEmail: z.string().trim().email().max(160),
+  customerPhone: text(30),
+  trainNumber: text(10),
+  fromStation: text(80),
+  toStation: text(80),
+  departureDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  departureTime: text(10),
+  arrivalTime: text(10),
+  seatClass: text(40),
+  seatClassVi: text(80),
+  seatClassEn: text(80),
+  passengers: z.array(z.object({ name: text(120), type: z.enum(['adult', 'child']).catch('adult') })).min(1).max(4),
+  isRoundTrip: z.boolean(),
+  returnDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  returnTime: z.string().trim().max(10).optional(),
+  subtotal: z.number().nonnegative(),
+  discount: z.number().nonnegative().default(0),
+  tax: z.number().nonnegative(),
+  total: z.number().nonnegative(),
+  locale: z.enum(['vi', 'en']).catch('vi'),
+})
 
 export async function POST(request: NextRequest) {
+  const authorization = await requireAdminApi(['admin', 'operations', 'support'])
+  if (!authorization.ok) {
+    return NextResponse.json({ error: authorization.error }, { status: authorization.status })
+  }
+
   try {
-    const body = await request.json()
-
-    // Validate required fields
-    const required = [
-      'bookingRef',
-      'customerName',
-      'customerEmail',
-      'customerPhone',
-      'trainNumber',
-      'fromStation',
-      'toStation',
-      'departureDate',
-      'departureTime',
-      'arrivalTime',
-      'seatClass',
-      'seatClassVi',
-      'seatClassEn',
-      'passengers',
-      'isRoundTrip',
-      'subtotal',
-      'tax',
-      'total',
-      'locale',
-    ]
-
-    for (const field of required) {
-      if (body[field] === undefined || body[field] === null || body[field] === '') {
-        return NextResponse.json(
-          { error: `Missing required field: ${field}` },
-          { status: 400 }
-        )
-      }
+    const parsed = emailSchema.safeParse(await readJsonBody(request))
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid email request', issues: parsed.error.flatten().fieldErrors }, { status: 400 })
     }
 
-    // Validate passengers array
-    if (!Array.isArray(body.passengers) || body.passengers.length === 0) {
-      return NextResponse.json(
-        { error: 'At least one passenger is required' },
-        { status: 400 }
-      )
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(body.customerEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid email address' },
-        { status: 400 }
-      )
-    }
-
-    const emailData: BookingEmailData = {
-      bookingRef: body.bookingRef,
-      customerName: body.customerName,
-      customerEmail: body.customerEmail,
-      customerPhone: body.customerPhone,
-      trainNumber: body.trainNumber,
-      fromStation: body.fromStation,
-      toStation: body.toStation,
-      departureDate: body.departureDate,
-      departureTime: body.departureTime,
-      arrivalTime: body.arrivalTime,
-      seatClass: body.seatClass,
-      seatClassVi: body.seatClassVi,
-      seatClassEn: body.seatClassEn,
-      passengers: body.passengers.map((p: { name: string; type: string }) => ({
-        name: p.name,
-        type: p.type === 'child' ? 'child' : 'adult',
-      })),
-      isRoundTrip: Boolean(body.isRoundTrip),
-      returnDate: body.returnDate || undefined,
-      returnTime: body.returnTime || undefined,
-      subtotal: Number(body.subtotal),
-      discount: Number(body.discount || 0),
-      tax: Number(body.tax),
-      total: Number(body.total),
-      locale: body.locale === 'en' ? 'en' : 'vi',
-    }
-
+    const emailData: BookingEmailData = parsed.data
     const result = await triggerBookingEmail(emailData)
 
     if (result.success) {
-      return NextResponse.json({
-        success: true,
-        messageId: result.messageId,
-        previewUrl: result.previewUrl,
-      })
-    } else {
-      return NextResponse.json(
-        { error: 'Failed to send email', details: result.error },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: true, messageId: result.messageId })
     }
+    return NextResponse.json({ error: 'Failed to send email' }, { status: 502 })
   } catch (err) {
-    console.error('[API /booking/email]', err)
-    const message = err instanceof Error ? err.message : 'Unknown error'
-    return NextResponse.json({ error: 'Internal server error', details: message }, { status: 500 })
+    if (err instanceof BodyTooLargeError) return NextResponse.json({ error: err.message }, { status: 413 })
+    console.error('[API /booking/email]', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

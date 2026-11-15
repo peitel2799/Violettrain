@@ -44,8 +44,8 @@
   },
   "dsvn": {
     "trainSchedule": "Train Schedule",
-    "availableSeats": "Available Seats",
-    "selectSeat": "Select Seat",
+    "availableSeats": "Cabins accepting requests",
+    "selectSeat": "Select cabin",
     "searching": "Searching...",
     "noTrains": "No Trains Available",
     "noTrainsDesc": "No trains found for this route. Please try a different date or route.",
@@ -57,7 +57,7 @@
     "from": "From",
     "ticketPrice": "Ticket Price",
     "seatClass": {
-      "standard": "Fixed 4-Berth Cabin",
+      "standard": "Full Cabin (4 Berths)",
       "premium": "VIP 2"
     },
     "categories": {
@@ -103,11 +103,11 @@
       "apply": "Apply",
       "noSchedules": "No trains available for this route on the selected date.",
       "loadError": "Unable to load schedules. Please try again.",
-      "selectCabin": "Select Cabin",
+      "selectCabin": "Choose train",
       "foundTrains": "Found {count} train(s)",
       "bestPrice": "Best price",
       "soldOut": "Sold out",
-      "selectCabinClass": "Select cabin class",
+      "selectCabinClass": "Choose cabin type",
       "available": "available",
       "perGuest": "/ticket"
     },
@@ -122,10 +122,10 @@
     },
     "cabins": {
       "title": "Luxurious Resting Space",
-      "subtitle": "Fixed 4-berth cabins and 7 VIP 2 cabins with raisable upper beds — fares are priced by route.",
+      "subtitle": "Full 4-berth cabins on all services; SE19 alone has one VIP 2 cabin with two fold-up upper berths.",
       "viewDetails": "Explore Cabins",
       "startingFrom": "From",
-      "perPerson": "/guest",
+      "perPerson": "/full cabin",
       "guestsPerRoom": "guests/room",
       "amenities": "Amenities",
       "ctaTitle": "Ready for Your Journey?",
@@ -188,27 +188,27 @@
   },
   "cabins": {
     "title": "Room Classes",
-    "subtitle": "Two four-person cabin choices with fares based on the selected route.",
+    "subtitle": "Cabins are sold only as complete 4-ticket units; one VIP 2 cabin is available exclusively on SE19.",
     "standard": {
-      "name": "Fixed 4-Berth Cabin",
-      "tagline": "Four fixed beds · Private when buying all 4 tickets",
-      "desc": "A four-person cabin with fixed upper berths that cannot be raised. Each ticket is 2,000,000 VND; buy all 4 tickets to use the entire cabin privately.",
+      "name": "Full Cabin (4 Berths)",
+      "tagline": "Four fixed berths · Full 4-ticket purchase required",
+      "desc": "A private cabin for up to four guests with fixed upper berths that cannot fold up. Both the 1-ticket fare and full-cabin fare = ticket fare × 4 are shown; cabins are not sold individually.",
       "capacity": "Up to 4 guests/room",
       "amenities": ["Air conditioning", "Power outlets", "Reading lights", "Shared restroom nearby", "Luggage storage", "Bedding included"],
-      "config4": "Buy all 4 tickets to use the entire cabin privately.",
-      "config2": "Each ticket is for one passenger in a four-person cabin."
+      "config4": "A full-cabin purchase containing all 4 tickets is required.",
+      "config2": "Full-cabin fare = one ticket fare × 4."
     },
     "premium": {
       "name": "VIP 2",
-      "tagline": "Raisable upper beds · Only 7 cabins",
-      "desc": "VIP 2 is a four-person cabin. Its upper berths can be raised to create a more comfortable daytime space. Only 7 cabins are available, priced at 2,500,000 VND per ticket.",
+      "tagline": "Two fold-up upper berths · Only 1 cabin on SE19",
+      "desc": "VIP 2 is limited to one cabin on SE19 and contains 4 tickets for up to four guests. Its two upper berths fold up. Both the 1-ticket fare and full-cabin fare = ticket fare × 4 are shown; cabins are not sold individually.",
       "capacity": "Up to 4 guests/room",
-      "amenities": ["Upper berths can be raised", "More comfortable daytime space", "Only 7 VIP 2 cabins", "Air conditioning", "Bedding included", "Luggage storage"],
-      "config4": "Buy all 4 tickets to use the entire cabin privately.",
-      "config2": "Each ticket is for one passenger in a four-person cabin."
+      "amenities": ["Two fold-up upper berths", "More comfortable daytime space", "Only 1 VIP 2 cabin on SE19", "Air conditioning", "Bedding included", "Luggage storage"],
+      "config4": "A full-cabin purchase containing all 4 tickets is required.",
+      "config2": "Full-cabin fare = one ticket fare × 4."
     },
     "guestsPerRoom": "guests/room",
-    "perPerson": "/guest",
+    "perPerson": "/full cabin",
     "amenities": "Amenities",
     "ctaTitle": "Ready for Your Journey?",
     "ctaSubtitle": "Book your ticket today and experience luxury train travel with Violette Train.",
@@ -219,7 +219,7 @@
     "title": "Book Your Journey",
     "steps": {
       "selectRoute": "Select Route",
-      "selectCabin": "Select Cabin",
+      "selectCabin": "Choose train",
       "passengerInfo": "Passenger Info",
       "confirmation": "Confirmation"
     },
@@ -238,9 +238,9 @@
     "foundTrains": "Found {count} train(s)",
     "bestPrice": "Best price",
     "soldOut": "Sold out",
-    "selectCabinClass": "Select cabin class",
+    "selectCabinClass": "Choose cabin type",
     "available": "available",
-    "perGuest": "/ticket",
+    "perGuest": "/full cabin",
     "form": {
       "from": "From",
       "to": "To",

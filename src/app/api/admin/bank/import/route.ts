@@ -24,10 +24,7 @@ function parseNum(v: unknown): number {
   if (typeof v === 'number') return v
   if (typeof v === 'string') {
     // Remove currency symbols, spaces, thousands separators
-    const cleaned = v.replace(/[VNĐđ.$€£¥,\s]/g, '').replace(/\./g, (m, offset, str) => {
-      // If dots are between digits, treat as thousands separator (only when followed by 3 digits)
-      return ''
-    }).replace(/,/g, '').trim()
+    const cleaned = v.replace(/[VNĐđ.$€£¥,\s]/g, '').replace(/\./g, '').replace(/,/g, '').trim()
     const n = parseFloat(cleaned)
     if (!isNaN(n)) return n
     // Try reversed: dots as decimal
@@ -72,58 +69,6 @@ function detectBank(headers: string[]): BankAccount | null {
   if (h.some((x) => x.includes('teck'))) return 'TECK'
   if (h.some((x) => x.includes('vtin'))) return 'VTIN'
   return null
-}
-
-// Parse VCB / Vietcombank statement format
-// Columns: Date, Transaction Details, Amount (debit), Amount (credit), Balance, Ref
-function parseVCB(rows: string[][]): BankTransaction[] {
-  return rows.map((row, i) => {
-    // Find date, desc, debit, credit
-    let date = ''
-    let desc = ''
-    let debit = 0
-    let credit = 0
-    let ref = ''
-
-    for (const cell of row) {
-      const trimmed = cell.trim()
-      // Try date (DD/MM/YYYY or YYYY-MM-DD)
-      if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(trimmed)) {
-        const [d, m, y] = trimmed.split('/')
-        date = `${y.length === 2 ? '20' + y : y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
-      }
-      // Try amount
-      const num = parseNum(trimmed)
-      if (num !== 0 && !/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-        if (trimmed.includes('-') && debit === 0) debit = num
-        else if (!trimmed.includes('-') && credit === 0 && num > 0) credit = num
-      }
-    }
-
-    // Description is the long text field
-    for (const cell of row) {
-      if (cell.length > desc.length && !/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(cell.trim())) {
-        desc = cell.trim()
-      }
-    }
-
-    return {
-      id: `bank_vcb_${Date.now()}_${i}`,
-      bankAccount: 'VCB' as BankAccount,
-      transactionDate: date,
-      description: desc,
-      credit,
-      debit,
-      runningBalance: 0,
-      ref,
-      category: '',
-      matchedBookingIds: [],
-      notes: '',
-      createdBy: 'import',
-      createdAt: new Date().toISOString(),
-      auditLog: [],
-    }
-  })
 }
 
 // Parse TECK bank statement format

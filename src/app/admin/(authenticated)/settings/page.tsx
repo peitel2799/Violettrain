@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Database, Server, RefreshCw, Save, ExternalLink, HardDrive, FileJson, Mail, Send } from 'lucide-react'
+import { Database, Server, Save, ExternalLink, HardDrive, FileJson, Mail, Send } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DataStats {

@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Users, Plus, Pencil, Trash2, Shield, ShieldCheck, Eye, EyeOff } from 'lucide-react'
+import { Plus, Pencil, Trash2, Shield, ShieldCheck, Eye, EyeOff } from 'lucide-react'
 import { Modal } from '@/components/admin/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/admin/ui/Badge'
 import { ConfirmDialog } from '@/components/admin/ui/Modal'
-import { toast, useToast } from '@/components/admin/ui/Toast'
+import { toast } from '@/components/admin/ui/Toast'
 import { listUsers, createUser, updateUser, deleteUser, UserRecord } from '@/lib/admin-data-api'
 import { cn } from '@/lib/utils'
 
@@ -93,7 +93,6 @@ function UserModal({ user, onSave, onClose }: {
 }
 
 export default function AdminUsersPage() {
-  const { toasts, removeToast } = useToast()
   const [users, setUsers] = useState<UserRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [editUser, setEditUser] = useState<Partial<UserRecord> | null>(null)

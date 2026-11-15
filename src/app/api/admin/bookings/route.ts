@@ -3,7 +3,7 @@ import { validateAdminRequest, adminUnauthorized } from '@/lib/admin-auth'
 import { readFile, writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
-import type { Booking, BookingStatus, AuditLogEntry } from '@/lib/booking-types'
+import type { Booking, BookingStatus } from '@/lib/booking-types'
 
 const DATA_DIR = path.join(process.cwd(), 'data')
 const BOOKINGS_FILE = path.join(DATA_DIR, 'bookings.json')

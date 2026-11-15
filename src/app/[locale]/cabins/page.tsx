@@ -1,11 +1,12 @@
 import { getTranslations } from 'next-intl/server'
 import { getLocale } from 'next-intl/server'
 import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, Check } from 'lucide-react'
+import { Link } from '@/i18n/routing'
+import { Check } from 'lucide-react'
 import { CABIN_CLASSES } from '@/lib/constants'
 import type { CabinProductId } from '@/lib/cabin-products'
 import ProductTicketPrice from '@/components/cabins/ProductTicketPrice'
+import { getLiveFares } from '@/lib/public-fares'
 
 export async function generateMetadata({
   params,
@@ -24,6 +25,7 @@ export default async function CabinsPage() {
   const t = await getTranslations('cabins')
   const locale = await getLocale()
   const isVi = locale === 'vi'
+  const liveFares = await getLiveFares()
 
   return (
     <>
@@ -81,18 +83,15 @@ export default async function CabinsPage() {
                   {/* Passenger Configurations */}
                   <div className="mb-6 space-y-3">
                     {cabin.configs.map((config) => (
-                      <div key={config.maxPax} className="flex items-start sm:items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg">
+                      <div key={config.maxPax} className="rounded-xl bg-gray-50 p-4">
                         <div>
                           <span className="font-medium text-gray-900 text-sm sm:text-base">{config.maxPax} {t('guestsPerRoom')}</span>
                           <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                             {t(`${config.descKey}`)}
                           </p>
                         </div>
-                        <div className="text-right flex-shrink-0">
-                          <span className="font-semibold text-gray-900 text-sm sm:text-base">
-                            {t('startingFrom')} <ProductTicketPrice cabinClassId={cabin.id as CabinProductId} />
-                          </span>
-                          <span className="text-xs text-gray-400 block">{t('perPerson')}</span>
+                        <div className="mt-4 border-t border-gray-200 pt-4">
+                          <ProductTicketPrice cabinClassId={cabin.id as CabinProductId} locale={locale} liveTicketFrom={liveFares?.lowest[cabin.id as CabinProductId]} />
                         </div>
                       </div>
                     ))}
@@ -108,12 +107,13 @@ export default async function CabinsPage() {
                           <span className="text-sm text-gray-600">{isVi ? ({
                             'Four fixed berths': 'Bốn giường cố định',
                             'Upper beds cannot be raised': 'Giường trên không thể nâng lên',
-                            'Private cabin when buying 4 tickets': 'Cabin riêng khi mua đủ 4 vé',
+                            'Full-cabin purchase only': 'Chỉ bán trọn cabin 4 vé',
                             'Air conditioning': 'Điều hòa không khí',
                             'Bedding included': 'Bao gồm bộ ga giường',
-                            'Upper beds can be raised': 'Giường trên có thể nâng lên',
+                            'Two upper beds fold up': 'Hai giường trên có thể gập lên',
                             'More comfortable daytime space': 'Không gian ban ngày thoải mái hơn',
                             'Four-passenger cabin': 'Cabin dành cho 4 khách',
+                            'Only one VIP 2 cabin on SE19': 'Chỉ 1 cabin VIP 2 trên tàu SE19',
                           } as Record<string, string>)[amenity] || amenity : amenity}</span>
                         </div>
                       ))}

@@ -54,6 +54,8 @@ interface TrainDatabase {
 
 const database = trainDatabaseJson as TrainDatabase
 
+export const VIP2_TRAIN_NUMBER = 'SE19'
+
 export const TRAIN_DATABASE_SOURCE = database.source
 export const TRAIN_STATIONS = database.stations
 export const TRAIN_ROUTES = database.routes
@@ -92,7 +94,8 @@ export function getTrainRouteById(routeId: string): TrainRouteRecord | undefined
   )
 }
 
-export function getRouteFare(
+/** Fare for one of the four tickets that make up a full-cabin purchase. */
+export function getRouteTicketFare(
   from: string,
   to: string,
   cabinClassId: CabinProductId = 'standard'
@@ -102,7 +105,19 @@ export function getRouteFare(
   return Math.round(route.baseFareVnd * database.cabinPriceFactors[cabinClassId])
 }
 
-export function getRouteFareById(
+/** Public selling price for one full cabin (four tickets). */
+export function getRouteFare(
+  from: string,
+  to: string,
+  cabinClassId: CabinProductId = 'standard'
+): number | undefined {
+  const ticketFare = getRouteTicketFare(from, to, cabinClassId)
+  return ticketFare === undefined
+    ? undefined
+    : ticketFare * CABIN_PRODUCTS[cabinClassId].privateCabinTickets
+}
+
+export function getRouteTicketFareById(
   routeId: string,
   cabinClassId: CabinProductId = 'standard'
 ): number | undefined {
@@ -111,12 +126,40 @@ export function getRouteFareById(
   return Math.round(route.baseFareVnd * database.cabinPriceFactors[cabinClassId])
 }
 
+/** Public selling price for one full cabin (four tickets). */
+export function getRouteFareById(
+  routeId: string,
+  cabinClassId: CabinProductId = 'standard'
+): number | undefined {
+  const ticketFare = getRouteTicketFareById(routeId, cabinClassId)
+  return ticketFare === undefined
+    ? undefined
+    : ticketFare * CABIN_PRODUCTS[cabinClassId].privateCabinTickets
+}
+
 export function getLowestRouteFare(cabinClassId: CabinProductId = 'standard'): number {
+  return Math.min(
+    ...TRAIN_ROUTES.map((route) =>
+      Math.round(route.baseFareVnd * database.cabinPriceFactors[cabinClassId])
+        * CABIN_PRODUCTS[cabinClassId].privateCabinTickets
+    )
+  )
+}
+
+export function getLowestRouteTicketFare(cabinClassId: CabinProductId = 'standard'): number {
   return Math.min(
     ...TRAIN_ROUTES.map((route) =>
       Math.round(route.baseFareVnd * database.cabinPriceFactors[cabinClassId])
     )
   )
+}
+
+/** VIP 2 is physically available only on SE19; all services sell the fixed full cabin. */
+export function isCabinProductAvailableOnTrain(
+  trainNumber: string,
+  cabinClassId: CabinProductId
+): boolean {
+  return cabinClassId === 'standard' || trainNumber.toUpperCase() === VIP2_TRAIN_NUMBER
 }
 
 function minutesAtStop(stop: TrainStopRecord): number {
@@ -160,9 +203,11 @@ function schedulesForRoute(
     const serviceDay = dayCodeForDeparture(date, fromStop.dayOffset)
     if (!serviceDay || !service.operatingDays.includes(serviceDay)) return []
 
+    const standardTicketPrice = getRouteTicketFare(fromId, toId, 'standard')
+    const premiumTicketPrice = getRouteTicketFare(fromId, toId, 'premium')
     const standardPrice = getRouteFare(fromId, toId, 'standard')
     const premiumPrice = getRouteFare(fromId, toId, 'premium')
-    if (!standardPrice || !premiumPrice) return []
+    if (!standardTicketPrice || !premiumTicketPrice || !standardPrice || !premiumPrice) return []
 
     return [{
       scheduleId: `${service.trainNumber}-${fromStation.code}-${toStation.code}`,
@@ -179,6 +224,7 @@ function schedulesForRoute(
           seatClass: 'standard',
           seatClassVi: CABIN_PRODUCTS.standard.nameVi,
           seatClassEn: CABIN_PRODUCTS.standard.nameEn,
+          ticketPrice: standardTicketPrice,
           price: standardPrice,
           available: null,
         },
@@ -186,10 +232,14 @@ function schedulesForRoute(
           seatClass: 'premium',
           seatClassVi: CABIN_PRODUCTS.premium.nameVi,
           seatClassEn: CABIN_PRODUCTS.premium.nameEn,
+          ticketPrice: premiumTicketPrice,
           price: premiumPrice,
           available: null,
         },
-      ],
+      ].filter((seat) => isCabinProductAvailableOnTrain(
+        service.trainNumber,
+        seat.seatClass as CabinProductId
+      )),
       hasLanding: true,
       hasRestaurant: false,
       sourceName: TRAIN_DATABASE_SOURCE.name,
@@ -222,20 +272,26 @@ export interface RoutePricing {
   seatClass: CabinProductId
   seatClassVi: string
   seatClassEn: string
+  ticketPrice: number
+  cabinPrice: number
   basePrice: number
   peakPrice: number
 }
 
 export function getRoutePricing(from: string, to: string): RoutePricing[] {
+  const standardTicketPrice = getRouteTicketFare(from, to, 'standard')
+  const premiumTicketPrice = getRouteTicketFare(from, to, 'premium')
   const standardPrice = getRouteFare(from, to, 'standard')
   const premiumPrice = getRouteFare(from, to, 'premium')
-  if (!standardPrice || !premiumPrice) return []
+  if (!standardTicketPrice || !premiumTicketPrice || !standardPrice || !premiumPrice) return []
 
   return [
     {
       seatClass: 'standard',
       seatClassVi: CABIN_PRODUCTS.standard.nameVi,
       seatClassEn: CABIN_PRODUCTS.standard.nameEn,
+      ticketPrice: standardTicketPrice,
+      cabinPrice: standardPrice,
       basePrice: standardPrice,
       peakPrice: standardPrice,
     },
@@ -243,6 +299,8 @@ export function getRoutePricing(from: string, to: string): RoutePricing[] {
       seatClass: 'premium',
       seatClassVi: CABIN_PRODUCTS.premium.nameVi,
       seatClassEn: CABIN_PRODUCTS.premium.nameEn,
+      ticketPrice: premiumTicketPrice,
+      cabinPrice: premiumPrice,
       basePrice: premiumPrice,
       peakPrice: premiumPrice,
     },

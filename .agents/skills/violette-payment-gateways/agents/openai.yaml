@@ -1,0 +1,3 @@
+interface:
+  display_name: "Violette Payment Gateways"
+  short_description: "Safe VNPay & MoMo checkout and callbacks"

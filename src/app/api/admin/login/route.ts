@@ -1,122 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server'
-import path from 'path'
-import { existsSync, readFileSync } from 'fs'
+import { z } from 'zod'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
+import { enforceRateLimit, HOUR, MINUTE } from '@/lib/security/rate-limit'
+import { BodyTooLargeError, readJsonBody } from '@/lib/security/request'
 
-/**
- * Admin Login API
- *
- * Three modes (tried in order):
- * 1. FLASK_AVAILABLE=true  → Flask backend (full user management)
- * 2. Local users.json      → local user database (supports multiple users, roles)
- * 3. Env vars fallback     → ADMIN_USERNAME + ADMIN_PASSWORD (single admin account)
- */
+const loginSchema = z.object({
+  email: z.string().trim().email('Email không hợp lệ.').max(160),
+  password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự.').max(256),
+})
 
-const FLASK_BASE = process.env.VM_API_URL || 'http://localhost:5001/api'
-const ADMIN_SECRET = process.env.ADMIN_SECRET_TOKEN || 'violette-admin-secret-dev'
-
-function simpleHash(password: string): string {
-  let hash = 0
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash
-  }
-  return 'hash_' + Math.abs(hash).toString(16)
-}
-
-function verifyPassword(password: string, hash: string): boolean {
-  return simpleHash(password) === hash
-}
-
-interface UserRecord {
-  id: string
-  username: string
-  name: string
-  role: string
-  active: boolean
-  passwordHash: string
-  lastLogin: string | null
-}
-
-function readLocalUsers(): UserRecord[] {
-  try {
-    const file = path.join(process.cwd(), 'data', 'users.json')
-    if (!existsSync(file)) return []
-    return JSON.parse(readFileSync(file, 'utf-8'))
-  } catch { return [] }
-}
-
-function updateLastLogin(username: string) {
-  try {
-    const file = path.join(process.cwd(), 'data', 'users.json')
-    if (!existsSync(file)) return
-    const users: UserRecord[] = JSON.parse(readFileSync(file, 'utf-8'))
-    const idx = users.findIndex((u) => u.username === username)
-    if (idx >= 0) {
-      users[idx].lastLogin = new Date().toISOString()
-      const { writeFileSync } = require('fs')
-      writeFileSync(file, JSON.stringify(users, null, 2), 'utf-8')
-    }
-  } catch { /* non-fatal */ }
-}
+// Password guessing protection, per IP and per targeted account.
+const LOGIN_LIMITS = [
+  { name: 'admin-login-burst', limit: 10, windowMs: 15 * MINUTE },
+  { name: 'admin-login-daily', limit: 50, windowMs: 24 * HOUR },
+]
+const LOGIN_LIMIT_MESSAGE = 'Bạn đã thử đăng nhập quá nhiều lần. Vui lòng đợi 15 phút rồi thử lại.'
 
 export async function POST(request: NextRequest) {
-  const body = await request.json().catch(() => ({}))
-  const { username = '', password = '' } = body
-
-  // 1. Try Flask first
-  if (process.env.FLASK_AVAILABLE === 'true') {
-    try {
-      const flaskRes = await fetch(`${FLASK_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      })
-      if (flaskRes.ok) {
-        const data = await flaskRes.json()
-        updateLastLogin(username)
-        return NextResponse.json({
-          token: data.access_token,
-          username: data.user?.username,
-          name: data.user?.name,
-          role: data.user?.role || 'admin',
-          expiresIn: data.expires_in,
-          mode: 'flask',
-        })
-      }
-    } catch { /* fall through */ }
+  if (!isSupabaseConfigured()) {
+    return NextResponse.json(
+      { error: 'Supabase chưa được cấu hình. Vui lòng kiểm tra biến môi trường.' },
+      { status: 503 }
+    )
   }
 
-  // 2. Try local users.json
-  const localUsers = readLocalUsers()
-  const localUser = localUsers.find(
-    (u) => u.username === username && u.active && verifyPassword(password, u.passwordHash || '')
+  const ipLimited = enforceRateLimit(request, LOGIN_LIMITS, { message: LOGIN_LIMIT_MESSAGE })
+  if (ipLimited) return ipLimited
+
+  let body: unknown
+  try {
+    body = await readJsonBody(request, 4 * 1024)
+  } catch (error) {
+    if (error instanceof BodyTooLargeError) return NextResponse.json({ error: error.message }, { status: 413 })
+    throw error
+  }
+  const parsed = loginSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 })
+  }
+
+  const accountLimited = enforceRateLimit(
+    request,
+    [{ name: 'admin-login-account', limit: 8, windowMs: 15 * MINUTE }],
+    { extraKey: parsed.data.email, message: LOGIN_LIMIT_MESSAGE }
   )
-  if (localUser) {
-    updateLastLogin(username)
-    return NextResponse.json({
-      token: ADMIN_SECRET,
-      username: localUser.username,
-      name: localUser.name,
-      role: localUser.role,
-      expiresIn: 86400 * 7,
-      mode: 'local',
-    })
+  if (accountLimited) return accountLimited
+
+  const supabase = await createSupabaseServerClient()
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data)
+
+  if (error || !data.user) {
+    console.warn('[admin login] failed sign-in attempt')
+    return NextResponse.json({ error: 'Email hoặc mật khẩu không đúng.' }, { status: 401 })
   }
 
-  // 3. Env var fallback (single admin)
-  const validUsername = process.env.ADMIN_USERNAME || 'admin'
-  const validPassword = process.env.ADMIN_PASSWORD || 'violet'
-  if (username === validUsername && password === validPassword) {
-    return NextResponse.json({
-      token: ADMIN_SECRET,
-      username: validUsername,
-      name: validUsername,
-      role: 'admin',
-      expiresIn: 86400 * 7,
-      mode: 'env',
-    })
+  const { data: profile, error: profileError } = await supabase
+    .from('admin_profiles')
+    .select('display_name, role, active')
+    .eq('user_id', data.user.id)
+    .maybeSingle()
+
+  if (profileError || !profile?.active) {
+    await supabase.auth.signOut()
+    return NextResponse.json({ error: 'Tài khoản chưa được cấp quyền quản trị.' }, { status: 403 })
   }
 
-  return NextResponse.json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng.' }, { status: 401 })
+  return NextResponse.json({
+    user: {
+      email: data.user.email,
+      displayName: profile.display_name,
+      role: profile.role,
+    },
+  })
+}
+
+export async function DELETE() {
+  if (!isSupabaseConfigured()) return NextResponse.json({ ok: true })
+  const supabase = await createSupabaseServerClient()
+  await supabase.auth.signOut()
+  return NextResponse.json({ ok: true })
 }

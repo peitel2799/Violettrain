@@ -6,6 +6,23 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/** Lower-case and strip Vietnamese accents so "hue", "HUE" and "Huế" all match. */
+export function foldText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .toLowerCase()
+}
+
+/** Every whitespace-separated word of the query appears somewhere in the haystack (accent-insensitive). */
+export function matchesSearch(haystack: string, query: string): boolean {
+  const words = foldText(query).split(/[^a-z0-9]+/).filter(Boolean)
+  if (!words.length) return true
+  const text = foldText(haystack)
+  return words.every((word) => text.includes(word))
+}
+
 export function formatCurrency(amount: number | undefined | null, locale = 'vi-VN'): string {
   if (amount == null || !Number.isFinite(amount)) return '—'
   return new Intl.NumberFormat(locale, {

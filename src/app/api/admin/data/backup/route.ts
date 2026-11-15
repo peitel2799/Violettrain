@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAdminRequest, adminUnauthorized } from '@/lib/admin-auth'
-import { readFile, writeFile, mkdir, readdir, rm, copyFile } from 'fs/promises'
+import { readFile, writeFile, mkdir, readdir, rm, stat } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 
@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
         .filter((f) => f.endsWith('.json'))
         .map(async (f) => {
           const filePath = path.join(BACKUPS_DIR, f)
-          const { stat } = require('fs').promises
           const s = await stat(filePath)
           const content = await readFile(filePath, 'utf-8')
           let data: Record<string, unknown> = {}

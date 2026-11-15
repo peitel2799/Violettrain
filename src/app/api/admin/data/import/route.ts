@@ -36,12 +36,6 @@ function parseCSVLine(line: string): string[] {
   return result
 }
 
-function parseNum(v: unknown): number {
-  if (typeof v === 'number') return v
-  if (typeof v === 'string') return parseFloat(v.replace(/[.,\s]/g, '')) || 0
-  return 0
-}
-
 function mapCSVToEntry(row: Record<string, unknown>, source: string): Record<string, unknown> {
   const get = (keys: string[]): string => {
     for (const k of keys) {

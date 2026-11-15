@@ -1,140 +1,157 @@
 'use client'
 
-import { useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Train } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { FormEvent, useState } from 'react'
+import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, TrainFront } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const router = useRouter()
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
     setError('')
     setLoading(true)
 
     try {
-      const res = await fetch('/api/admin/login', {
+      const response = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Không thể đăng nhập.')
 
-      const data = await res.json()
-
-      if (res.ok) {
-        localStorage.setItem('admin_token', data.token)
-        localStorage.setItem('admin_user', data.username)
-        localStorage.setItem('vm_token', data.token)
-        localStorage.setItem('vm_user', JSON.stringify({ username: data.username, role: data.role || 'admin' }))
-        router.push('/admin')
-      } else {
-        setError(data.error || 'Tên đăng nhập hoặc mật khẩu không đúng.')
-      }
-    } catch {
-      setError('Lỗi kết nối. Vui lòng thử lại.')
+      router.replace('/admin/calendar')
+      router.refresh()
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : 'Không thể đăng nhập.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-950 via-violet-900 to-violet-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gold-500 rounded-2xl mb-4 shadow-lg shadow-gold-500/20">
-            <Train className="w-8 h-8 text-violet-950" />
-          </div>
-          <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-serif)' }}>
-            Violette Train
-          </h1>
-          <p className="text-white/50 text-sm mt-1">Bảng điều khiển quản trị</p>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-white/10 shadow-xl shadow-violet-950/50 p-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">Chào mừng trở lại</h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Đăng nhập để truy cập bảng điều khiển quản trị.
-          </p>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                Tên đăng nhập
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Nhập tên đăng nhập"
-                required
-                autoFocus
-                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              />
+    <main className="min-h-screen bg-[#160b24] p-4 sm:p-8">
+      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#20102f] shadow-2xl shadow-black/30 lg:grid-cols-[1.1fr_0.9fr] sm:min-h-[calc(100vh-4rem)]">
+        <section className="relative hidden min-h-[680px] overflow-hidden lg:block">
+          <Image
+            src="/violette-train-evening.jpg"
+            alt="Đoàn tàu Violette vào buổi tối"
+            fill
+            priority
+            sizes="(min-width: 1024px) 55vw, 0px"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#160b24] via-[#241237]/40 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-10 text-white xl:p-14">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/20 px-4 py-2 text-sm backdrop-blur-md">
+              <TrainFront className="h-4 w-4 text-gold-400" />
+              Trung tâm vận hành Violette Train
             </div>
+            <h1 className="max-w-xl font-serif text-4xl font-semibold leading-tight xl:text-5xl">
+              Quản lý từng chuyến tàu một cách rõ ràng.
+            </h1>
+            <p className="mt-4 max-w-lg text-base leading-7 text-white/70">
+              Thiết lập tuyến, lịch chạy, sức chứa và giá bán theo ngày trên một nguồn dữ liệu duy nhất.
+            </p>
+          </div>
+        </section>
 
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                Mật khẩu
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu"
-                  required
-                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+        <section className="flex items-center px-6 py-10 sm:px-12 lg:px-14">
+          <div className="mx-auto w-full max-w-md">
+            <div className="mb-10 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-500 text-violet-950 shadow-lg shadow-gold-500/20">
+                <TrainFront className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-serif text-xl font-semibold text-white">Violette Train</p>
+                <p className="text-sm text-white/45">Admin Operations</p>
               </div>
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-600">
-                {error}
+            <div className="mb-8">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-400/10 px-3 py-1.5 text-xs font-semibold text-emerald-300">
+                <ShieldCheck className="h-4 w-4" />
+                Đăng nhập bảo mật qua Supabase
               </div>
-            )}
+              <h2 className="font-serif text-3xl font-semibold text-white sm:text-4xl">Chào mừng trở lại</h2>
+              <p className="mt-3 text-sm leading-6 text-white/55">
+                Dùng tài khoản đã được cấp quyền để truy cập dữ liệu vận hành.
+              </p>
+            </div>
 
-            <button
-              type="submit"
-              disabled={loading || !username.trim() || !password.trim()}
-              className={cn(
-                'w-full py-2.5 rounded-lg font-semibold text-sm transition-all',
-                loading || !username.trim() || !password.trim()
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-gold-500 hover:bg-gold-400 text-violet-950 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30'
-              )}
-            >
-              {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-            </button>
-          </form>
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div>
+                <label htmlFor="admin-email" className="mb-2 block text-sm font-semibold text-white/75">Email</label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/35" />
+                  <input
+                    id="admin-email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    autoComplete="username"
+                    autoFocus
+                    required
+                    placeholder="admin@violettetrain.vn"
+                    className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.06] pl-12 pr-4 text-base text-white placeholder:text-white/25 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20"
+                  />
+                </div>
+              </div>
 
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="text-xs text-gray-400 text-center">
-              Tài khoản mặc định: <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">admin</code> / <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">violet</code>
-            </p>
-            <p className="text-xs text-gray-300 text-center mt-1">
-              Thay đổi bằng <code className="bg-gray-100 px-1 py-0.5 rounded font-mono">ADMIN_USERNAME</code> / <code className="bg-gray-100 px-1 py-0.5 rounded font-mono">ADMIN_PASSWORD</code> trong <code className="bg-gray-100 px-1 py-0.5 rounded font-mono">.env.local</code>
+              <div>
+                <label htmlFor="admin-password" className="mb-2 block text-sm font-semibold text-white/75">Mật khẩu</label>
+                <div className="relative">
+                  <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/35" />
+                  <input
+                    id="admin-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    autoComplete="current-password"
+                    required
+                    minLength={8}
+                    placeholder="Ít nhất 8 ký tự"
+                    className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.06] pl-12 pr-12 text-base text-white placeholder:text-white/25 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((visible) => !visible)}
+                    aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-white/40 hover:bg-white/5 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {error ? (
+                <p role="alert" className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm leading-5 text-red-200">
+                  {error}
+                </p>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={loading || !email || password.length < 8}
+                className="flex h-12 w-full items-center justify-center rounded-xl bg-gold-500 px-5 text-base font-bold text-violet-950 shadow-lg shadow-gold-500/15 hover:bg-gold-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? 'Đang xác thực…' : 'Đăng nhập quản trị'}
+              </button>
+            </form>
+
+            <p className="mt-8 border-t border-white/10 pt-6 text-xs leading-5 text-white/35">
+              Không còn tài khoản hoặc mật khẩu mặc định. Liên hệ quản trị hệ thống nếu bạn chưa được cấp quyền.
             </p>
           </div>
-        </div>
-
-        <p className="text-center text-xs text-white/30 mt-6">
-          Violette Train Admin &copy; {new Date().getFullYear()}
-        </p>
+        </section>
       </div>
-    </div>
+    </main>
   )
 }

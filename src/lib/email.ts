@@ -10,7 +10,10 @@
  * For development, emails are logged to console if SMTP is not configured.
  */
 
+import 'server-only'
+
 import nodemailer, { Transporter } from 'nodemailer'
+import { escapeHtml } from '@/lib/security/request'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -67,6 +70,10 @@ function getTransporter(): Transporter {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      // Fail fast so a slow mail server never blocks a booking request for minutes.
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
     })
   } else {
     // Dev mode: use console transport (logs to terminal)
@@ -124,7 +131,19 @@ function formatDateDisplay(dateStr: string, locale: 'vi' | 'en'): string {
 // Booking Confirmation Email (HTML)
 // ---------------------------------------------------------------------------
 
-function buildBookingConfirmationHTML(data: BookingEmailData): string {
+/** HTML-escapes every text field so guest-supplied values can never inject markup or links into the email. */
+function escapeEmailData(data: BookingEmailData): BookingEmailData {
+  const escaped = { ...data }
+  for (const key of Object.keys(escaped) as Array<keyof BookingEmailData>) {
+    const value = escaped[key]
+    if (typeof value === 'string') (escaped as Record<string, unknown>)[key] = escapeHtml(value)
+  }
+  escaped.passengers = data.passengers.map((passenger) => ({ ...passenger, name: escapeHtml(passenger.name) }))
+  return escaped
+}
+
+function buildBookingConfirmationHTML(raw: BookingEmailData): string {
+  const data = escapeEmailData(raw)
   const isVi = data.locale === 'vi'
 
   const passengersHTML = data.passengers
@@ -425,7 +444,8 @@ export async function sendBookingConfirmationEmail(
   try {
     const info = await transport.sendMail({
       from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
-      to: `"${data.customerName}" <${data.customerEmail}>`,
+      // Object form lets nodemailer encode the name, so it cannot inject extra headers or recipients.
+      to: { name: data.customerName, address: data.customerEmail },
       replyTo: REPLY_TO,
       subject,
       text,
@@ -456,6 +476,62 @@ export async function sendBookingConfirmationEmail(
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err)
     console.error(`\n❌ [EMAIL FAILED] To: ${data.customerEmail} | Ref: ${data.bookingRef} | Error: ${errorMsg}`)
+    return { success: false, error: errorMsg }
+  }
+}
+
+export interface OutgoingEmail {
+  to: string
+  toName?: string
+  /** Hidden copy, e.g. the staff inbox that follows up on bookings. */
+  bcc?: string | null
+  subject: string
+  html: string
+  text: string
+}
+
+/** True when a real SMTP server is configured (otherwise emails are only logged). */
+export function isEmailDeliveryConfigured() {
+  return Boolean(process.env.SMTP_HOST)
+}
+
+/**
+ * Sends one email from the company address (EMAIL_FROM via SMTP).
+ * Without SMTP_HOST the message is logged and, if EMAIL_PREVIEW_DIR is set,
+ * written there as an .html file so it can be opened in a browser.
+ */
+export async function sendEmail(message: OutgoingEmail): Promise<SendEmailResult> {
+  const fromName = process.env.EMAIL_FROM_NAME || FROM_NAME
+  try {
+    const info = await getTransporter().sendMail({
+      from: `"${fromName}" <${FROM_EMAIL}>`,
+      to: message.toName ? { name: message.toName, address: message.to } : message.to,
+      bcc: message.bcc || undefined,
+      replyTo: REPLY_TO,
+      subject: message.subject,
+      text: message.text,
+      html: message.html,
+      headers: { 'X-Mailer': 'Violette Train Booking System' },
+    })
+
+    if (!isEmailDeliveryConfigured()) {
+      console.log(`\n📧 [EMAIL - DEV MODE, not delivered] To: ${message.to}${message.bcc ? ` (bcc ${message.bcc})` : ''} | ${message.subject}`)
+      const previewDir = process.env.EMAIL_PREVIEW_DIR?.trim()
+      if (previewDir) {
+        const { mkdir, writeFile } = await import('node:fs/promises')
+        const { join } = await import('node:path')
+        await mkdir(previewDir, { recursive: true })
+        const file = join(previewDir, `${Date.now()}-${message.subject.replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 60)}.html`)
+        await writeFile(file, message.html, 'utf8')
+        console.log(`   Preview: ${file}`)
+      }
+    } else {
+      console.log(`📧 [EMAIL SENT] To: ${message.to} | ${message.subject} | ID: ${info.messageId}`)
+    }
+    return { success: true, messageId: info.messageId }
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err)
+    console.error(`❌ [EMAIL FAILED] To: ${message.to} | ${message.subject} | ${errorMsg}`)
     return { success: false, error: errorMsg }
   }
 }

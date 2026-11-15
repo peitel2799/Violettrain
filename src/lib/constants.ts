@@ -89,8 +89,8 @@ export const ROUTES: Route[] = TRAIN_ROUTES.map((route) => {
 export const CABIN_CLASSES: CabinClass[] = [
   {
     id: 'standard',
-    name: 'Fixed 4-Berth',
-    abbr: '4-BERTH',
+    name: 'Full Cabin',
+    abbr: 'FULL CABIN',
     taglineKey: 'standard.tagline',
     descKey: 'standard.desc',
     maxBeds: 4,
@@ -98,7 +98,7 @@ export const CABIN_CLASSES: CabinClass[] = [
     amenities: [
       'Four fixed berths',
       'Upper beds cannot be raised',
-      'Private cabin when buying 4 tickets',
+      'Full-cabin purchase only',
       'Air conditioning',
       'Bedding included',
     ],
@@ -126,10 +126,11 @@ export const CABIN_CLASSES: CabinClass[] = [
     maxBeds: 4,
     pushUpBeds: true,
     amenities: [
-      'Upper beds can be raised',
+      'Two upper beds fold up',
       'More comfortable daytime space',
       'Four-passenger cabin',
-      'Private cabin when buying 4 tickets',
+      'Only one VIP 2 cabin on SE19',
+      'Full-cabin purchase only',
       'Air conditioning',
     ],
     images: [
@@ -139,7 +140,7 @@ export const CABIN_CLASSES: CabinClass[] = [
       '/premium_room/outside1.JPG',
       '/premium_room/outside2.JPG',
     ],
-    priceFactor: 1.25,
+    priceFactor: 2.0,
     ticketPrice: CABIN_PRODUCTS.premium.ticketPrice,
     roomCount: CABIN_PRODUCTS.premium.roomCount,
     configs: [

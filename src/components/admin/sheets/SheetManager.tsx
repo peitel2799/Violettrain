@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Plus, Trash2, X, Ticket, FileText, LayoutGrid, Columns3,
-  MoreHorizontal, AlertCircle,
+  Plus, Trash2, X, Ticket, FileText, LayoutGrid, AlertCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ToastContainer, toast, useToast } from '@/components/admin/ui/Toast'
 import { ConfirmDialog } from '@/components/admin/ui/Modal'
 import { SpreadsheetSheet } from './SpreadsheetSheet'
-import type { SheetDefinition, SheetRow, SheetColumn } from '@/lib/sheets-api'
+import type { SheetDefinition, SheetRow } from '@/lib/sheets-api'
 
 // ─── Create Sheet Modal ────────────────────────────────────────────────────────
 
@@ -117,28 +116,29 @@ export function SheetManager() {
   const [showCreate, setShowCreate] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<SheetDefinition | null>(null)
   const [deleting, setDeleting] = useState(false)
-  const [contextMenu, setContextMenu] = useState<{ sheet: SheetDefinition; x: number; y: number } | null>(null)
+  const [, setContextMenu] = useState<{ sheet: SheetDefinition; x: number; y: number } | null>(null)
+
+  const loadSheetData = useCallback(async (sheetId: string) => {
+    try {
+      const { getSheet } = await import('@/lib/sheets-api')
+      const { rows } = await getSheet(sheetId)
+      setActiveRows(rows)
+    } catch { toast('Không thể tải dữ liệu', 'error') }
+  }, [])
 
   const loadSheets = useCallback(async () => {
     try {
       const { listSheets } = await import('@/lib/sheets-api')
       const data = await listSheets()
       setSheets(data)
-      if (data.length > 0 && !activeSheet) {
-        setActiveSheet(data[0])
-        loadSheetData(data[0].id)
-      }
+      setActiveSheet((current) => {
+        if (current || data.length === 0) return current
+        void loadSheetData(data[0].id)
+        return data[0]
+      })
     } catch { toast('Không thể tải danh sách sheet', 'error') }
     finally { setLoading(false) }
-  }, [])
-
-  const loadSheetData = async (sheetId: string) => {
-    try {
-      const { getSheet } = await import('@/lib/sheets-api')
-      const { rows } = await getSheet(sheetId)
-      setActiveRows(rows)
-    } catch { toast('Không thể tải dữ liệu', 'error') }
-  }
+  }, [loadSheetData])
 
   useEffect(() => { loadSheets() }, [loadSheets])
 

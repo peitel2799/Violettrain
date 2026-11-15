@@ -7,13 +7,12 @@ declare global {
   }
 }
 
-import { useEffect, useState, useCallback, useRef } from 'react'
-import { Plus, Pencil, Trash2, Search, RefreshCw, Download, Upload, ChevronUp, ChevronDown, X } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
+import { Plus, Pencil, Trash2, Search, RefreshCw, Download, ChevronUp, ChevronDown } from 'lucide-react'
 import { Modal } from '@/components/admin/ui/Modal'
 import { ConfirmDialog } from '@/components/admin/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/admin/ui/Badge'
-import { toast, useToast } from '@/components/admin/ui/Toast'
+import { toast } from '@/components/admin/ui/Toast'
 import { listBookings, createBooking, updateBooking, deleteBooking, exportBookingsCSV } from '@/lib/booking-api'
 import type { Booking, BookingStatus } from '@/lib/booking-types'
 import { cn } from '@/lib/utils'
@@ -123,7 +122,6 @@ function BookingForm({ booking, onSave, onClose }: {
 // ─── Main Page ──────────────────────────────────────────────────────────
 
 export default function BookingsPage() {
-  const { toasts, removeToast } = useToast()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -136,7 +134,7 @@ export default function BookingsPage() {
   const [stats, setStats] = useState<{ totalAmount: number; totalPaid: number; totalDebt: number } | null>(null)
   const [editBooking, setEditBooking] = useState<Partial<Booking> | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Booking | null>(null)
-  const [saving, setSaving] = useState(false)
+  const [, setSaving] = useState(false)
   const [localSearch, setLocalSearch] = useState('')
 
   const load = useCallback(async (p = 1, q = search, status = statusFilter) => {
@@ -302,25 +300,25 @@ export default function BookingsPage() {
                           <td key="companyName" className="px-3 py-3 font-medium text-gray-800">{b.companyName}</td>
                         )
                         if (col.key === 'departureDate') return (
-                          <td className="px-3 py-3 text-gray-600">{fmtDate(b.departureDate)}</td>
+                          <td key={col.key} className="px-3 py-3 text-gray-600">{fmtDate(b.departureDate)}</td>
                         )
                         if (col.key === 'totalAmount' || col.key === 'paidAmount') {
                           const v = col.key === 'totalAmount' ? b.totalAmount : b.paidAmount
-                          return <td className="px-3 py-3 text-right font-semibold text-gray-900">{fmt(v)} đ</td>
+                          return <td key={col.key} className="px-3 py-3 text-right font-semibold text-gray-900">{fmt(v)} đ</td>
                         }
                         if (col.key === 'debt') return (
-                          <td className={cn('px-3 py-3 text-right font-bold', debt > 0 ? 'text-red-600' : 'text-green-600')}>
+                          <td key={col.key} className={cn('px-3 py-3 text-right font-bold', debt > 0 ? 'text-red-600' : 'text-green-600')}>
                             {fmt(debt)} đ
                           </td>
                         )
                         if (col.key === 'status') return (
-                          <td className="px-3 py-3 text-center">
+                          <td key={col.key} className="px-3 py-3 text-center">
                             <span className={cn('px-2 py-1 rounded-full text-xs font-medium', cfg.bg, cfg.color)}>{cfg.label}</span>
                           </td>
                         )
-                        if (col.key === 'totalTickets') return <td className="px-3 py-3 text-center font-semibold">{b.totalTickets}</td>
+                        if (col.key === 'totalTickets') return <td key={col.key} className="px-3 py-3 text-center font-semibold">{b.totalTickets}</td>
                         return (
-                          <td className="px-3 py-3 text-gray-600 truncate max-w-[150px]" title={String((b as unknown as Record<string, unknown>)[col.key] ?? '')}>
+                          <td key={col.key} className="px-3 py-3 text-gray-600 truncate max-w-[150px]" title={String((b as unknown as Record<string, unknown>)[col.key] ?? '')}>
                             {String((b as unknown as Record<string, unknown>)[col.key] ?? '')}
                           </td>
                         )

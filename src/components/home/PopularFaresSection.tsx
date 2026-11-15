@@ -5,7 +5,8 @@ import { useLocale } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock3, Sparkles } from 'lucide-react'
 import { Link } from '@/i18n/routing'
-import { getRoutePricing } from '@/lib/train-database'
+import { getRoutePricing, getTrainStation } from '@/lib/train-database'
+import type { LiveFares } from '@/lib/public-fares'
 
 const FARES = [
   {
@@ -51,7 +52,7 @@ function formatVnd(amount: number) {
   return new Intl.NumberFormat('vi-VN').format(amount) + '₫'
 }
 
-export default function PopularFaresSection() {
+export default function PopularFaresSection({ liveFares = null }: { liveFares?: LiveFares | null }) {
   const locale = useLocale()
   const isVi = locale === 'vi'
 
@@ -67,29 +68,39 @@ export default function PopularFaresSection() {
         >
           <div className="max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-gold-600">
-              {isVi ? 'Giá vé minh bạch' : 'Clear ticket fares'}
+              {isVi ? 'Giá vé & cabin minh bạch' : 'Clear ticket & cabin fares'}
             </p>
             <h2 className="font-serif text-3xl font-bold leading-tight text-violet-950 sm:text-4xl lg:text-5xl">
               {isVi ? 'Chọn hành trình phù hợp' : 'Choose your journey'}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500 sm:text-base">
               {isVi
-                ? 'Giá vé thay đổi theo tuyến; chọn hành trình để xem đúng giá và giờ tàu.'
-                : 'Fares vary by route; choose a journey to see its exact fare and timetable.'}
+                ? 'Giá 1 vé giữ nguyên theo tuyến; giá 1 cabin bằng giá vé × 4.'
+                : 'The per-ticket fare stays unchanged by route; one cabin costs the ticket fare × 4.'}
             </p>
           </div>
           <p className="max-w-sm text-xs leading-relaxed text-gray-400 md:text-right">
             {isVi
-              ? 'Giá cho mỗi vé. Mua đủ 4 vé nếu bạn muốn sử dụng riêng toàn bộ cabin.'
-              : 'Price per ticket. Buy all 4 tickets if you want the entire cabin privately.'}
+              ? 'Website hiển thị cả đơn giá 1 vé và tổng giá 4 vé. Cabin chỉ bán trọn.'
+              : 'Both the 1-ticket fare and 4-ticket total are shown. Cabins are sold only as complete units.'}
           </p>
         </motion.div>
 
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {FARES.map((fare, index) => {
             const pricing = getRoutePricing(fare.from, fare.to)
-            const standardPrice = pricing.find((entry) => entry.seatClass === 'standard')?.basePrice
-            const premiumPrice = pricing.find((entry) => entry.seatClass === 'premium')?.basePrice
+            const routeKey = `${getTrainStation(fare.from)?.code ?? ''}-${getTrainStation(fare.to)?.code ?? ''}`.toUpperCase()
+            const live = liveFares?.byRoute[routeKey]
+            // Live fares (set per day by staff) win; reference fares are only a fallback.
+            const priceFor = (id: 'standard' | 'premium') => {
+              const range = live?.[id]
+              if (range) return { ticketPrice: range.min, cabinPrice: range.min * 4, from: range.max > range.min }
+              if (liveFares) return undefined
+              const reference = pricing.find((entry) => entry.seatClass === id)
+              return reference ? { ticketPrice: reference.ticketPrice, cabinPrice: reference.cabinPrice, from: false } : undefined
+            }
+            const standardPrice = priceFor('standard')
+            const premiumPrice = priceFor('premium')
 
             return (
               <motion.article
@@ -128,28 +139,46 @@ export default function PopularFaresSection() {
 
                 <div className="p-5">
                   <div className="space-y-3">
-                    <div className="flex items-end justify-between gap-3 border-b border-gray-100 pb-3">
-                      <span className="text-sm text-gray-500">{isVi ? 'Cabin 4 giường' : 'Fixed 4-Berth'}</span>
-                      <div className="text-right">
-                        <span className="block text-[10px] uppercase tracking-wide text-gray-400">
-                          {isVi ? 'Mỗi vé' : 'Per ticket'}
-                        </span>
-                        <strong className="font-serif text-xl text-violet-950">
-                          {standardPrice ? formatVnd(standardPrice) : '—'}
-                        </strong>
+                    {[
+                      {
+                        id: 'standard',
+                        label: isVi ? 'Full Cabin (4 giường)' : 'Full Cabin (4 Berths)',
+                        pricing: standardPrice,
+                      },
+                      {
+                        id: 'premium',
+                        label: 'VIP 2 · SE19',
+                        pricing: premiumPrice,
+                      },
+                    ].map((product) => (
+                      <div key={product.id} className="rounded-xl border border-violet-100 bg-violet-50/45 p-3.5">
+                        <p className="text-sm font-semibold text-violet-950">{product.label}</p>
+                        {!product.pricing ? (
+                          <p className="mt-2 text-sm font-medium text-gray-500">
+                            {isVi ? 'Chưa mở bán — liên hệ để được báo giá' : 'Not on sale yet — contact us for a quote'}
+                          </p>
+                        ) : (
+                        <div className="mt-2 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
+                          <div>
+                            <span className="block text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                              {product.pricing.from ? (isVi ? 'Giá 1 vé từ' : '1 ticket from') : (isVi ? 'Giá 1 vé' : '1 ticket')}
+                            </span>
+                            <strong className="text-base font-bold text-gray-700">
+                              {formatVnd(product.pricing.ticketPrice)}
+                            </strong>
+                          </div>
+                          <div className="text-right">
+                            <span className="block text-[10px] font-semibold uppercase tracking-wide text-gold-600">
+                              {product.pricing.from ? (isVi ? '1 cabin (4 vé) từ' : '1 cabin (4 tickets) from') : (isVi ? 'Giá 1 cabin (4 vé)' : '1 cabin (4 tickets)')}
+                            </span>
+                            <strong className="font-serif text-xl font-bold text-violet-950 sm:text-2xl">
+                              {formatVnd(product.pricing.cabinPrice)}
+                            </strong>
+                          </div>
+                        </div>
+                        )}
                       </div>
-                    </div>
-                    <div className="flex items-end justify-between gap-3">
-                      <span className="text-sm text-gray-500">VIP 2</span>
-                      <div className="text-right">
-                        <span className="block text-[10px] uppercase tracking-wide text-gray-400">
-                          {isVi ? 'Mỗi vé' : 'Per ticket'}
-                        </span>
-                        <strong className="font-serif text-xl text-violet-950">
-                          {premiumPrice ? formatVnd(premiumPrice) : '—'}
-                        </strong>
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   <Link

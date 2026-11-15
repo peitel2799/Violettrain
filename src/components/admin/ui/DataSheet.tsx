@@ -1,11 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Search, Upload, Download, Plus, Pencil, Trash2, RefreshCw, ChevronUp, ChevronDown, History, X, PlusCircle } from 'lucide-react'
+import { Search, Upload, Download, Plus, Pencil, Trash2, RefreshCw, ChevronUp, ChevronDown, History } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ToastContainer, toast, useToast } from './Toast'
 import { ConfirmDialog } from './Modal'
-import { Badge } from './Badge'
 
 // ─── Original T1-QV Schema (exact column mapping from Excel) ────────────────────
 

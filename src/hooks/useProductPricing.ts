@@ -6,8 +6,8 @@ import { CABIN_PRODUCTS, type CabinProductId } from '@/lib/cabin-products'
 type ProductPriceMap = Record<CabinProductId, number>
 
 const DEFAULT_PRICES: ProductPriceMap = {
-  standard: CABIN_PRODUCTS.standard.ticketPrice,
-  premium: CABIN_PRODUCTS.premium.ticketPrice,
+  standard: CABIN_PRODUCTS.standard.ticketPrice * CABIN_PRODUCTS.standard.privateCabinTickets,
+  premium: CABIN_PRODUCTS.premium.ticketPrice * CABIN_PRODUCTS.premium.privateCabinTickets,
 }
 
 export function useProductPricing() {

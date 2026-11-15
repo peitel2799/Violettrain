@@ -1,21 +1,23 @@
 import type { Metadata, Viewport } from 'next'
-import { Playfair_Display, DM_Sans, Cormorant_Garamond } from 'next/font/google'
+import { Playfair_Display, Be_Vietnam_Pro, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
 
 const playfair = Playfair_Display({
-  subsets: ['latin'],
+  subsets: ['latin', 'vietnamese'],
   variable: '--font-serif',
   display: 'swap',
 })
 
-const dmSans = DM_Sans({
-  subsets: ['latin'],
+// DM Sans has no Vietnamese glyphs, so accented letters fell back to Arial mid-word.
+const bodySans = Be_Vietnam_Pro({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-sans',
   display: 'swap',
 })
 
 const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
+  subsets: ['latin', 'vietnamese'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-accent',
   display: 'swap',
@@ -108,7 +110,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="vi" className={`${playfair.variable} ${dmSans.variable} ${cormorant.variable}`}>
+    <html lang="vi" className={`${playfair.variable} ${bodySans.variable} ${cormorant.variable}`}>
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />

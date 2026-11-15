@@ -57,7 +57,7 @@ function PaginationBar({
   const pages_arr: number[] = []
   const maxVisible = 5
   let start = Math.max(1, page - Math.floor(maxVisible / 2))
-  let end = Math.min(pages, start + maxVisible - 1)
+  const end = Math.min(pages, start + maxVisible - 1)
   if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1)
   for (let i = start; i <= end; i++) pages_arr.push(i)
 
@@ -155,8 +155,8 @@ export function DataTable({
               <Download className="w-4 h-4" /> Xuất CSV
             </button>
           )}
-          {onEdit && (
-            <button onClick={() => onEdit({})}
+          {onAdd && (
+            <button onClick={onAdd}
               className="flex items-center gap-1.5 px-3 py-2 text-sm bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors">
               <Plus className="w-4 h-4" /> {addLabel}
             </button>

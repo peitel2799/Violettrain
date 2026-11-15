@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { Link } from '@/i18n/routing'
 import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react'
 import ContactForm from '@/components/contact/ContactForm'
 
@@ -25,7 +24,6 @@ export default async function ContactPage({
 }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'contact' })
-  const tFooter = await getTranslations({ locale, namespace: 'common.footer' })
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Violette Ticket Commerce"
+  short_description: "Supabase schedules, inventory, holds & orders"

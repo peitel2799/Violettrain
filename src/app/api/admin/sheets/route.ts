@@ -25,12 +25,6 @@ async function writeSheets(data: Record<string, unknown>) {
 
 function now() { return new Date().toISOString() }
 
-function parseNum(v: unknown): number {
-  if (typeof v === 'number') return v
-  if (typeof v === 'string') return parseFloat(v.replace(/[.,]/g, '').replace(/\s/g, '')) || 0
-  return 0
-}
-
 // ─── GET ─────────────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {

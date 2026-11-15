@@ -30,10 +30,6 @@ function simpleHash(password: string): string {
   return 'hash_' + Math.abs(hash).toString(16)
 }
 
-function verifyPassword(password: string, hash: string): boolean {
-  return simpleHash(password) === hash
-}
-
 async function readUsers(): Promise<User[]> {
   try {
     if (!existsSync(USERS_FILE)) return []
@@ -58,7 +54,7 @@ export async function GET(request: NextRequest) {
   try {
     const users = await readUsers()
     // Don't return password hashes
-    const safe = users.map(({ passwordHash, ...u }) => u)
+    const safe = users.map(({ passwordHash: _passwordHash, ...u }) => u)
     return NextResponse.json({ users: safe })
   } catch (error) {
     console.error('[API /admin/users GET]', error)
@@ -96,7 +92,7 @@ export async function POST(request: NextRequest) {
       }
       users.push(newUser)
       await writeUsers(users)
-      const { passwordHash, ...safe } = newUser
+      const { passwordHash: _passwordHash, ...safe } = newUser
       return NextResponse.json({ user: safe }, { status: 201 })
     }
 
@@ -110,7 +106,7 @@ export async function POST(request: NextRequest) {
       if (role !== undefined) users[idx].role = role
       if (active !== undefined) users[idx].active = active
       await writeUsers(users)
-      const { passwordHash, ...safe } = users[idx]
+      const { passwordHash: _passwordHash, ...safe } = users[idx]
       return NextResponse.json({ user: safe })
     }
 

@@ -5,30 +5,31 @@ import Image from 'next/image'
 import { Link } from '@/i18n/routing'
 import { motion } from 'framer-motion'
 import { ArrowRight, Check, Users, BedDouble } from 'lucide-react'
-import { getLowestRouteFare } from '@/lib/train-database'
+import { getLowestRouteTicketFare } from '@/lib/train-database'
+import type { LiveFares } from '@/lib/public-fares'
 
 const CABINS = [
   {
     id: 'standard' as const,
-    nameVi: 'Cabin 4 giường cố định',
-    nameEn: 'Fixed 4-Berth Cabin',
-    shortDescVi: 'Cabin dành cho 4 khách với giường tầng trên cố định, không thể nâng lên. Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.',
-    shortDescEn: 'A four-person cabin with fixed upper berths that cannot be raised. Buy all 4 tickets to reserve the entire cabin privately.',
+    nameVi: 'Full Cabin (4 giường)',
+    nameEn: 'Full Cabin (4 Berths)',
+    shortDescVi: 'Cabin riêng dành cho tối đa 4 khách với giường tầng trên cố định. Sản phẩm chỉ bán trọn cabin gồm 4 vé.',
+    shortDescEn: 'A private cabin for up to four guests with fixed upper berths. It is sold only as a full cabin containing all 4 tickets.',
     images: ['/premium_room/4pax1.JPG', '/premium_room/4pax.JPG'],
     maxGuests: 4,
-    amenities: ['Four fixed berths', 'Private when buying 4 tickets', 'Air conditioning', 'Bedding included'],
-    amenitiesVi: ['Bốn giường cố định', 'Riêng tư khi mua đủ 4 vé', 'Điều hòa không khí', 'Bộ ga giường'],
+    amenities: ['Four fixed berths', 'Full-cabin purchase only', 'Air conditioning', 'Bedding included'],
+    amenitiesVi: ['Bốn giường cố định', 'Chỉ bán trọn cabin', 'Điều hòa không khí', 'Bộ ga giường'],
   },
   {
     id: 'premium' as const,
     nameVi: 'VIP 2',
     nameEn: 'VIP 2',
-    shortDescVi: 'Một trong 7 cabin VIP 2 dành cho 4 khách. Giường tầng trên có thể nâng lên để tạo không gian thoải mái hơn vào ban ngày.',
-    shortDescEn: 'One of only 7 VIP 2 cabins for four guests. The upper berths can be raised to create a more comfortable daytime space.',
+    shortDescVi: 'Chỉ có 1 cabin VIP 2 trên tàu SE19, gồm 4 vé cho tối đa 4 khách. Hai giường tầng trên có thể gập lên.',
+    shortDescEn: 'Only one VIP 2 cabin is available on SE19. It includes 4 tickets for up to four guests, with two fold-up upper berths.',
     images: ['/premium_room/room1.JPG', '/premium_room/room2.JPG'],
     maxGuests: 4,
-    amenities: ['Upper berths can be raised', 'Only 7 VIP 2 cabins', 'Private when buying 4 tickets', 'Air conditioning'],
-    amenitiesVi: ['Giường trên có thể nâng lên', 'Chỉ có 7 cabin VIP 2', 'Riêng tư khi mua đủ 4 vé', 'Điều hòa không khí'],
+    amenities: ['Two fold-up upper berths', 'Only 1 VIP 2 cabin on SE19', 'Full-cabin purchase only', 'Air conditioning'],
+    amenitiesVi: ['Hai giường trên có thể gập lên', 'Chỉ 1 cabin VIP 2 trên SE19', 'Chỉ bán trọn cabin', 'Điều hòa không khí'],
   },
 ]
 
@@ -36,8 +37,9 @@ function formatVnd(amount: number) {
   return new Intl.NumberFormat('vi-VN').format(amount) + '₫'
 }
 
-export default function CabinShowcase() {
+export default function CabinShowcase({ liveFares = null }: { liveFares?: LiveFares | null }) {
   const isVi = useLocale() === 'vi'
+  const ticketFrom = (id: 'standard' | 'premium') => liveFares?.lowest[id] ?? getLowestRouteTicketFare(id)
 
   return (
     <section id="cabins" className="overflow-hidden bg-white py-20 md:py-28">
@@ -98,7 +100,7 @@ export default function CabinShowcase() {
                     <BedDouble className="h-5 w-5 text-violet-700" />
                   </span>
                   <span className="rounded-full bg-gold-500/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-gold-600">
-                    {cabin.id === 'premium' ? 'VIP 2' : (isVi ? '4 giường' : '4-berth')}
+                    {cabin.id === 'premium' ? 'VIP 2 · SE19' : 'FULL CABIN'}
                   </span>
                 </div>
 
@@ -127,15 +129,29 @@ export default function CabinShowcase() {
                 </div>
 
                 <div className="mt-8 border-t border-gray-100 pt-7">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
-                    {isVi ? 'Giá từ / 1 vé' : 'Fare from / ticket'}
-                  </p>
-                  <p className="mt-1 font-serif text-3xl font-bold text-violet-950">
-                    {formatVnd(getLowestRouteFare(cabin.id))}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-400">
-                    {isVi ? 'giá cuối cùng phụ thuộc vào tuyến đã chọn' : 'final fare depends on the selected route'}
-                  </p>
+                  <div className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4 sm:p-5">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gray-400">
+                          {isVi ? 'Giá từ / 1 vé' : 'Fare from / 1 ticket'}
+                        </p>
+                        <p className="mt-1 text-xl font-bold text-gray-700 sm:text-2xl">
+                          {formatVnd(ticketFrom(cabin.id))}
+                        </p>
+                      </div>
+                      <div className="sm:text-right">
+                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-600">
+                          {isVi ? 'Giá 1 cabin · 4 vé' : '1 cabin fare · 4 tickets'}
+                        </p>
+                        <p className="mt-1 font-serif text-3xl font-bold text-violet-950 sm:text-4xl">
+                          {formatVnd(ticketFrom(cabin.id) * 4)}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-3 border-t border-violet-100 pt-3 text-xs font-medium text-violet-700">
+                      {isVi ? 'Bắt buộc mua trọn cabin: giá 1 vé × 4. Giá thực tế phụ thuộc tuyến.' : 'Full-cabin purchase required: 1 ticket × 4. The actual fare depends on route.'}
+                    </p>
+                  </div>
 
                   <div className="mt-6 flex flex-wrap gap-3">
                     <Link

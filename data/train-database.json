@@ -10,7 +10,7 @@
   },
   "cabinPriceFactors": {
     "standard": 1,
-    "premium": 1.25
+    "premium": 2
   },
   "stations": [
     {

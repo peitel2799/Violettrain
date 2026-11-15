@@ -1,23 +1,23 @@
 ---
 name: violette-landing-booking
-description: Build, review, or repair the Violette Train Next.js landing page and passenger booking-request workflow, including bilingual UX, server-side inquiry persistence, and operator alerts. Use for public-site conversion, booking forms, email notifications, SEO, accessibility, or responsive UI in this repository; do not use for payment gateways, bank reconciliation, accounting, or unrelated admin expansion.
+description: Build, review, or repair the Violette Train Next.js public experience, including bilingual landing pages, train imagery, pricing and schedule presentation, contact conversion, booking forms, email notifications, SEO, accessibility, and responsive UI. Use for the customer-facing journey; route Supabase inventory/order work to violette-ticket-commerce and payment-provider work to violette-payment-gateways.
 ---
 
 # Violette Train Landing and Booking
 
-Keep work aligned with the current MVP: a polished landing page is the primary product, and a passenger can submit a booking inquiry that alerts the Violette operator. Payment is not part of this phase.
+Keep the public experience polished while the project evolves from booking inquiries into online ticket commerce. Preserve the current working path during migration, but do not mistake JSON persistence or a request receipt for a confirmed paid ticket.
 
 ## Product contract
 
 Apply these priorities when repository documents or legacy code disagree:
 
 1. Make the landing page explain the offer quickly and move visitors toward one clear booking CTA.
-2. Let a passenger choose a trip and cabin, enter contact/passenger details, and submit a booking **request**.
-3. Persist the request with a server-generated reference and `pending` status, then alert the operator with enough information to follow up.
-4. Optionally acknowledge receipt to the passenger, but never describe an inquiry as a confirmed reservation or issued ticket.
-5. Do not add checkout, card collection, QR payment, VNPay, MoMo, payment status, bank matching, debt tracking, or revenue logic unless the user explicitly starts a later payment phase.
+2. Show the one-ticket fare and the required four-ticket cabin total together wherever price drives a decision.
+3. Let a passenger choose a dated trip and available cabin, enter contact/passenger details, and create a server-authoritative order or inquiry appropriate to the implemented phase.
+4. Clearly distinguish inquiry received, inventory held, awaiting payment, paid/confirmed, and ticket issued. Never describe an inquiry or browser redirect as confirmed payment.
+5. Use `violette-ticket-commerce` for Supabase schedules, availability, holds, orders, and oversell protection. Use `violette-payment-gateways` only when online payment is explicitly in scope.
 
-Treat `SPEC.md` as brand and content context, not as authority for its stale payment, five-step booking, or broad admin roadmap. Do not delete or refactor the existing admin/accounting area merely because it is outside the public MVP.
+Treat `SPEC.md` as brand and content context, not as authority for stale cabin names, pricing rules, payment implementation details, or admin architecture. The current product rules and dedicated commerce/payment skills take precedence.
 
 ## Repository map
 
@@ -26,7 +26,7 @@ Treat `SPEC.md` as brand and content context, not as authority for its stale pay
 - Main conversion hero: `src/components/home/VietnamMapHero.tsx`.
 - Booking flow: `src/app/[locale]/booking/page.tsx` and `src/components/booking/`.
 - Public server endpoints: `src/app/api/schedules/`, `src/app/api/bookings/`, and `src/app/api/booking/email/`.
-- Booking/email server code: `src/lib/admin-store.ts` and `src/lib/email.ts`.
+- Booking/email server code during the JSON-to-Supabase migration: `src/lib/admin-store.ts` and `src/lib/email.ts`.
 - Canonical train reference data: `data/train-database.json` with client-safe accessors in `src/lib/train-database.ts`. It contains the versioned DSVN timetable snapshot, station distances, bookable routes, and route base fares; do not recreate schedule arrays elsewhere.
 - Shared public domain data: `src/lib/constants.ts`, `src/lib/types.ts`, `src/lib/cabin-products.ts`, and `src/lib/product-pricing.ts`.
 - Locale configuration and navigation: `src/i18n/routing.ts`, `src/i18n/request.ts`, `src/i18n/messages/`, and `src/middleware.ts`.
@@ -38,7 +38,7 @@ Inspect the live code before relying on this map; keep this skill current when a
 
 For any public-site change, trace the smallest relevant vertical slice:
 
-`landing CTA -> locale-aware booking route -> trip/cabin choice -> passenger form -> server intake -> durable pending request -> operator alert -> receipt screen`
+`landing CTA -> locale-aware booking route -> dated trip/cabin choice -> passenger form -> server-owned order/inquiry -> optional payment handoff -> truthful receipt/status screen`
 
 Prefer improvements that reduce friction or increase trust along this path. Keep secondary pages and internal tooling behind landing clarity, booking correctness, reliable alerts, mobile usability, and SEO.
 
@@ -58,6 +58,8 @@ Before editing, inspect `git status` and preserve the user's unrelated work. The
 - Use Next.js metadata APIs in Server Components for localized titles, descriptions, canonicals, alternates, Open Graph data, `robots.ts`, and `sitemap.ts`.
 
 ## Booking intake and alert invariants
+
+These rules govern the current inquiry path. When dated inventory and payment are implemented, preserve them where applicable and load `violette-ticket-commerce` for the order/hold state machine.
 
 Prefer one server-owned booking-intake operation. It should:
 
@@ -97,7 +99,7 @@ At the time this skill was created, the public booking path had these risks. Ver
 - The browser performed separate booking and email requests and did not consistently reject non-2xx responses.
 - Email delivery targeted the passenger but did not implement the required operator alert.
 - JSON file persistence was suitable for local prototyping, not a durable Vercel production ledger.
-- Legacy types, seed data, copy, and `SPEC.md` still contained payment concepts even though payment routes and UI were being removed.
+- Legacy types, seed data, copy, and `SPEC.md` may conflict with the newer cabin, Supabase, and payment roadmap; verify against current product rules before reusing them.
 
 ## Verification
 

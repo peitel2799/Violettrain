@@ -36,17 +36,17 @@ const ARTICLE_CONTENT: Record<string, { vi: string[]; en: string[] }> = {
   'discover-sapa-by-train': {
     vi: [
       'Đặt chân lên chuyến tàu đêm từ Hà Nội đến Sapa, bạn không chỉ đơn thuần di chuyển — bạn đang bắt đầu một hành trình khám phá văn hóa và thiên nhiên Tây Bắc Việt Nam ngay từ khi rời ga.',
-      'Khoảng 8 tiếng rưỡi trên tàu Violette Orient SE19, từ 22:00 đến 06:30, là khoảng thời gian đủ để bạn nghỉ ngơi trong cabin 4 giường cố định hoặc cabin VIP 2.',
+      'Khoảng 8 tiếng rưỡi trên tàu Violette Orient SE19, từ 22:00 đến 06:30, là khoảng thời gian đủ để bạn nghỉ ngơi trong Full Cabin 4 giường hoặc cabin VIP 2.',
       'Điều đầu tiên khiến chuyến tàu Hà Nội — Sapa trở nên đặc biệt chính là cảnh quan thay đổi không ngừng bên ngoài cửa kính. Từ ánh đèn thành phố về đêm, qua những cánh đồng lúa xanh mướt, rồi dần dần là đồi núi.',
       'Khi đến Lào Cai, không khí se lạnh của vùng núi Tây Bắc chào đón bạn ngay tại ga.',
-      'Violette Train có hai sản phẩm cabin 4 khách: cabin 4 giường cố định và VIP 2 với giường tầng trên có thể nâng lên. Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.',
+      'Violette Train chỉ bán trọn cabin gồm 4 vé. Full Cabin có giường trên cố định; riêng tàu SE19 có 1 cabin VIP 2 với hai giường trên gập được.',
     ],
     en: [
       'Stepping aboard the night train from Hanoi to Sapa, you are not merely traveling — you are beginning a journey of cultural and natural discovery the moment you leave the station.',
-      'The approximately 8 hours and 30 minutes aboard the Violette Orient SE19, departing at 22:00 and arriving at 06:30, gives you time to rest in either a fixed four-berth cabin or a VIP 2 cabin.',
+      'The approximately 8 hours and 30 minutes aboard the Violette Orient SE19, departing at 22:00 and arriving at 06:30, gives you time to rest in either a Full Cabin with four fixed berths or a VIP 2 cabin.',
       'What makes the Hanoi — Sapa train journey truly special is the ever-changing landscape outside the window. From city lights at night through lush green rice fields and rolling mountain ranges.',
       'When arriving in Lao Cai, the cool mountain air of the Northwest greets you right at the station.',
-      'Violette Train offers two four-person cabin products: the fixed four-berth cabin and VIP 2 with raisable upper berths. Buy all 4 tickets to use the cabin privately.',
+      'Violette Train sells cabins only as complete 4-ticket units. Full Cabin has fixed upper berths; SE19 alone has one VIP 2 cabin with two fold-up upper berths.',
     ],
   },
   'sapa-travel-guide-2026': {
@@ -99,13 +99,13 @@ const ARTICLE_CONTENT: Record<string, { vi: string[]; en: string[] }> = {
     vi: [
       'Khi nhắc đến tuần trăng mật, người ta thường nghĩ đến những bãi biển nhiệt đới hay thành phố lãng mạn châu Âu.',
       'Một hành trình tàu lửa đêm HN-Sapa trên Violette Train mang đến trải nghiệm hoàn toàn khác biệt.',
-      'Cabin VIP 2 của Violette Train dành cho 4 khách; giường tầng trên có thể nâng lên để tạo không gian thoải mái hơn vào ban ngày. Mua đủ 4 vé để sử dụng riêng cabin.',
+      'Tàu SE19 có duy nhất 1 cabin VIP 2 gồm 4 vé; hai giường tầng trên có thể gập lên. Cabin chỉ được bán trọn, không bán lẻ.',
       'Sáng hôm sau, khi tàu đến Lào Cai, cặp đôi được đón bằng khung cảnh núi non hùng vĩ.',
     ],
     en: [
       'When it comes to honeymoons, people typically think of tropical beaches or romantic European cities.',
       'A Hanoi — Sapa overnight train journey on Violette Train offers a completely different experience.',
-      'The four-person Violette VIP 2 cabin has upper berths that can be raised for a more comfortable daytime space. Buy all 4 tickets to reserve it privately.',
+      'SE19 has exactly one VIP 2 cabin containing 4 tickets, with two fold-up upper berths. It is sold only as a full cabin, not as individual tickets.',
       'The next morning, when the train arrives in Lao Cai, the couple is greeted by majestic mountain scenery.',
     ],
   },
@@ -242,7 +242,7 @@ export default async function BlogArticlePage({
               {relatedPosts.map((related) => (
                 <Link
                   key={related.id}
-                  href={`/blog/${related.slug}`}
+                  href={`/${locale}/blog/${related.slug}`}
                   className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-all"
                 >
                   <div className="relative h-36">

@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
 
     // Strip auditLog from list (too large)
     const safeItems = pageItems.map((e) => {
-      const { auditLog, ...rest } = e
+      const { auditLog: _auditLog, ...rest } = e
       return rest
     })
 
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
     }
     entries.unshift(entry)
     await writeLedger(entries)
-    const { auditLog, ...safe } = entry
+    const { auditLog: _auditLog, ...safe } = entry
     return NextResponse.json({ item: safe }, { status: 201 })
   } catch (error) {
     console.error('[API /admin/data POST]', error)

@@ -72,6 +72,9 @@ export interface DsvnSeatAvailability {
   seatClass: string
   seatClassVi: string
   seatClassEn: string
+  /** Price of one passenger ticket before the required four-ticket cabin purchase. */
+  ticketPrice: number
+  /** Required full-cabin price, equal to four tickets. */
   price: number
   /** Null when DSVN publishes a timetable but no live inventory for this request. */
   available: number | null
@@ -81,6 +84,8 @@ export interface DsvnSeatAvailability {
 export type SeatAvailability = DsvnSeatAvailability
 
 export interface DsvnSchedule {
+  /** Supabase dated-departure identity used for atomic inventory holds. */
+  departureId?: number
   scheduleId?: string
   trainNumber: string
   fromStation: string
@@ -133,7 +138,7 @@ export interface BookingState {
   bookingRef?: string
 }
 
-export type BookingStep = 'select' | 'schedule' | 'passenger' | 'confirmation'
+export type BookingStep = 'select' | 'schedule' | 'returnSchedule' | 'passenger' | 'checkout' | 'confirmation'
 
 export interface TicketRefundPolicy {
   timeframeVi: string

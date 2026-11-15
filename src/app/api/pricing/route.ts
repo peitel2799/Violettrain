@@ -12,8 +12,10 @@ export async function GET() {
       seatClass: entry.cabinClassId,
       seatClassVi: product.nameVi,
       seatClassEn: product.nameEn,
-      basePrice: entry.ticketPrice,
-      peakPrice: entry.ticketPrice,
+      basePrice: entry.ticketPrice * product.privateCabinTickets,
+      peakPrice: entry.ticketPrice * product.privateCabinTickets,
+      ticketPrice: entry.ticketPrice,
+      ticketsIncluded: product.privateCabinTickets,
     }
   })
 

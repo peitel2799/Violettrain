@@ -2,13 +2,12 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import {
-  Plus, Trash2, Pencil, Download, Search, RefreshCw, ChevronUp, ChevronDown,
-  X, MoreHorizontal, Columns3, AlertCircle,
+  Plus, Trash2, Download, Search, RefreshCw, ChevronUp, ChevronDown,
+  X, Columns3, AlertCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ToastContainer, toast, useToast } from '@/components/admin/ui/Toast'
 import { ConfirmDialog } from '@/components/admin/ui/Modal'
-import { Badge } from '@/components/admin/ui/Badge'
 import type { SheetColumn, SheetRow } from '@/lib/sheets-api'
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -290,14 +289,12 @@ export function SpreadsheetSheet({
   const [rows, setRows] = useState<SheetRow[]>(initialRows)
   const [columns, setColumns] = useState<SheetColumn[]>(initialColumns)
   const [loading, setLoading] = useState(false)
-  const [search, setSearch] = useState('')
   const [sortField, setSortField] = useState('')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const [deleteTarget, setDeleteTarget] = useState<SheetRow | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [showAddColumn, setShowAddColumn] = useState(false)
   const [showAddRow, setShowAddRow] = useState(false)
-  const [colMenuSheet, setColMenuSheet] = useState<string | null>(null)
   const [localSearch, setLocalSearch] = useState('')
 
   const refresh = useCallback(async () => {

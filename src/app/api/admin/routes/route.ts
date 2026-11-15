@@ -9,34 +9,33 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
 import { validateAdminRequest, adminUnauthorized } from '@/lib/admin-auth'
 import { ROUTES } from '@/lib/constants'
 
-const routesFile = () => {
-  const path = require('path')
-  const fs = require('fs')
-  return path.join(process.cwd(), 'data', 'routes.json')
-}
+const DATA_DIRECTORY = path.join(process.cwd(), 'data')
+const ROUTES_FILE = path.join(DATA_DIRECTORY, 'routes.json')
 
-function loadCustomRoutes() {
+type CustomRoutes = Record<string, Record<string, unknown>>
+
+function loadCustomRoutes(): CustomRoutes {
   try {
-    const fs = require('fs')
-    const file = routesFile()
-    if (fs.existsSync(file)) {
-      return JSON.parse(fs.readFileSync(file, 'utf-8'))
+    if (existsSync(ROUTES_FILE)) {
+      const parsed = JSON.parse(readFileSync(ROUTES_FILE, 'utf-8')) as unknown
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed as CustomRoutes
+      }
     }
   } catch {}
   return {}
 }
 
-function saveCustomRoutes(data: Record<string, unknown>) {
-  const fs = require('fs')
-  const path = require('path')
-  const dir = path.join(process.cwd(), 'data')
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true })
+function saveCustomRoutes(data: CustomRoutes) {
+  if (!existsSync(DATA_DIRECTORY)) {
+    mkdirSync(DATA_DIRECTORY, { recursive: true })
   }
-  fs.writeFileSync(routesFile(), JSON.stringify(data, null, 2), 'utf-8')
+  writeFileSync(ROUTES_FILE, JSON.stringify(data, null, 2), 'utf-8')
 }
 
 export async function GET(request: NextRequest) {

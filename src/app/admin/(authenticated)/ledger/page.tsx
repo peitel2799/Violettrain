@@ -1,19 +1,15 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { History, Database, BarChart3, Download, Upload } from 'lucide-react'
+import { History, Database, Download, Upload } from 'lucide-react'
 import { DataSheet, LedgerEntry, SHEETS } from '@/components/admin/ui/DataSheet'
 import { Modal } from '@/components/admin/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { toast, useToast } from '@/components/admin/ui/Toast'
+import { toast } from '@/components/admin/ui/Toast'
 import { listData, createEntry, updateEntry, deleteEntry, listAuditLogs, getEntryAuditLog, exportCSV, downloadBackup, AuditLogEntry } from '@/lib/admin-data-api'
 import { cn } from '@/lib/utils'
 
 // ─── Helpers ───────────────────────────────────────────────────────────
-
-function fmt(n: number): string {
-  return new Intl.NumberFormat('vi-VN').format(Math.round(n))
-}
 
 function fmtDate(d: string): string {
   if (!d) return '—'
@@ -296,7 +292,6 @@ function BackupPanel({ onBack }: { onBack: () => void }) {
 // ─── Main Page ────────────────────────────────────────────────────────
 
 export default function AdminLedgerPage() {
-  const { toasts, removeToast } = useToast()
   const [data, setData] = useState<LedgerEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -318,8 +313,7 @@ export default function AdminLedgerPage() {
   const [editEntry, setEditEntry] = useState<Partial<LedgerEntry> | null>(null)
   const [historyEntry, setHistoryEntry] = useState<LedgerEntry | null>(null)
   const [activeTab, setActiveTab] = useState<'data' | 'history' | 'backup'>('data')
-  const [saving, setSaving] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [, setSaving] = useState(false)
 
   const load = useCallback(async (p = 1, sheet = activeSheet, q = search) => {
     setLoading(true)

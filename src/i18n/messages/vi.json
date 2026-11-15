@@ -17,7 +17,7 @@
       "learnMore": "Tìm hiểu thêm",
       "viewAll": "Xem tất cả",
       "exploreNow": "Khám phá ngay",
-      "selectCabin": "Chọn ghế",
+      "selectCabin": "Chọn cabin",
       "continueBtn": "Tiếp tục",
       "searchTickets": "Tìm vé",
       "confirm": "Xác nhận"
@@ -44,8 +44,8 @@
   },
   "dsvn": {
     "trainSchedule": "Lịch tàu",
-    "availableSeats": "Chỗ trống",
-    "selectSeat": "Chọn ghế",
+    "availableSeats": "Cabin đang nhận đặt",
+    "selectSeat": "Chọn cabin",
     "searching": "Đang tìm kiếm...",
     "noTrains": "Không có chuyến tàu",
     "noTrainsDesc": "Không tìm thấy chuyến tàu phù hợp. Vui lòng thử ngày hoặc tuyến đường khác.",
@@ -57,7 +57,7 @@
     "from": "Từ",
     "ticketPrice": "Giá vé",
     "seatClass": {
-      "standard": "Cabin 4 giường cố định",
+      "standard": "Full Cabin (4 giường)",
       "premium": "VIP 2"
     },
     "categories": {
@@ -103,11 +103,11 @@
       "apply": "Áp dụng",
       "noSchedules": "Không có chuyến tàu cho tuyến này vào ngày đã chọn.",
       "loadError": "Không thể tải lịch trình. Vui lòng thử lại.",
-      "selectCabin": "Chọn hạng ghế",
+      "selectCabin": "Chọn cabin",
       "foundTrains": "Tìm thấy {count} chuyến tàu",
       "bestPrice": "Giá tốt nhất",
       "soldOut": "Hết vé",
-      "selectCabinClass": "Chọn hạng ghế",
+      "selectCabinClass": "Chọn loại cabin",
       "available": "chỗ trống",
       "perGuest": "/vé"
     },
@@ -122,10 +122,10 @@
     },
     "cabins": {
       "title": "Không gian nghỉ ngơi đẳng cấp",
-      "subtitle": "Cabin 4 giường cố định và 7 cabin VIP 2 có giường trên nâng được — giá vé được tính theo tuyến.",
+      "subtitle": "Full Cabin 4 giường trên các chuyến; riêng SE19 có 1 cabin VIP 2 với hai giường trên gập được.",
       "viewDetails": "Khám phá cabin",
       "startingFrom": "Từ",
-      "perPerson": "/khách",
+      "perPerson": "/trọn cabin",
       "guestsPerRoom": "khách/phòng",
       "amenities": "Tiện nghi",
       "ctaTitle": "Sẵn sàng cho hành trình?",
@@ -188,27 +188,27 @@
   },
   "cabins": {
     "title": "Hạng phòng",
-    "subtitle": "Hai lựa chọn cabin 4 khách với giá vé được tính theo tuyến đã chọn.",
+    "subtitle": "Cabin chỉ bán trọn 4 vé; VIP 2 chỉ có 1 cabin trên tàu SE19.",
     "standard": {
-      "name": "Cabin 4 giường cố định",
-      "tagline": "4 giường cố định · Riêng tư khi mua đủ 4 vé",
-      "desc": "Cabin dành cho 4 khách với giường tầng trên cố định, không thể nâng lên. Giá 2.000.000 VND cho mỗi vé; mua đủ 4 vé để sử dụng riêng toàn bộ cabin.",
+      "name": "Full Cabin (4 giường)",
+      "tagline": "4 giường cố định · Bắt buộc mua trọn 4 vé",
+      "desc": "Cabin riêng cho tối đa 4 khách với giường tầng trên cố định, không thể gập lên. Website hiển thị cả giá 1 vé và giá trọn cabin = giá vé × 4; cabin không bán lẻ.",
       "capacity": "Tối đa 4 khách/phòng",
       "amenities": ["Điều hòa không khí", "Ổ cắm điện", "Đèn đọc sách", "Nhà vệ sinh chung", "Hành lý ký gửi", "Bộ ga giường"],
-      "config4": "Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.",
-      "config2": "Mỗi vé dành cho một hành khách trong cabin 4 khách."
+      "config4": "Bắt buộc mua trọn cabin gồm 4 vé.",
+      "config2": "Giá trọn cabin = đơn giá 1 vé × 4."
     },
     "premium": {
       "name": "VIP 2",
-      "tagline": "Giường trên có thể nâng lên · Chỉ có 7 cabin",
-      "desc": "VIP 2 là cabin dành cho 4 khách. Giường tầng trên có thể nâng lên để tạo không gian thoải mái hơn vào ban ngày. Chỉ có 7 cabin, giá 2.500.000 VND cho mỗi vé.",
+      "tagline": "Hai giường trên gập được · Chỉ 1 cabin trên SE19",
+      "desc": "VIP 2 chỉ có 1 cabin trên tàu SE19, gồm 4 vé cho tối đa 4 khách. Hai giường tầng trên có thể gập lên. Website hiển thị cả giá 1 vé và giá trọn cabin = giá vé × 4; cabin không bán lẻ.",
       "capacity": "Tối đa 4 khách/phòng",
-      "amenities": ["Giường tầng trên có thể nâng lên", "Không gian ban ngày thoải mái hơn", "Chỉ có 7 cabin VIP 2", "Điều hòa không khí", "Bộ ga giường", "Hành lý ký gửi"],
-      "config4": "Mua đủ 4 vé để sử dụng riêng toàn bộ cabin.",
-      "config2": "Mỗi vé dành cho một hành khách trong cabin 4 khách."
+      "amenities": ["Hai giường tầng trên có thể gập lên", "Không gian ban ngày thoải mái hơn", "Chỉ 1 cabin VIP 2 trên SE19", "Điều hòa không khí", "Bộ ga giường", "Hành lý ký gửi"],
+      "config4": "Bắt buộc mua trọn cabin gồm 4 vé.",
+      "config2": "Giá trọn cabin = đơn giá 1 vé × 4."
     },
     "guestsPerRoom": "khách/phòng",
-    "perPerson": "/khách",
+    "perPerson": "/trọn cabin",
     "amenities": "Tiện nghi",
     "ctaTitle": "Sẵn sàng cho hành trình?",
     "ctaSubtitle": "Đặt vé ngay hôm nay và trải nghiệm du lịch đường sắt đẳng cấp cùng Violette Train.",
@@ -219,7 +219,7 @@
     "title": "Đặt vé",
     "steps": {
       "selectRoute": "Chọn hành trình",
-      "selectCabin": "Chọn hạng ghế",
+      "selectCabin": "Chọn chuyến",
       "passengerInfo": "Thông tin khách",
       "confirmation": "Hoàn tất"
     },
@@ -238,9 +238,9 @@
     "foundTrains": "Tìm thấy {count} chuyến tàu",
     "bestPrice": "Giá tốt nhất",
     "soldOut": "Hết vé",
-    "selectCabinClass": "Chọn hạng ghế",
+    "selectCabinClass": "Chọn loại cabin",
     "available": "chỗ trống",
-    "perGuest": "/vé",
+    "perGuest": "/trọn cabin",
     "form": {
       "from": "Điểm đi",
       "to": "Điểm đến",

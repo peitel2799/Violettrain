@@ -17,6 +17,8 @@ export type CalendarDeparture = {
   serviceDate: string
   status: DepartureStatus
   source: 'manual' | 'dsvn'
+  /** Placeholder for a date DSVN has not opened yet (copied from the recent daily pattern). */
+  projected?: boolean
   adminStatusOverride: boolean
   departureAt: string
   arrivalAt: string
@@ -28,7 +30,36 @@ export type CalendarDeparture = {
   arrivalDayOffset: number
   hasOrders: boolean
   products: CalendarProduct[]
+  /** DSVN 4-berth compartment fares for the same date/train/segment ("giá cơ sở"). */
+  dsvnFare?: DsvnFareSummary | null
 }
+
+export type DsvnFareSummary = {
+  lowerMin: number | null
+  lowerMax: number | null
+  upperMin: number | null
+  upperMax: number | null
+  fetchedAt: string | null
+}
+
+export type DsvnFareRow = { seatCode: string; seatName: string; seatGroup: string; fare: number; fetchedAt: string }
+
+/** Cheapest way to buy a whole 4-berth compartment from DSVN: 2 lower + 2 upper berths. */
+export function dsvnCabinBase(fare: DsvnFareSummary | null | undefined) {
+  if (!fare?.lowerMin || !fare.upperMin) return null
+  const cabin = fare.lowerMin * 2 + fare.upperMin * 2
+  return { cabin, perTicket: Math.round(cabin / TICKETS_PER_CABIN) }
+}
+
+/** Violette ticket price compared with the DSVN base per ticket. */
+export function marginAgainstDsvn(ticketPrice: number | null | undefined, fare: DsvnFareSummary | null | undefined) {
+  const base = dsvnCabinBase(fare)
+  if (!base || !ticketPrice) return null
+  const perTicket = ticketPrice - base.perTicket
+  return { perTicket, perCabin: perTicket * TICKETS_PER_CABIN, percent: Math.round((perTicket / base.perTicket) * 100) }
+}
+
+export const DSVN_FARE_PAGE = 'https://giotaugiave.dsvn.vn/giave/thongnhat'
 
 export type CalendarRoute = {
   id: number

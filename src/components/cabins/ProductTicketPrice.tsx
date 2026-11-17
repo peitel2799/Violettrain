@@ -33,6 +33,9 @@ export default function ProductTicketPrice({
           {formatCurrency(ticketFrom * 4)}
         </strong>
       </div>
+      <p className="text-xs text-gray-400 sm:col-span-2 sm:text-right">
+        {isVi ? 'Giá chưa gồm VAT 10%, được cộng khi thanh toán.' : 'Prices exclude 10% VAT, added at checkout.'}
+      </p>
     </div>
   )
 }

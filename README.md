@@ -266,22 +266,32 @@ NEXT_PUBLIC_VM_URL=http://localhost:5173
 
 `ADMIN_SECRET_TOKEN` chỉ phục vụ một số API admin cũ. Không có mật khẩu mặc định; nếu không dùng các API cũ thì giữ biến này rỗng.
 
-## Đồng bộ lịch tàu DSVN lúc 04:00
+## Đồng bộ lịch tàu & giá vé DSVN
 
-`vercel.json` đã cấu hình gọi `GET /api/cron/dsvn-sync` vào `21:00 UTC`, tương ứng `04:00` tại Việt Nam. Trên Vercel, thêm các biến môi trường production:
+Nguồn: trang công khai `giotaugiave.dsvn.vn`. Trình duyệt chạy ngầm (Chromium) dùng form "Giờ tàu" và "Giá vé" giống một người tra cứu, mỗi lần một lượt, có nghỉ ngắn giữa các lượt. Không gọi API đặt vé, không cần API key, không có và không vượt CAPTCHA. Ba tuyến được đọc: Tàu khách Bắc Nam; Hà Nội – Vinh – Huế – Đà Nẵng (SE19/20, SE17/18, HĐ…); Hà Nội – Lào Cai (SP…).
+
+- **Lịch chạy theo từng ngày:** những tàu DSVN thực sự chạy ngày đó (kể cả tàu tăng cường dịp Tết), giờ đi và giờ đến tại từng ga.
+- **Giá vé DSVN (giá cơ sở):** mọi loại chỗ của từng tàu và chặng, lưu ở bảng `dsvn_fares`. Lịch giá admin hiện giá khoang 4 tầng 1/tầng 2 và mức lãi/lỗ so với giá bán của Violette.
+- **Ngày DSVN chưa mở bán:** điền lịch dự kiến (các tàu chạy đều đặn 7 ngày cuối có dữ liệu), luôn ở trạng thái nháp, gắn nhãn "Lịch dự kiến". Khi DSVN mở bán, lần đồng bộ sau thay bằng dữ liệu thật.
+
+**Hằng ngày (Vercel cron 04:00):** `vercel.json` gọi `GET /api/cron/dsvn-sync` lúc `21:00 UTC`. Mỗi lượt cập nhật lịch cho `DSVN_SYNC_DAYS` ngày tới, rồi dùng thời gian còn lại (khoảng 4 phút) để cập nhật giá DSVN cho những ngày lâu chưa cập nhật nhất. Ngày gần được ưu tiên: dưới 7 ngày cập nhật mỗi ngày, dưới 30 ngày ba ngày một lần, xa hơn mỗi tuần. Biến môi trường trên Vercel:
 
 ```dotenv
-DSVN_TIMETABLE_URL=https://giotaugiave.dsvn.vn/
 DSVN_CHROME_EXECUTABLE_PATH=
-DSVN_SYNC_DAYS=7
+DSVN_SYNC_DAYS=30
 CRON_SECRET=MOT_CHUOI_NGAU_NHIEN_DAI
 ```
 
-Sau đó chạy `npx supabase db push` để tạo bảng `schedule_sync_runs` và hàm nhập snapshot. Admin/operations có thể xem trạng thái hoặc chạy tay tại `/admin/operations`.
+**Chạy dài hạn (không giới hạn thời gian):** khoảng 3 tháng dữ liệu mất 1–2 giờ.
 
-Crawler dùng Chromium để mở trang bảng giờ tàu công khai `giotaugiave.dsvn.vn` và đọc trực tiếp hai bảng Bắc–Nam/Nam–Bắc. Nó không gọi API đặt vé, không cần API key và không vượt CAPTCHA. `DSVN_CHROME_EXECUTABLE_PATH` chỉ cần khi chạy local mà Chrome không nằm ở vị trí mặc định; Vercel dùng Chromium serverless đã đóng gói trong dependencies.
+```bash
+npm run dsvn:sync -- --until 2027-06-30           # database trong .env.local
+npm run dsvn:sync -- --until 2027-06-30 --cloud   # project Supabase cloud đã link (cần `npx supabase login`)
+```
 
-Đồng bộ chỉ thay đổi số hiệu tàu và giờ chạy. Giá bán Violette, sức chứa cabin, quy tắc mua trọn 4 vé và VIP2 chỉ có trên SE19 vẫn do hệ thống Violette quản lý. Chuyến mới sẽ kế thừa giá/capacity của cùng tàu ở ngày gần nhất trước đó; nếu chưa có cấu hình giá thì chuyến ở trạng thái nháp để admin kiểm tra. Ngày nào nhân viên đã tự mở bán, tạm ngưng hoặc hủy trên trang Lịch chạy & giá vé thì đồng bộ giữ nguyên quyết định đó.
+Tùy chọn khác: `--from YYYY-MM-DD`, `--skip-fares` (chỉ lịch), `--reproject` (tạo lại lịch dự kiến). Nên chạy lệnh `--cloud` khoảng mỗi tuần một lần, để giá của các ngày xa (trên 30 ngày) luôn mới.
+
+Đồng bộ chỉ thay đổi tàu, giờ chạy và giá tham khảo của DSVN. Giá bán Violette, sức chứa cabin, quy tắc mua trọn 4 vé và VIP2 chỉ có trên SE19 vẫn do hệ thống Violette quản lý. Chuyến mới chỉ kế thừa giá và sức chứa của **cùng tàu** ở ngày gần nhất. Nếu tàu chưa từng được đặt giá (ví dụ tàu địa phương, tàu tăng cường) thì chuyến ở trạng thái nháp để admin quyết định. Ngày nào nhân viên đã tự mở bán hoặc tạm ngưng thì đồng bộ giữ nguyên quyết định đó. Trạng thái từng ngày nằm ở bảng `dsvn_sync_dates`, nhật ký mỗi lượt ở `schedule_sync_runs`.
 
 ## Kiểm tra trước khi commit
 

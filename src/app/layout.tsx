@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Playfair_Display, Be_Vietnam_Pro, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
+import { siteUrl } from '@/lib/site-url'
 
 const playfair = Playfair_Display({
   subsets: ['latin', 'vietnamese'],
@@ -24,13 +25,13 @@ const cormorant = Cormorant_Garamond({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://violettetrain.com'),
+  metadataBase: new URL(siteUrl()),
   title: {
     template: '%s | Violette Train',
     default: 'Violette Train — Luxury Train Travel in Vietnam',
   },
   description:
-    'Violette Train offers luxury train travel experiences in Vietnam. Book your Hanoi to Sapa, Ninh Binh, Hue, Da Nang journey with premium cabins, VIP lounges, and exceptional service.',
+    'Private sleeper cabins on Vietnam Railways trains from Hanoi to Lao Cai (Sapa), Ninh Binh, Dong Hoi, Hue, Da Nang, Nha Trang and Saigon. Book a whole 4-berth cabin or the VIP 2 cabin on SE19.',
   keywords: [
     'Violette Train',
     'violettetrain',
@@ -87,13 +88,6 @@ export const metadata: Metadata = {
     description: 'Violette Train offers luxury train travel experiences in Vietnam.',
     images: ['/premium_room/outside2.JPG'],
     creator: '@violettetrain',
-  },
-  alternates: {
-    canonical: '/',
-    languages: {
-      'vi': '/',
-      'en': '/en',
-    },
   },
 }
 

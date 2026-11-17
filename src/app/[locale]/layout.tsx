@@ -24,7 +24,7 @@ export async function generateMetadata({
         : 'Violette Train — Luxury Train Travel in Vietnam',
     },
     description: isVi
-      ? 'Violette Train mang đến trải nghiệm du lịch tàu đẳng cấp tại Việt Nam. Đặt vé tàu Hà Nội - Sapa, Ninh Bình, Huế, Đà Nẵng với hạng phòng VIP, phòng chờ sang trọng và dịch vụ xuất sắc.'
+      ? 'Cabin riêng trên tàu Đường sắt Việt Nam từ Hà Nội đi Lào Cai (Sapa), Ninh Bình, Đồng Hới, Huế, Đà Nẵng, Nha Trang và Sài Gòn. Đặt trọn cabin 4 giường hoặc cabin VIP 2 trên tàu SE19.'
       : t('tagline'),
     keywords: isVi
       ? [
@@ -91,13 +91,8 @@ export async function generateMetadata({
       images: ['/premium_room/outside2.JPG'],
       creator: '@violettetrain',
     },
-    alternates: {
-      canonical: `/${locale}`,
-      languages: {
-        vi: '/',
-        en: '/en',
-      },
-    },
+    // No layout-wide canonical: it made every page point at the home page.
+    // Language alternates per page are listed in the sitemap.
   }
 }
 
@@ -123,6 +118,10 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      {/* The shared root layout renders <html lang="vi">; correct it for English pages. */}
+      {locale !== 'vi' ? (
+        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.lang=${JSON.stringify(locale)}` }} />
+      ) : null}
       <a href="#main-content" className="skip-link">
         {t('skipLink')}
       </a>

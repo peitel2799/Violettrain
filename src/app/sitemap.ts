@@ -1,88 +1,37 @@
 import { MetadataRoute } from 'next'
+import { routing } from '@/i18n/routing'
+import { BLOG_POSTS } from '@/lib/constants'
+import { siteUrl } from '@/lib/site-url'
 
+type Entry = { path: string; changeFrequency: 'weekly' | 'monthly'; priority: number }
+
+const PAGES: Entry[] = [
+  { path: '', changeFrequency: 'weekly', priority: 1 },
+  { path: '/booking', changeFrequency: 'weekly', priority: 0.9 },
+  { path: '/cabins', changeFrequency: 'monthly', priority: 0.8 },
+  { path: '/blog', changeFrequency: 'weekly', priority: 0.7 },
+  { path: '/news', changeFrequency: 'weekly', priority: 0.7 },
+  { path: '/about', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/contact', changeFrequency: 'monthly', priority: 0.6 },
+]
+
+/** Every page exists once per locale; all URLs carry the /vi or /en prefix (localePrefix: 'always'). */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://violettetrain.com'
-
-  const routes = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/booking`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/cabins`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/news`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/en`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/en/booking`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/en/cabins`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/about`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/en/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/en/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    },
+  const baseUrl = siteUrl()
+  const entries: Entry[] = [
+    ...PAGES,
+    ...BLOG_POSTS.map((post) => ({ path: `/blog/${post.slug}`, changeFrequency: 'monthly' as const, priority: 0.5 })),
   ]
 
-  return routes
+  return entries.flatMap((entry) =>
+    routing.locales.map((locale) => ({
+      url: `${baseUrl}/${locale}${entry.path}`,
+      lastModified: new Date(),
+      changeFrequency: entry.changeFrequency,
+      priority: entry.priority,
+      alternates: {
+        languages: Object.fromEntries(routing.locales.map((other) => [other, `${baseUrl}/${other}${entry.path}`])),
+      },
+    }))
+  )
 }

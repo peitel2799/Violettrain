@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import { ArrowLeft, Clock, Tag, Calendar, User } from 'lucide-react'
 import { BLOG_POSTS, CATEGORY_COLORS } from '@/lib/constants'
 import { formatDate } from '@/lib/utils'
+import { siteUrl } from '@/lib/site-url'
 
 export async function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }))
@@ -36,17 +37,17 @@ const ARTICLE_CONTENT: Record<string, { vi: string[]; en: string[] }> = {
   'discover-sapa-by-train': {
     vi: [
       'Đặt chân lên chuyến tàu đêm từ Hà Nội đến Sapa, bạn không chỉ đơn thuần di chuyển — bạn đang bắt đầu một hành trình khám phá văn hóa và thiên nhiên Tây Bắc Việt Nam ngay từ khi rời ga.',
-      'Khoảng 8 tiếng rưỡi trên tàu Violette Orient SE19, từ 22:00 đến 06:30, là khoảng thời gian đủ để bạn nghỉ ngơi trong Full Cabin 4 giường hoặc cabin VIP 2.',
+      'Các chuyến tàu đêm Hà Nội – Lào Cai (tàu SP) khởi hành buổi tối và đến Lào Cai vào sáng sớm hôm sau, khoảng 7–8 tiếng — đủ để bạn ngủ một giấc trong cabin riêng. Giờ tàu chính xác theo lịch DSVN được hiển thị khi bạn đặt vé.',
       'Điều đầu tiên khiến chuyến tàu Hà Nội — Sapa trở nên đặc biệt chính là cảnh quan thay đổi không ngừng bên ngoài cửa kính. Từ ánh đèn thành phố về đêm, qua những cánh đồng lúa xanh mướt, rồi dần dần là đồi núi.',
       'Khi đến Lào Cai, không khí se lạnh của vùng núi Tây Bắc chào đón bạn ngay tại ga.',
-      'Violette Train chỉ bán trọn cabin gồm 4 vé. Full Cabin có giường trên cố định; riêng tàu SE19 có 1 cabin VIP 2 với hai giường trên gập được.',
+      'Violette Train chỉ bán trọn cabin gồm 4 vé, nên cả nhóm của bạn có một không gian riêng suốt đêm.',
     ],
     en: [
       'Stepping aboard the night train from Hanoi to Sapa, you are not merely traveling — you are beginning a journey of cultural and natural discovery the moment you leave the station.',
-      'The approximately 8 hours and 30 minutes aboard the Violette Orient SE19, departing at 22:00 and arriving at 06:30, gives you time to rest in either a Full Cabin with four fixed berths or a VIP 2 cabin.',
+      'The Hanoi – Lao Cai night trains (SP trains) leave in the evening and reach Lao Cai early the next morning, about 7–8 hours later — enough for a full night\'s sleep in a private cabin. Exact times follow the DSVN timetable and are shown when you book.',
       'What makes the Hanoi — Sapa train journey truly special is the ever-changing landscape outside the window. From city lights at night through lush green rice fields and rolling mountain ranges.',
       'When arriving in Lao Cai, the cool mountain air of the Northwest greets you right at the station.',
-      'Violette Train sells cabins only as complete 4-ticket units. Full Cabin has fixed upper berths; SE19 alone has one VIP 2 cabin with two fold-up upper berths.',
+      'Violette Train sells cabins only as complete 4-ticket units, so your group has its own private space all night.',
     ],
   },
   'sapa-travel-guide-2026': {
@@ -68,14 +69,14 @@ const ARTICLE_CONTENT: Record<string, { vi: string[]; en: string[] }> = {
   '10-things-before-sapa-trip': {
     vi: [
       'Trước khi lên đường đến Sapa, có những điều quan trọng bạn cần biết để chuyến đi thêm phần trọn vẹn.',
-      'Đầu tiên và quan trọng nhất: HÃY ĐẶT VÉ TÀU TRƯỚC. Các chuyến tàu HN-Sapa đặc biệt SE19 rất hay kín chỗ, đặc biệt vào cuối tuần.',
+      'Đầu tiên và quan trọng nhất: HÃY ĐẶT VÉ TÀU TRƯỚC. Các chuyến tàu đêm Hà Nội – Lào Cai rất hay kín chỗ, nhất là cuối tuần và mùa lễ hội.',
       'Về hành lý: Sapa có khí hậu mát mù quanh năm (15-25°C), nhưng nếu đi mùa đông, nhiệt độ có thể xuống 0°C.',
       'Về tiền bạc: Lào Cai và Sapa có cây ATM, nhưng có thể hết tiền vào cuối tuần hoặc ngày lễ.',
       'Mẹo quan trọng: Nếu đi vào mùa lễ (Tết, 30/4, 1/5), hãy đặt mọi thứ trước ít nhất 1 tháng.',
     ],
     en: [
       'Before setting off for Sapa, there are important things you need to know to make your trip more complete.',
-      'First and most importantly: BOOK YOUR TRAIN TICKETS IN ADVANCE. HN-Sapa trains especially SE19 often sell out quickly on weekends.',
+      'First and most importantly: BOOK YOUR TRAIN TICKETS IN ADVANCE. Hanoi – Lao Cai night trains often sell out, especially on weekends and holidays.',
       'Regarding luggage: Sapa has a cool climate year-round (15-25°C), but in winter temperatures can drop to 0°C.',
       'Regarding money: Lao Cai and Sapa have ATMs, but they may run out on weekends or holidays.',
       'Important tip: If traveling during holidays, book everything at least 1 month in advance.',
@@ -223,7 +224,7 @@ export default async function BlogArticlePage({
           <div className="mt-6 flex items-center gap-3">
             <span className="text-sm text-gray-500">{t('share')}</span>
             <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=https://violettetrain.vn/blog/${slug}`}
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${siteUrl()}/${locale}/blog/${slug}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-blue-600 hover:underline"

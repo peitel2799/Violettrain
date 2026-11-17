@@ -253,7 +253,7 @@ function FareRow({
         <p className="mt-1 whitespace-nowrap text-[1.35rem] font-black tabular-nums tracking-[-0.025em] text-[#9a6d13] sm:text-2xl">
           {formatCurrency(fare.price)}
         </p>
-        <p className="mt-0.5 text-[11px] font-semibold text-[#756d79]">{isVi ? 'Bắt buộc mua đủ 4 vé' : 'All 4 tickets required'}</p>
+        <p className="mt-0.5 text-[11px] font-semibold text-[#756d79]">{isVi ? 'Mua đủ 4 vé · chưa gồm VAT 10%' : 'All 4 tickets · excl. 10% VAT'}</p>
       </div>
 
       <button

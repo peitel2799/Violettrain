@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     })
 
     await transporter.sendMail({
-      from: `"${process.env.EMAIL_FROM_NAME || 'Violette Train'}" <${process.env.EMAIL_FROM || 'noreply@violettetrain.vn'}>`,
+      from: `"${process.env.EMAIL_FROM_NAME || 'Violette Train'}" <${process.env.EMAIL_FROM || process.env.SMTP_USER || 'violettetrains@gmail.com'}>`,
       to: testEmail,
       subject: '✅ Violette Train — Email Configuration Test',
       html: `
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
           </div>
           <div class="config-row">
             <span class="config-label">From Address</span>
-            <span class="config-value">${process.env.EMAIL_FROM || 'noreply@violettetrain.vn'}</span>
+            <span class="config-value">${process.env.EMAIL_FROM || process.env.SMTP_USER || 'violettetrains@gmail.com'}</span>
           </div>
         </div>
       </div>
@@ -121,7 +121,7 @@ Your SMTP configuration is working correctly!
 Host: ${host}
 Port: ${port} (${secure ? 'SSL/TLS' : 'STARTTLS'})
 Auth: ${process.env.SMTP_USER || '(not set)'}
-From: ${process.env.EMAIL_FROM || 'noreply@violettetrain.vn'}
+From: ${process.env.EMAIL_FROM || process.env.SMTP_USER || 'violettetrains@gmail.com'}
 
 If you received this email, booking confirmation emails will be delivered successfully to your customers.
 

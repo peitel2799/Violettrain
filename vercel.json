@@ -3,6 +3,9 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "framework": "nextjs",
+  "regions": [
+    "icn1"
+  ],
   "crons": [
     {
       "path": "/api/cron/dsvn-sync",

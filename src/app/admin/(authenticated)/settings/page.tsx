@@ -28,7 +28,7 @@ export default function AdminSettingsPage() {
     SMTP_PORT: '587',
     SMTP_USER: '',
     SMTP_PASS: '',
-    EMAIL_FROM: 'noreply@violettetrain.vn',
+    EMAIL_FROM: '',
     NEXT_PUBLIC_BOOKING_ENABLED: 'true',
   })
 

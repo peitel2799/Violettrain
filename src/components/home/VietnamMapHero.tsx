@@ -107,8 +107,8 @@ export default function VietnamMapHero() {
             </div>
             <p className="mt-3 text-[11px] leading-relaxed text-white/40">
               {isVi
-                ? 'Giá 1 vé giữ nguyên theo tuyến. Giá bắt buộc thanh toán cho 1 cabin = giá vé × 4. VIP 2 chỉ có trên SE19.'
-                : 'The per-ticket fare stays unchanged. Required full-cabin price = ticket fare × 4. VIP 2 is available only on SE19.'}
+                ? 'Giá vé tùy theo tuyến, chưa gồm VAT 10%. Mỗi lần mua trọn 1 cabin = giá 1 vé × 4. VIP 2 chỉ có trên SE19.'
+                : 'Fares vary by route and exclude 10% VAT. Each purchase is a full cabin = ticket fare × 4. VIP 2 is available only on SE19.'}
             </p>
           </div>
         </motion.div>

@@ -44,6 +44,9 @@ export const STATIONS: Record<string, Station> = {
   donghoi:  { code: 'DHO', nameVi: 'Đồng Hới',     nameEn: 'Dong Hoi' },
   hue:      { code: 'HUE', nameVi: 'Huế',           nameEn: 'Hue' },
   danang:   { code: 'DNA', nameVi: 'Đà Nẵng',       nameEn: 'Da Nang' },
+  laocai:   { code: 'LCA', nameVi: 'Lào Cai',       nameEn: 'Lao Cai' },
+  nhatrang: { code: 'NTR', nameVi: 'Nha Trang',     nameEn: 'Nha Trang' },
+  saigon:   { code: 'SGO', nameVi: 'Sài Gòn',       nameEn: 'Saigon' },
 }
 
 export function getAllStations(): Station[] {

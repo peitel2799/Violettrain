@@ -20,8 +20,8 @@ export default function Footer() {
   const supportLinks = [
     { href: '/about', label: tNav('about') },
     { href: '/contact', label: tNav('contact') },
-    { href: '/#refund-policy', label: t('refundPolicy') },
-    { href: '/#terms', label: t('termsOfService') },
+    // Refund policy / terms / privacy links come back once those pages exist
+    // (they pointed at anchors that were not on any page).
   ]
 
   return (
@@ -128,14 +128,6 @@ export default function Footer() {
           <p className="text-white/50 text-xs">
             &copy; {new Date().getFullYear()} {t('copyright')}
           </p>
-          <div className="flex items-center gap-5">
-            <Link href="/#privacy-policy" className="text-white/50 hover:text-gold-400 text-xs transition-colors">
-              {t('privacy')}
-            </Link>
-            <Link href="/#terms" className="text-white/50 hover:text-gold-400 text-xs transition-colors">
-              {t('terms')}
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

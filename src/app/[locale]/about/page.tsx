@@ -52,13 +52,13 @@ export default async function AboutPage({
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-gold-500/10 text-gold-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mb-4">
               <Train className="w-4 h-4" />
-              {t('story.title')}
+              {t('title')}
             </div>
             <h2 className="font-serif text-3xl md:text-4xl text-gray-900 font-bold mb-6">
-              {t('mission.title')}
+              {t('story.title')}
             </h2>
             <p className="text-gray-500 leading-relaxed text-lg">
-              {t('mission.text')}
+              {t('story.text')}
             </p>
           </div>
           <div className="bg-violet-50 rounded-2xl p-8 text-center">

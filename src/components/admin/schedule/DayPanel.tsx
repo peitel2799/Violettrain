@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Clock3, LoaderCircle, Lock, Save, TrainFront } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Dialog, Notice, SaleChoice, SaleStatusPicker, Stepper, TicketPriceField } from './controls'
+import DsvnBase from './DsvnBase'
 import {
   ApiError,
   arrivalDayText,
@@ -202,6 +203,11 @@ function DepartureEditor({
           <p className="mt-1 text-xs text-slate-400">
             {departure.source === 'dsvn' ? 'Tàu và giờ chạy theo lịch DSVN' : 'Chuyến tạo tay trước đây, không có trong lịch DSVN'}
           </p>
+          {departure.projected ? (
+            <p className="mt-1.5 inline-flex rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200">
+              Lịch dự kiến: DSVN chưa mở bán ngày này, chưa có giá vé DSVN
+            </p>
+          ) : null}
         </div>
         <span className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ring-1 ring-inset', meta.chip)}>
           <span className={cn('h-2 w-2 rounded-full', meta.dot)} aria-hidden="true" /> {meta.label}
@@ -222,6 +228,8 @@ function DepartureEditor({
           <dd className="text-lg font-extrabold tabular-nums text-emerald-800">{remainingCabins(standard)}</dd>
         </div>
       </dl>
+
+      <DsvnBase departure={departure} ticketPrice={price} />
 
       {departed ? (
         <div className="mt-4">

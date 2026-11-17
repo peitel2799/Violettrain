@@ -27,14 +27,14 @@
       "quickLinks": "Liên kết nhanh",
       "support": "Hỗ trợ",
       "contact": "Liên hệ",
-      "address": "11 Thanh Nien Street, Ba Dinh, Ha Noi",
+      "address": "11 Thanh Niên, Ba Đình, Hà Nội",
       "phone": "091 582 3667",
       "phoneAlt": "0947 163 497",
       "email": "violettetrains@gmail.com",
       "copyright": "Violette Train. Bảo lưu mọi quyền.",
       "privacy": "Chính sách bảo mật",
       "terms": "Điều khoản sử dụng",
-      "checkIn": "Check-in: Gate 16, Hall C, Floor 1, 120 Le Duan (Ga Hà Nội)",
+      "checkIn": "Check-in: Cổng 16, Sảnh C, Tầng 1, 120 Lê Duẩn (Ga Hà Nội)",
       "refundPolicy": "Chính sách hoàn vé",
       "termsOfService": "Điều khoản dịch vụ"
     },
@@ -152,7 +152,7 @@
     },
     "notice": {
       "title": "Lưu ý về tiếng ồn trên tàu hỏa Việt Nam",
-      "text": "Với hơn 119 năm lịch sử, đường sắt Việt Nam mang theo sự quyến rũ của quá khứ — bao gồm tiếng lộp cộp đặc trưng trên đường ray, một âm thanh hoài niệm gắn liền với trải nghiệm tàu cổ điển. Tại Violette, chúng tôi hiểu rằng tiếng ồn có thể ảnh hưởng đến sự nghỉ ngơi của bạn. Chúng tôi đã nỗ lực giảm thiểu bằng cách cải thiện mối nối đường ray, nâng cấp toa tàu và lắp đặt vật liệu cách âm."
+      "text": "Với hơn 119 năm lịch sử, đường sắt Việt Nam mang theo sự quyến rũ của quá khứ — bao gồm tiếng lộp cộp đặc trưng trên đường ray, một âm thanh hoài niệm gắn liền với trải nghiệm tàu cổ điển. Tàu có thể rung và ồn khi chạy qua mối nối đường ray hoặc ghi. Nếu bạn khó ngủ, hãy mang theo nút bịt tai và bịt mắt; nhân viên Violette luôn sẵn sàng hỗ trợ trong suốt hành trình."
     },
     "cta": {
       "label": "Bắt đầu hành trình",
@@ -460,11 +460,11 @@
     "bookViaMessage": "Đặt vé qua tin nhắn",
     "whatsappZalo": "WhatsApp / Zalo",
     "checkInPoint": "Điểm check-in",
-    "checkInAddress": "Gate 16, Hall C, Floor 1, 120 Le Duan",
+    "checkInAddress": "Cổng 16, Sảnh C, Tầng 1, 120 Lê Duẩn",
     "checkInNote": "(Ga Hà Nội)",
     "operatingHours": "24/7 — Kể cả ngày lễ",
     "operatingHoursNote": "Kể cả ngày lễ",
-    "officeAddress": "11 Thanh Nien Street, Ba Dinh, Ha Noi",
+    "officeAddress": "11 Thanh Niên, Ba Đình, Hà Nội",
     "officeLabel": "Văn phòng Violette Train"
   },
   "notFound": {

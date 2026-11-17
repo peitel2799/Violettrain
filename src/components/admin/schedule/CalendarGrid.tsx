@@ -5,11 +5,13 @@ import { cn } from '@/lib/utils'
 import {
   CalendarDeparture,
   displayStatus,
+  dsvnCabinBase,
   formatDayMonth,
   formatMoney,
   formatMoneyShort,
   isDeparted,
   isSoldOut,
+  marginAgainstDsvn,
   monthKey,
   productOf,
   remainingCabins,
@@ -42,6 +44,8 @@ function DepartureLine({ departure, now, large, fullPrice = false }: { departure
   const standard = productOf(departure, 'standard')
   const soldOut = isSoldOut(departure)
   const meta = STATUS_META[status]
+  const base = dsvnCabinBase(departure.dsvnFare)
+  const margin = marginAgainstDsvn(standard?.ticketPrice, departure.dsvnFare)
 
   if (large) {
     return (
@@ -54,6 +58,11 @@ function DepartureLine({ departure, now, large, fullPrice = false }: { departure
         <p className="text-[11px] leading-tight text-slate-500">
           {departure.departureTime} · còn {remainingCabins(standard)}/{standard?.capacity ?? 0} cabin
         </p>
+        {base ? (
+          <p className={cn('text-[11px] font-semibold leading-tight', margin && margin.perTicket < 0 ? 'text-rose-700' : 'text-sky-800')}>
+            Giá DSVN {formatMoneyShort(base.perTicket)}/vé{margin ? ` · ${margin.perTicket >= 0 ? 'lãi' : 'lỗ'} ${Math.abs(margin.percent)}%` : ''}
+          </p>
+        ) : null}
       </div>
     )
   }

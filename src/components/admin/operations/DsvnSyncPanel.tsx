@@ -6,7 +6,7 @@ import { CheckCircle2, Clock3, DatabaseZap, LoaderCircle, Play, ShieldAlert } fr
 type SyncRun = {
   id: number
   status: 'running' | 'succeeded' | 'partial' | 'failed'
-  trigger_type: 'cron' | 'manual'
+  trigger_type: 'cron' | 'manual' | 'script'
   window_start: string
   window_end: string
   requested_snapshots: number
@@ -15,6 +15,10 @@ type SyncRun = {
   upserted_departures: number
   cancelled_departures: number
   draft_departures: number
+  fare_dates: number
+  fare_rows: number
+  projected_departures: number
+  dsvn_horizon: string | null
   error_summary: string | null
   started_at: string
   finished_at: string | null
@@ -78,7 +82,7 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
       setMessage({
         type: payload.status === 'succeeded' ? 'success' : 'error',
         text: payload.status === 'succeeded'
-          ? `Đã cập nhật ${payload.upsertedDepartures} chuyến từ ${payload.completedSnapshots} lượt tra cứu.`
+          ? `Đã cập nhật ${payload.upsertedDepartures} chuyến và giá DSVN của ${payload.fareDates ?? 0} ngày${payload.pendingFareDates ? ` (${payload.pendingFareDates} ngày còn lại sẽ cập nhật giá ở lượt sau)` : ''}.`
           : `Đồng bộ hoàn tất một phần. ${payload.errors?.[0] ?? 'Kiểm tra nhật ký bên dưới.'}`,
       })
       await load()
@@ -102,18 +106,20 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-bold text-slate-950">Đồng bộ lịch tàu DSVN</h2>
+              <h2 className="text-lg font-bold text-slate-950">Đồng bộ lịch tàu &amp; giá vé DSVN</h2>
               <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${configured ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}`}>
                 {configured ? 'Browser crawler sẵn sàng' : 'Crawler chưa sẵn sàng'}
               </span>
             </div>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Tự mở trang giờ tàu DSVN và đọc bảng công khai hằng ngày lúc <strong>04:00 giờ Việt Nam</strong>. Giá và sức chứa cabin vẫn do Violette quản lý.
+              Mỗi ngày lúc <strong>04:00 giờ Việt Nam</strong>, hệ thống đọc trang Giờ tàu và Giá vé công khai của DSVN theo từng ngày: lịch các tàu cho số ngày bên cạnh, và giá vé DSVN (giá cơ sở) cho những ngày lâu chưa cập nhật nhất. Giá bán và số cabin của Violette vẫn do bạn đặt.
             </p>
             {latest ? (
               <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-slate-500">
                 <span className="flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" /> Lần cuối: {formatDateTime(latest.finished_at ?? latest.started_at)}</span>
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" /> {statusText[latest.status]} · {latest.upserted_departures} chuyến</span>
+                {latest.fare_dates > 0 ? <span>Giá DSVN: {latest.fare_dates} ngày · {latest.fare_rows} dòng giá</span> : null}
+                {latest.dsvn_horizon ? <span>DSVN mở bán đến {latest.dsvn_horizon.split('-').reverse().join('/')}</span> : null}
                 {latest.draft_departures > 0 ? <span>{latest.draft_departures} chuyến nháp chưa có giá</span> : null}
               </div>
             ) : null}

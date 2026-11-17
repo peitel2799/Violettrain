@@ -75,8 +75,8 @@ export default function PopularFaresSection({ liveFares = null }: { liveFares?: 
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500 sm:text-base">
               {isVi
-                ? 'Giá 1 vé giữ nguyên theo tuyến; giá 1 cabin bằng giá vé × 4.'
-                : 'The per-ticket fare stays unchanged by route; one cabin costs the ticket fare × 4.'}
+                ? 'Giá vé tùy theo tuyến; giá 1 cabin bằng giá 1 vé × 4. Giá chưa gồm VAT 10%, được cộng khi thanh toán.'
+                : 'Fares vary by route; one cabin costs the ticket fare × 4. Prices exclude 10% VAT, added at checkout.'}
             </p>
           </div>
           <p className="max-w-sm text-xs leading-relaxed text-gray-400 md:text-right">

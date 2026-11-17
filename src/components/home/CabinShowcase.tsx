@@ -149,7 +149,7 @@ export default function CabinShowcase({ liveFares = null }: { liveFares?: LiveFa
                       </div>
                     </div>
                     <p className="mt-3 border-t border-violet-100 pt-3 text-xs font-medium text-violet-700">
-                      {isVi ? 'Bắt buộc mua trọn cabin: giá 1 vé × 4. Giá thực tế phụ thuộc tuyến.' : 'Full-cabin purchase required: 1 ticket × 4. The actual fare depends on route.'}
+                      {isVi ? 'Bắt buộc mua trọn cabin: giá 1 vé × 4. Giá thực tế phụ thuộc tuyến, chưa gồm VAT 10%.' : 'Full-cabin purchase required: 1 ticket × 4. The actual fare depends on route; prices exclude 10% VAT.'}
                     </p>
                   </div>
 

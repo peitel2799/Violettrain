@@ -18,7 +18,7 @@ export async function GET() {
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase
     .from('schedule_sync_runs')
-    .select('id, status, trigger_type, window_start, window_end, requested_snapshots, completed_snapshots, fetched_departures, upserted_departures, cancelled_departures, draft_departures, error_summary, started_at, finished_at')
+    .select('id, status, trigger_type, window_start, window_end, requested_snapshots, completed_snapshots, fetched_departures, upserted_departures, cancelled_departures, draft_departures, fare_dates, fare_rows, projected_departures, dsvn_horizon, error_summary, started_at, finished_at')
     .eq('source', 'dsvn')
     .order('started_at', { ascending: false })
     .limit(10)

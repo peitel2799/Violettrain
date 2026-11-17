@@ -14,6 +14,7 @@ import 'server-only'
 
 import nodemailer, { Transporter } from 'nodemailer'
 import { escapeHtml } from '@/lib/security/request'
+import { siteUrl } from '@/lib/site-url'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -89,9 +90,19 @@ function getTransporter(): Transporter {
 // Email Addresses
 // ---------------------------------------------------------------------------
 
-const FROM_EMAIL = process.env.EMAIL_FROM || 'noreply@violettetrain.vn'
+/** Company inbox shown on the website; used when no address is configured. */
+export const COMPANY_EMAIL = 'violettetrains@gmail.com'
+// The violettetrain.vn/.com domains are not registered yet, so a sender on them
+// would bounce or land in spam. Default to the SMTP account itself.
+const FROM_EMAIL = process.env.EMAIL_FROM?.trim() || process.env.SMTP_USER?.trim() || COMPANY_EMAIL
 const FROM_NAME = 'Violette Train'
-const REPLY_TO = process.env.EMAIL_REPLY_TO || 'info@violettetrain.vn'
+const REPLY_TO = process.env.EMAIL_REPLY_TO?.trim() || COMPANY_EMAIL
+const WEBSITE = siteUrl()
+
+/** Where website contact-form messages and newsletter sign-ups are delivered. */
+export function companyInbox() {
+  return process.env.CONTACT_INBOX_EMAIL?.trim() || REPLY_TO
+}
 
 // ---------------------------------------------------------------------------
 // Currency formatter
@@ -338,7 +349,7 @@ function buildBookingConfirmationHTML(raw: BookingEmailData): string {
         </div>
 
         <p style="text-align: center;">
-          <a href="https://violettetrain.vn" class="cta-button">
+          <a href="${WEBSITE}" class="cta-button">
             🌸 ${isVi ? 'Truy cập website Violette Train' : 'Visit Violette Train Website'}
           </a>
         </p>
@@ -407,7 +418,7 @@ function buildBookingConfirmationText(data: BookingEmailData): string {
     isVi ? '--- LIEN HE HO TRO ---' : '--- SUPPORT ---',
     'Hotline: 091 582 3667 / 0947 163 497',
     'Email: violettetrains@gmail.com',
-    'Website: https://violettetrain.vn',
+    `Website: ${WEBSITE}`,
   ].filter(Boolean)
 
   return lines.join('\n')
@@ -453,7 +464,7 @@ export async function sendBookingConfirmationEmail(
       headers: {
         'X-Priority': '1',
         'X-Mailer': 'Violette Train Booking System',
-        'List-Unsubscribe': `<mailto:unsubscribe@violettetrain.vn?subject=Unsubscribe>`,
+        'List-Unsubscribe': `<mailto:${REPLY_TO}?subject=Unsubscribe>`,
       },
     })
 
@@ -485,6 +496,8 @@ export interface OutgoingEmail {
   toName?: string
   /** Hidden copy, e.g. the staff inbox that follows up on bookings. */
   bcc?: string | null
+  /** Reply-To override, e.g. the customer who wrote via the contact form. */
+  replyTo?: string | null
   subject: string
   html: string
   text: string
@@ -507,7 +520,7 @@ export async function sendEmail(message: OutgoingEmail): Promise<SendEmailResult
       from: `"${fromName}" <${FROM_EMAIL}>`,
       to: message.toName ? { name: message.toName, address: message.to } : message.to,
       bcc: message.bcc || undefined,
-      replyTo: REPLY_TO,
+      replyTo: message.replyTo || REPLY_TO,
       subject: message.subject,
       text: message.text,
       html: message.html,

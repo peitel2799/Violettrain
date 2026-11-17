@@ -8,7 +8,8 @@ import {
 } from './train-database'
 
 // Bookable stations for the booking widget (Violette's primary routes)
-export const BOOKABLE_STATIONS = ['hanoi', 'ninhbinh', 'donghoi', 'hue', 'danang'] as const
+// Hà Nội plus the tourist destinations Violette focuses on (Hà Nội ⇄ each).
+export const BOOKABLE_STATIONS = ['hanoi', 'laocai', 'ninhbinh', 'donghoi', 'hue', 'danang', 'nhatrang', 'saigon'] as const
 export type BookableStationKey = (typeof BOOKABLE_STATIONS)[number]
 
 // Derive STATION_NAMES and STATION_CODES from dsvn-client's authoritative STATIONS data

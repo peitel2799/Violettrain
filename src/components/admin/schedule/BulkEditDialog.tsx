@@ -7,6 +7,7 @@ import { Dialog, Notice, SaleChoice, SaleStatusPicker, Stepper, TicketPriceField
 import {
   ApiError,
   CalendarDeparture,
+  dsvnCabinBase,
   formatDayMonth,
   formatMoney,
   Permissions,
@@ -72,6 +73,11 @@ export default function BulkEditDialog({ open, mode, departures, dayCount, permi
   const invalidPrice = changePrice && (!price || price < 10_000)
 
   const preview = useMemo(() => departures.slice(0, 60), [departures])
+  const dsvnRange = useMemo(() => {
+    const bases = departures.map((departure) => dsvnCabinBase(departure.dsvnFare)?.perTicket).filter((value): value is number => Boolean(value))
+    if (!bases.length) return null
+    return { min: Math.min(...bases), max: Math.max(...bases), missing: departures.length - bases.length }
+  }, [departures])
 
   async function save() {
     if (!hasChange || invalidPrice) return
@@ -118,7 +124,20 @@ export default function BulkEditDialog({ open, mode, departures, dayCount, permi
       <div className="space-y-4">
         {permissions.canPrice ? (
           <Section title="Đổi giá vé" checked={changePrice} onChange={setChangePrice}>
-            <TicketPriceField id="bulk-price" label="Giá 1 vé mới" value={price} onChange={setPrice} suggestions={suggestions} />
+            <TicketPriceField
+              id="bulk-price"
+              label="Giá 1 vé mới"
+              value={price}
+              onChange={setPrice}
+              suggestions={suggestions}
+              hint={dsvnRange ? (
+                <>
+                  Giá cơ sở DSVN của các chuyến đã chọn: <strong>{dsvnRange.min === dsvnRange.max ? formatMoney(dsvnRange.min) : `${formatMoney(dsvnRange.min)} – ${formatMoney(dsvnRange.max)}`}</strong>/vé
+                  {dsvnRange.missing ? ` (${dsvnRange.missing} chuyến chưa có giá DSVN)` : ''}.
+                  {price && price < dsvnRange.max ? <strong className="text-rose-700"> Giá mới thấp hơn giá DSVN của một số chuyến!</strong> : null}
+                </>
+              ) : undefined}
+            />
           </Section>
         ) : null}
 

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { companyInbox, isEmailDeliveryConfigured, sendEmail } from '@/lib/email'
 import { enforceRateLimit, HOUR, MINUTE } from '@/lib/security/rate-limit'
-import { BodyTooLargeError, maskEmail, readJsonBody } from '@/lib/security/request'
+import { BodyTooLargeError, escapeHtml, maskEmail, readJsonBody } from '@/lib/security/request'
 
 const contactSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -15,6 +16,11 @@ const CONTACT_LIMITS = [
   { name: 'contact-burst', limit: 5, windowMs: 10 * MINUTE },
   { name: 'contact-hourly', limit: 20, windowMs: HOUR },
 ]
+
+/** Shown when the message cannot reach the company inbox, so the guest uses another channel. */
+const NOT_DELIVERED =
+  'Chưa gửi được tin nhắn. Vui lòng gọi/Zalo/WhatsApp 091 582 3667 hoặc email violettetrains@gmail.com. '
+  + '/ Your message could not be sent. Please call or WhatsApp +84 91 582 3667 or email violettetrains@gmail.com.'
 
 export async function POST(request: NextRequest) {
   const limited = enforceRateLimit(request, CONTACT_LIMITS)
@@ -35,29 +41,46 @@ export async function POST(request: NextRequest) {
     }
 
     const { name, email, phone, subject, message } = parsed.data
-    const contactRecord = {
-      id: `CT-${crypto.randomUUID()}`,
-      name,
-      email: email.toLowerCase(),
-      phone: phone || '',
-      subject: subject || 'General',
-      message,
-      createdAt: new Date().toISOString(),
-      status: 'new' as const,
+    const id = `CT-${crypto.randomUUID()}`
+    const topic = subject || 'Khác'
+
+    // Without SMTP the message would only be logged and lost; tell the guest instead.
+    if (!isEmailDeliveryConfigured() && process.env.NODE_ENV === 'production') {
+      console.error('[CONTACT FORM] SMTP is not configured; message not delivered', id)
+      return NextResponse.json({ error: NOT_DELIVERED }, { status: 503 })
     }
 
-    // Logs are kept by the host and readable by every project member, so they
-    // only record that a message arrived, never the customer's details.
-    console.log('[CONTACT FORM SUBMISSION]', contactRecord.id, maskEmail(contactRecord.email), contactRecord.createdAt)
-
-    return NextResponse.json({
-      success: true,
-      id: contactRecord.id,
-      message: 'Contact form submitted successfully',
+    const sent = await sendEmail({
+      to: companyInbox(),
+      replyTo: email,
+      subject: `[Liên hệ từ website] ${topic}`.slice(0, 200),
+      text: [
+        `Họ tên: ${name}`,
+        `Email: ${email}`,
+        `Điện thoại: ${phone || '—'}`,
+        `Chủ đề: ${topic}`,
+        '',
+        message,
+        '',
+        `Mã: ${id}`,
+      ].join('\n'),
+      html: `
+        <p><strong>Họ tên:</strong> ${escapeHtml(name)}<br>
+        <strong>Email:</strong> ${escapeHtml(email)}<br>
+        <strong>Điện thoại:</strong> ${escapeHtml(phone || '—')}<br>
+        <strong>Chủ đề:</strong> ${escapeHtml(topic)}</p>
+        <p style="white-space:pre-wrap">${escapeHtml(message)}</p>
+        <p style="color:#888;font-size:12px">Mã: ${id} · Trả lời email này để phản hồi trực tiếp cho khách.</p>`,
     })
+
+    // Logs only record that a message arrived, never the customer's details.
+    console.log('[CONTACT FORM SUBMISSION]', id, maskEmail(email), sent.success ? 'delivered' : `failed: ${sent.error}`)
+    if (!sent.success) return NextResponse.json({ error: NOT_DELIVERED }, { status: 502 })
+
+    return NextResponse.json({ success: true, id, message: 'Contact form submitted successfully' })
   } catch (err) {
     if (err instanceof BodyTooLargeError) return NextResponse.json({ error: err.message }, { status: 413 })
     console.error('[API /contact]', err instanceof Error ? err.message : err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: NOT_DELIVERED }, { status: 500 })
   }
 }

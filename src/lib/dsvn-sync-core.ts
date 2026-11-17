@@ -20,7 +20,8 @@ const TIME_ZONE = 'Asia/Ho_Chi_Minh'
 const DAY_MS = 86_400_000
 /** Pause between lookups so the public site sees a light, steady load. */
 const LOOKUP_PAUSE_MS = 120
-const APPLY_CONCURRENCY = 6
+/** One route at a time: routes of the same date upsert the same train rows. */
+const APPLY_CONCURRENCY = 1
 /** A northbound train can reach Hà Nội two calendar days after leaving its origin. */
 const MAX_ORIGIN_LAG_DAYS = 2
 /** Days the projection pattern is taken from (trains present on every one of them). */
@@ -556,11 +557,17 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
       const outcomes = await inBatches(entries, APPLY_CONCURRENCY, async ([routeCode, items]) => {
         try {
           if (items.length === 0) throw new Error('no train listed; nothing applied.')
-          const { data, error } = await supabase.rpc('apply_dsvn_route_snapshot', {
-            p_route_code: routeCode, p_service_date: serviceDate, p_departures: items, p_projected: projected,
-          })
-          if (error) throw new Error(error.message)
-          return { routeCode, items: items.length, applied: data as ApplyResult }
+          // Routes share train rows (SE2 serves SGO/NTR/DNA/HUE…→HNO), so a
+          // concurrent run (e.g. cron + manual) can still deadlock; retry then.
+          for (let attempt = 1; ; attempt += 1) {
+            const { data, error } = await supabase.rpc('apply_dsvn_route_snapshot', {
+              p_route_code: routeCode, p_service_date: serviceDate, p_departures: items, p_projected: projected,
+            })
+            if (!error) return { routeCode, items: items.length, applied: data as ApplyResult }
+            const retryable = error.code === '40P01' || error.code === '40001' || /deadlock|could not serialize/i.test(error.message)
+            if (!retryable || attempt >= 3) throw new Error(error.message)
+            await sleep(300 * attempt)
+          }
         } catch (error) {
           return { routeCode, error: error instanceof Error ? error.message : String(error) }
         }

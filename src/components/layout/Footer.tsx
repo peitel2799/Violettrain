@@ -1,13 +1,16 @@
 'use client'
 
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import { Phone, Mail, MapPin, Facebook, Instagram, Youtube } from 'lucide-react'
+import { COMPANY, companyLocale } from '@/lib/company'
+import { POLICY_PATHS } from '@/lib/policies'
 
 export default function Footer() {
   const t = useTranslations('common.footer')
   const tNav = useTranslations('common.nav')
+  const locale = useLocale()
 
   const quickLinks = [
     { href: '/', label: tNav('home') },
@@ -20,9 +23,11 @@ export default function Footer() {
   const supportLinks = [
     { href: '/about', label: tNav('about') },
     { href: '/contact', label: tNav('contact') },
-    // Refund policy / terms / privacy links come back once those pages exist
-    // (they pointed at anchors that were not on any page).
+    { href: POLICY_PATHS.refund, label: t('refundPolicy') },
+    { href: POLICY_PATHS.terms, label: t('termsOfService') },
+    { href: POLICY_PATHS.privacy, label: t('privacy') },
   ]
+  const lang = companyLocale(locale)
 
   return (
     <footer className="bg-violet-950 text-white">
@@ -127,6 +132,9 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-white/50 text-xs">
             &copy; {new Date().getFullYear()} {t('copyright')}
+          </p>
+          <p className="text-white/40 text-xs text-center sm:text-right">
+            {COMPANY.legalName[lang]} · {lang === 'vi' ? 'MST' : 'Tax code'} {COMPANY.taxCode}
           </p>
         </div>
       </div>

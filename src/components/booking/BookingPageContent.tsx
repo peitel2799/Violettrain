@@ -26,6 +26,8 @@ import ScheduleResults from '@/components/booking/ScheduleResults'
 import type { CheckoutOrder } from '@/components/booking/CheckoutStep'
 import type { ManualPaymentInfo } from '@/lib/manual-payment'
 import { normalizeWhatsapp } from '@/lib/whatsapp'
+import { Link } from '@/i18n/routing'
+import { POLICY_PATHS } from '@/lib/policies'
 import TrainExperienceStrip from '@/components/booking/TrainExperienceStrip'
 import { fetchSchedules } from '@/components/booking/schedule-client'
 import type { DsvnSchedule, BookingPassenger, BookingStep } from '@/lib/types'
@@ -665,6 +667,21 @@ function BookingContent({ locale }: { locale: string }) {
                     <>{t('confirmBooking')}<ChevronRight className="w-4 h-4" /></>
                   )}
               </button>
+              <p className="text-center text-xs leading-relaxed text-[#71667a]">
+                {isVi ? 'Khi đặt vé, quý khách đồng ý với ' : 'By booking you agree to our '}
+                <Link href={POLICY_PATHS.terms} target="_blank" className="font-semibold text-[#633671] underline-offset-2 hover:underline">
+                  {isVi ? 'Điều khoản dịch vụ' : 'Terms of Service'}
+                </Link>
+                {', '}
+                <Link href={POLICY_PATHS.refund} target="_blank" className="font-semibold text-[#633671] underline-offset-2 hover:underline">
+                  {isVi ? 'Chính sách hoàn, đổi vé' : 'Refund & Exchange Policy'}
+                </Link>
+                {isVi ? ' và ' : ' and '}
+                <Link href={POLICY_PATHS.privacy} target="_blank" className="font-semibold text-[#633671] underline-offset-2 hover:underline">
+                  {isVi ? 'Chính sách bảo mật' : 'Privacy Policy'}
+                </Link>
+                .
+              </p>
               {error && (
                 <p role="alert" className="text-center text-sm text-red-600">{error}</p>
               )}

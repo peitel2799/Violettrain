@@ -98,10 +98,17 @@ export const TICKETS_PER_CABIN = 4
 export const WEEKDAY_SHORT = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'] as const
 export const WEEKDAY_LONG = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'] as const
 
-/** Human labels shown to staff. "draft" is presented as a paused sale. */
-export const STATUS_META: Record<DepartureStatus, { label: string; dot: string; chip: string; text: string }> = {
+/**
+ * What staff see. "draft" is split: a pause chosen by staff ("Tạm ngưng bán") versus a
+ * departure the DSVN sync added that has no Violette price yet ("Chưa có giá"). The sync
+ * itself never pauses a sale.
+ */
+export type DisplayStatus = DepartureStatus | 'unpriced'
+
+export const STATUS_META: Record<DisplayStatus, { label: string; dot: string; chip: string; text: string }> = {
   published: { label: 'Đang bán', dot: 'bg-emerald-500', chip: 'bg-emerald-50 text-emerald-800 ring-emerald-200', text: 'text-emerald-700' },
   draft: { label: 'Tạm ngưng bán', dot: 'bg-amber-400', chip: 'bg-amber-50 text-amber-800 ring-amber-200', text: 'text-amber-700' },
+  unpriced: { label: 'Chưa có giá', dot: 'bg-sky-400', chip: 'bg-sky-50 text-sky-800 ring-sky-200', text: 'text-sky-700' },
   cancelled: { label: 'DSVN hủy chuyến', dot: 'bg-rose-500', chip: 'bg-rose-50 text-rose-800 ring-rose-200', text: 'text-rose-700' },
   departed: { label: 'Đã chạy', dot: 'bg-slate-400', chip: 'bg-slate-100 text-slate-600 ring-slate-200', text: 'text-slate-500' },
 }
@@ -201,8 +208,10 @@ export function isDeparted(departure: CalendarDeparture, now = Date.now()) {
   return departure.status === 'departed' || Date.parse(departure.departureAt) <= now
 }
 
-export function displayStatus(departure: CalendarDeparture, now = Date.now()): DepartureStatus {
-  return isDeparted(departure, now) && departure.status !== 'cancelled' ? 'departed' : departure.status
+export function displayStatus(departure: CalendarDeparture, now = Date.now()): DisplayStatus {
+  if (isDeparted(departure, now) && departure.status !== 'cancelled') return 'departed'
+  if (departure.status === 'draft' && !departure.adminStatusOverride) return 'unpriced'
+  return departure.status
 }
 
 export function isSoldOut(departure: CalendarDeparture) {

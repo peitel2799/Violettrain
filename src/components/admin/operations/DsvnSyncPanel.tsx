@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { CheckCircle2, Clock3, DatabaseZap, LoaderCircle, Play, ShieldAlert } from 'lucide-react'
 
 type SyncRun = {
@@ -52,13 +52,18 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
   const [running, setRunning] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
+  const daysInitialised = useRef(false)
+
   const load = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/operations/dsvn-sync', { cache: 'no-store' })
       const payload = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(payload.error || 'Không thể tải trạng thái đồng bộ.')
+      if (!response.ok) throw new Error(payload.error || `Không thể tải trạng thái đồng bộ (mã ${response.status}).`)
       setData(payload)
-      setDays(payload.config.defaultDays)
+      if (!daysInitialised.current) {
+        daysInitialised.current = true
+        setDays(payload.config.defaultDays)
+      }
     } catch (error) {
       setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Không thể tải trạng thái đồng bộ.' })
     } finally {
@@ -67,6 +72,14 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
   }, [])
 
   useEffect(() => { void load() }, [load])
+
+  // While a run is in progress (here, by cron or from a computer) refresh its live journal.
+  const anyRunning = running || data?.runs.some((run) => run.status === 'running')
+  useEffect(() => {
+    if (!anyRunning) return
+    const timer = setInterval(() => void load(), 5_000)
+    return () => clearInterval(timer)
+  }, [anyRunning, load])
 
   async function runNow() {
     setRunning(true)
@@ -87,7 +100,7 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
         type: payload.status === 'succeeded' ? 'success' : 'error',
         text: payload.status === 'succeeded'
           ? `Đã cập nhật ${payload.upsertedDepartures} chuyến và giá DSVN của ${payload.fareDates ?? 0} ngày${payload.pendingFareDates ? ` (${payload.pendingFareDates} ngày còn lại sẽ cập nhật giá ở lượt sau)` : ''}.`
-          : `Đồng bộ hoàn tất một phần. ${payload.errors?.[0] ?? 'Kiểm tra nhật ký bên dưới.'}`,
+          : `Đồng bộ ${payload.status === 'failed' ? 'thất bại' : 'hoàn tất một phần'}: ${payload.upsertedDepartures ?? 0} chuyến đã cập nhật, ${payload.errors?.length ?? 0} lỗi. Xem nhật ký chi tiết bên dưới.`,
       })
       await load()
     } catch (error) {
@@ -99,7 +112,8 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
   }
 
   const latest = data?.runs[0]
-  const configured = data?.config.configured ?? false
+  // Until the status has loaded, do not claim the crawler is broken.
+  const configured = data?.config.configured ?? true
 
   return (
     <section className="mb-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -112,7 +126,7 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-lg font-bold text-slate-950">Đồng bộ lịch tàu &amp; giá vé DSVN</h2>
               <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${configured ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}`}>
-                {configured ? 'Browser crawler sẵn sàng' : 'Crawler chưa sẵn sàng'}
+                {loading ? 'Đang tải…' : configured ? 'Browser crawler sẵn sàng' : 'Crawler chưa sẵn sàng'}
               </span>
             </div>
             <p className="mt-1 text-sm leading-6 text-slate-600">
@@ -124,7 +138,7 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" /> {statusText[latest.status]} · {latest.upserted_departures} chuyến</span>
                 {latest.fare_dates > 0 ? <span>Giá DSVN: {latest.fare_dates} ngày · {latest.fare_rows} dòng giá</span> : null}
                 {latest.dsvn_horizon ? <span>DSVN mở bán đến {latest.dsvn_horizon.split('-').reverse().join('/')}</span> : null}
-                {latest.draft_departures > 0 ? <span>{latest.draft_departures} chuyến nháp chưa có giá</span> : null}
+                {latest.draft_departures > 0 ? <span>{latest.draft_departures} chuyến chưa có giá Violette (chưa bán)</span> : null}
               </div>
             ) : null}
           </div>
@@ -169,12 +183,68 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
         </div>
       ) : null}
 
-      {latest?.error_summary ? (
-        <details className="border-t border-slate-100 px-5 py-3 text-sm sm:px-6">
-          <summary className="cursor-pointer font-semibold text-rose-700">Xem lỗi lần đồng bộ gần nhất</summary>
-          <pre className="mt-3 max-h-44 overflow-auto whitespace-pre-wrap rounded-xl bg-slate-950 p-3 text-xs leading-5 text-slate-200">{latest.error_summary}</pre>
-        </details>
+      {data?.runs.length ? (
+        <div className="border-t border-slate-100 px-5 py-4 sm:px-6">
+          <h3 className="text-sm font-bold text-slate-900">Nhật ký đồng bộ (10 lượt gần nhất)</h3>
+          <ul className="mt-3 space-y-2">
+            {data.runs.map((run, index) => <RunLog key={run.id} run={run} defaultOpen={index === 0 && (run.status !== 'succeeded')} />)}
+          </ul>
+        </div>
       ) : null}
     </section>
+  )
+}
+
+const triggerText: Record<SyncRun['trigger_type'], string> = {
+  cron: 'Tự động 04:00',
+  manual: 'Bấm "Đồng bộ ngay"',
+  script: 'Chạy từ máy tính',
+}
+
+const statusChip: Record<SyncRun['status'], string> = {
+  running: 'bg-sky-100 text-sky-800',
+  succeeded: 'bg-emerald-100 text-emerald-800',
+  partial: 'bg-amber-100 text-amber-800',
+  failed: 'bg-rose-100 text-rose-800',
+}
+
+function formatDay(value: string) {
+  return value.split('-').reverse().join('/')
+}
+
+/** One run: counters at a glance, the full timestamped journal ("✗" = error) on demand. */
+function RunLog({ run, defaultOpen }: { run: SyncRun; defaultOpen: boolean }) {
+  const lines = run.error_summary?.split('\n').filter(Boolean) ?? []
+  // Journal lines: "HH:MM:SS ✗ …" errors, "⚠" needs attention, "·" progress. Older runs stored bare error lines.
+  const isError = (line: string) => line.includes('✗') || !/^\d{2}:\d{2}:\d{2} /.test(line)
+  const errorCount = lines.filter(isError).length
+  const warningCount = lines.filter((line) => line.includes('⚠')).length
+  const seconds = run.finished_at ? Math.max(0, Math.round((Date.parse(run.finished_at) - Date.parse(run.started_at)) / 1000)) : null
+  return (
+    <li className="rounded-2xl border border-slate-200">
+      <details open={defaultOpen}>
+        <summary className="flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-xs text-slate-600">
+          <span className={`rounded-full px-2 py-0.5 font-bold ${statusChip[run.status]}`}>{statusText[run.status]}</span>
+          <span className="font-semibold text-slate-900">#{run.id} · {triggerText[run.trigger_type] ?? run.trigger_type}</span>
+          <span>Lịch {formatDay(run.window_start)} → {formatDay(run.window_end)}</span>
+          <span>Bắt đầu {formatDateTime(run.started_at)}{seconds !== null ? ` · ${seconds >= 60 ? `${Math.floor(seconds / 60)} phút ${seconds % 60} giây` : `${seconds} giây`}` : ''}</span>
+          <span>{run.completed_snapshots}/{run.requested_snapshots} lượt tra · {run.upserted_departures} chuyến · giá {run.fare_dates} ngày</span>
+          {run.cancelled_departures > 0 ? <span className="font-semibold text-amber-700">{run.cancelled_departures} chuyến dự kiến DSVN không chạy (đã gỡ)</span> : null}
+          {errorCount > 0 ? <span className="font-bold text-rose-700">{errorCount} lỗi</span> : null}
+          {warningCount > 0 ? <span className="font-bold text-amber-700">{warningCount} cần xem</span> : null}
+        </summary>
+        <div className="border-t border-slate-100 px-4 py-3">
+          {lines.length ? (
+            <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-xl bg-slate-950 p-3 text-xs leading-5 text-slate-200">
+              {lines.map((line, index) => (
+                <span key={index} className={isError(line) ? 'text-rose-300' : line.includes('⚠') ? 'text-amber-300' : undefined}>{line}{'\n'}</span>
+              ))}
+            </pre>
+          ) : (
+            <p className="text-xs text-slate-500">{run.status === 'running' ? 'Đang chạy, nhật ký sẽ hiện sau vài giây…' : 'Không có ghi chú.'}</p>
+          )}
+        </div>
+      </details>
+    </li>
   )
 }

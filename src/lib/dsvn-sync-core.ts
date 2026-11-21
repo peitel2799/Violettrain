@@ -75,7 +75,8 @@ type SnapshotItem = {
   payload_hash: string
 }
 
-type ApplyResult = { upserted: number; cancelled: number; draftWithoutFare: number; skipped?: boolean }
+/** `missing`: trains DSVN no longer lists that day; the sync leaves them as staff set them. */
+type ApplyResult = { upserted: number; cancelled: number; draftWithoutFare: number; skipped?: boolean; missing?: string[] }
 
 type FareRow = { seat_code: string; seat_name: string; seat_group: string; fare_vnd: number }
 
@@ -123,13 +124,22 @@ const STALE_RUN_MS: Record<SyncTrigger, number> = { cron: 10 * 60_000, manual: 1
 /** Close runs whose process died, so the admin log does not show them as running forever. */
 export async function closeStaleRuns(supabase: SupabaseClient) {
   for (const [trigger, ageMs] of Object.entries(STALE_RUN_MS)) {
-    await supabase
+    const { data: stale } = await supabase
       .from('schedule_sync_runs')
-      .update({ status: 'failed', error_summary: 'Lượt chạy bị ngắt giữa chừng (hết thời gian hoặc máy dừng). Dữ liệu đã ghi trước đó vẫn giữ nguyên.', finished_at: new Date().toISOString() })
+      .select('id, error_summary')
       .eq('source', 'dsvn')
       .eq('status', 'running')
       .eq('trigger_type', trigger)
       .lt('started_at', new Date(Date.now() - ageMs).toISOString())
+    for (const run of stale ?? []) {
+      // Keep the journal the run saved before it died; add why it ended.
+      const reason = '✗ Lượt chạy bị ngắt giữa chừng (máy chủ hết thời gian hoặc máy tính dừng). Dữ liệu đã ghi trước đó vẫn giữ nguyên.'
+      await supabase
+        .from('schedule_sync_runs')
+        .update({ status: 'failed', error_summary: [run.error_summary, reason].filter(Boolean).join('\n'), finished_at: new Date().toISOString() })
+        .eq('id', run.id)
+        .eq('status', 'running')
+    }
   }
 }
 
@@ -434,7 +444,19 @@ async function inBatches<T, R>(items: T[], size: number, work: (item: T) => Prom
 
 export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncResult> {
   const { supabase } = options
-  const log = options.log ?? (() => undefined)
+  // Journal shown in the admin page: every step and every error, with Vietnam time.
+  // "✗" lines are errors, "·" lines are progress notes.
+  const journal: string[] = []
+  const clock = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+  const note = (mark: '·' | '✗' | '⚠', text: string) => journal.push(`${clock.format(new Date())} ${mark} ${text}`)
+  const journalText = () => {
+    const lines = journal.length > 400 ? [...journal.slice(0, 50), `${clock.format(new Date())} · … (bỏ bớt ${journal.length - 350} dòng ở giữa) …`, ...journal.slice(-300)] : journal
+    return lines.join('\n').slice(-30_000) || null
+  }
+  const log = (line: string) => {
+    options.log?.(line)
+    if (!line.startsWith('! ')) note('·', line)
+  }
   const startedAt = Date.now()
   const deadline = options.budgetMs ? startedAt + options.budgetMs : Number.POSITIVE_INFINITY
   const budgeted = Number.isFinite(deadline)
@@ -483,8 +505,36 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
   }
   const fail = (message: string) => {
     result.errors.push(message)
+    note('✗', message)
     log(`! ${message}`)
   }
+  /** Needs staff attention but is not a sync failure (run status unaffected). */
+  const warn = (message: string) => {
+    note('⚠', message)
+    options.log?.(`⚠ ${message}`)
+  }
+  const runCounters = () => ({
+    requested_snapshots: result.requestedSnapshots,
+    completed_snapshots: result.completedSnapshots,
+    fetched_departures: result.fetchedDepartures,
+    upserted_departures: result.upsertedDepartures,
+    cancelled_departures: result.cancelledDepartures,
+    draft_departures: result.draftDepartures,
+    fare_dates: result.fareDates,
+    fare_rows: result.fareRows,
+    projected_departures: result.projectedDepartures,
+    dsvn_horizon: result.dsvnHorizon,
+    error_summary: journalText(),
+  })
+  // Write counters + journal while running so the admin page can follow the run live
+  // (and so a run that gets killed still shows how far it got and why).
+  let lastProgressAt = 0
+  const saveProgress = async () => {
+    if (Date.now() - lastProgressAt < 10_000) return
+    lastProgressAt = Date.now()
+    await supabase.from('schedule_sync_runs').update(runCounters()).eq('id', result.runId)
+  }
+  log(`Bắt đầu: lịch ${from} → ${until}${budgeted ? `, giới hạn ${Math.round((options.budgetMs ?? 0) / 1000)} giây` : ''}`)
 
   const { data: stateRows } = await supabase
     .from('dsvn_sync_dates')
@@ -497,7 +547,12 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
 
   let browser: Browser | null = null
   try {
-    browser = await launchBrowser()
+    try {
+      browser = await launchBrowser()
+    } catch (error) {
+      throw new Error(`Không khởi động được trình duyệt Chromium: ${error instanceof Error ? error.message : error}`)
+    }
+    log('Đã khởi động trình duyệt, đang mở trang Giờ tàu / Giá vé của DSVN')
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: 'vi-VN' })
     await context.route('**/*', (route) => {
       const request = route.request()
@@ -633,6 +688,10 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
         result.cancelledDepartures += Number(outcome.applied.cancelled) || 0
         result.draftDepartures += Number(outcome.applied.draftWithoutFare) || 0
         if (projected) result.projectedDepartures += Number(outcome.applied.upserted) || 0
+        const missing = Array.isArray(outcome.applied.missing) ? outcome.applied.missing : []
+        if (missing.length) {
+          warn(`${outcome.routeCode} ${serviceDate}: DSVN không còn chạy tàu ${missing.join(', ')}. Chuyến vẫn giữ nguyên trạng thái; nếu cần, admin vào Lịch & giá để tạm ngưng bán.`)
+        }
       }
       return ok === entries.length
     }
@@ -739,6 +798,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
     if (openDates.length) closedDates.push(...closedRun)
     result.dsvnHorizon = openDates.at(-1) ?? null
     log(`DSVN mở bán ${openDates.length} ngày trong khoảng ${from}..${until}; ngày cuối có tàu: ${result.dsvnHorizon ?? '—'}`)
+    await saveProgress()
 
     // --- 2. Timetable + fares for open dates ---------------------------------
     const fareThresholdMs = (date: string) => {
@@ -772,6 +832,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
         fail(`Lịch ngày ${date}: ${error instanceof Error ? error.message : error}`)
         markDate(date, { last_error: error instanceof Error ? error.message.slice(0, 500) : 'Lỗi không rõ' })
       }
+      await saveProgress()
     }
     if (budgeted) {
       for (const date of fareOrder) {
@@ -781,10 +842,12 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
         try {
           await syncFares(date, built)
           fareSet.delete(date)
+          log(`${date}: giá DSVN đã cập nhật (${result.fareRows} dòng giá, tích lũy)`)
         } catch (error) {
-          if (error instanceof BudgetExceeded) break
+          if (error instanceof BudgetExceeded) { log(`Hết thời gian: giá DSVN ngày ${date} trở đi để lượt sau.`); break }
           fail(`Giá ngày ${date}: ${error instanceof Error ? error.message : error}`)
         }
+        await saveProgress()
       }
       result.pendingFareDates = [...fareSet].length
     }
@@ -851,26 +914,11 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
     }
   }
 
+  log(`Xong sau ${Math.round((Date.now() - startedAt) / 1000)} giây: ${result.status} · ${result.upsertedDepartures} chuyến, giá DSVN ${result.fareDates} ngày, ${result.errors.length} lỗi`)
   const { error: finishError } = await supabase
     .from('schedule_sync_runs')
-    .update({
-      status: result.status,
-      requested_snapshots: result.requestedSnapshots,
-      completed_snapshots: result.completedSnapshots,
-      fetched_departures: result.fetchedDepartures,
-      upserted_departures: result.upsertedDepartures,
-      cancelled_departures: result.cancelledDepartures,
-      draft_departures: result.draftDepartures,
-      fare_dates: result.fareDates,
-      fare_rows: result.fareRows,
-      projected_departures: result.projectedDepartures,
-      dsvn_horizon: result.dsvnHorizon,
-      error_summary: result.errors.slice(0, 30).join('\n').slice(0, 8000) || null,
-      finished_at: new Date().toISOString(),
-    })
+    .update({ status: result.status, ...runCounters(), finished_at: new Date().toISOString() })
     .eq('id', result.runId)
   if (finishError) throw new Error(`Sync completed but its log could not be updated: ${finishError.message}`)
-
-  log(`Xong sau ${Math.round((Date.now() - startedAt) / 1000)} giây: ${result.status}`)
   return result
 }

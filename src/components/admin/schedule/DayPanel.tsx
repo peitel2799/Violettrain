@@ -134,7 +134,11 @@ function DepartureEditor({
   const isSe19 = departure.trainNumber === 'SE19'
   const departed = isDeparted(departure, now)
   const cancelled = departure.status === 'cancelled'
-  const initialStatus: SaleChoice = departure.status === 'draft' ? 'draft' : 'published'
+  // Only a pause chosen by staff shows as "Tạm ngưng bán". A departure the sync left
+  // unsold (no Violette price yet) defaults to "Mở bán", so entering a price sells it.
+  const pausedByStaff = departure.status === 'draft' && departure.adminStatusOverride
+  const notOpenYet = departure.status === 'draft' && !departure.adminStatusOverride
+  const initialStatus: SaleChoice = pausedByStaff ? 'draft' : 'published'
 
   const initial = {
     status: initialStatus,
@@ -154,6 +158,8 @@ function DepartureEditor({
   const changes: UpdatePayload = {}
   if (status !== initial.status) changes.status = status
   if (price !== initial.price && price != null) changes.standardTicketPriceVnd = price
+  // Saving a price on a not-yet-open departure also opens it (unless staff chose to pause).
+  if (notOpenYet && status === 'published' && Object.keys(changes).length) changes.status = 'published'
   if (capacity !== initial.capacity) changes.standardCapacity = capacity
   if (isSe19 && vip2On !== initial.vip2On) changes.vip2Capacity = vip2On ? 1 : 0
   if (isSe19 && vip2On && vip2Price !== initial.vip2Price && vip2Price != null) changes.vip2TicketPriceVnd = vip2Price

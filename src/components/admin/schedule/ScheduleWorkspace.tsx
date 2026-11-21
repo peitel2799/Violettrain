@@ -167,7 +167,7 @@ export default function ScheduleWorkspace() {
     const prices = upcoming.map((departure) => productOf(departure, 'standard')?.ticketPrice).filter(Boolean) as number[]
     return {
       selling: upcoming.filter((departure) => departure.status === 'published' && !isSoldOut(departure)).length,
-      paused: upcoming.filter((departure) => departure.status === 'draft').length,
+      paused: upcoming.filter((departure) => departure.status === 'draft' && departure.adminStatusOverride).length,
       soldOut: upcoming.filter(isSoldOut).length,
       sold: monthDepartures.reduce((total, departure) => total + departure.products.reduce((sum, product) => sum + product.sold, 0), 0),
       min: prices.length ? Math.min(...prices) : null,
@@ -485,7 +485,8 @@ export default function ScheduleWorkspace() {
 function Legend() {
   const items: Array<{ dot: string; label: string }> = [
     { dot: STATUS_META.published.dot, label: 'Đang bán' },
-    { dot: STATUS_META.draft.dot, label: 'Tạm ngưng bán' },
+    { dot: STATUS_META.draft.dot, label: 'Tạm ngưng bán (admin)' },
+    { dot: STATUS_META.unpriced.dot, label: 'Chưa có giá' },
     { dot: 'bg-slate-800', label: 'Hết cabin' },
     { dot: STATUS_META.cancelled.dot, label: STATUS_META.cancelled.label },
     { dot: STATUS_META.departed.dot, label: 'Đã chạy' },

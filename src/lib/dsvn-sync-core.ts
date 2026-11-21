@@ -106,6 +106,46 @@ export type DsvnSyncOptions = {
   log?: (line: string) => void
 }
 
+/**
+ * Thrown inside the crawl when a budgeted run is about to overrun its time limit.
+ * A single DSVN lookup can take over a minute, so checking only between dates is
+ * not enough: the Vercel function would be killed (HTTP 504) with the run row
+ * left "running" and nothing saved.
+ */
+class BudgetExceeded extends Error {}
+
+/** Minimum time left before starting another DSVN lookup in a budgeted run. */
+const LOOKUP_RESERVE_MS = 75_000
+
+/** Runs still "running" after this long were killed (timeout, crash, closed laptop). */
+const STALE_RUN_MS: Record<SyncTrigger, number> = { cron: 10 * 60_000, manual: 10 * 60_000, script: 6 * 3_600_000 }
+
+/** Close runs whose process died, so the admin log does not show them as running forever. */
+export async function closeStaleRuns(supabase: SupabaseClient) {
+  for (const [trigger, ageMs] of Object.entries(STALE_RUN_MS)) {
+    await supabase
+      .from('schedule_sync_runs')
+      .update({ status: 'failed', error_summary: 'Lượt chạy bị ngắt giữa chừng (hết thời gian hoặc máy dừng). Dữ liệu đã ghi trước đó vẫn giữ nguyên.', finished_at: new Date().toISOString() })
+      .eq('source', 'dsvn')
+      .eq('status', 'running')
+      .eq('trigger_type', trigger)
+      .lt('started_at', new Date(Date.now() - ageMs).toISOString())
+  }
+}
+
+/** A run of the given kinds started recently and is still running (cleanup runs first). */
+export async function activeRun(supabase: SupabaseClient) {
+  await closeStaleRuns(supabase)
+  const { data } = await supabase
+    .from('schedule_sync_runs')
+    .select('id, trigger_type, started_at')
+    .eq('source', 'dsvn')
+    .eq('status', 'running')
+    .order('started_at', { ascending: false })
+    .limit(1)
+  return data?.[0] ?? null
+}
+
 export type DsvnSyncResult = {
   runId: number
   status: 'succeeded' | 'partial' | 'failed'
@@ -399,6 +439,10 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
   const deadline = options.budgetMs ? startedAt + options.budgetMs : Number.POSITIVE_INFINITY
   const budgeted = Number.isFinite(deadline)
   const timeLeft = () => deadline - Date.now()
+  /** Call before every DSVN lookup: stop cleanly instead of being killed mid-request. */
+  const ensureTime = (what: string) => {
+    if (budgeted && timeLeft() < LOOKUP_RESERVE_MS) throw new BudgetExceeded(`Hết thời gian chạy: ${what} để lượt sau.`)
+  }
   const today = vietnamToday()
   const from = options.from ?? today
   const until = options.until ?? addDays(from, 29)
@@ -408,6 +452,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
   const routeByPair = new Map(routes.map((route) => [`${route.from}>${route.to}`, route]))
   const focusCodes = new Set(routes.flatMap((route) => [route.from, route.to]))
 
+  await closeStaleRuns(supabase).catch(() => undefined)
   const { data: run, error: runError } = await supabase
     .from('schedule_sync_runs')
     .insert({ source: 'dsvn', trigger_type: options.trigger, window_start: from, window_end: until, requested_snapshots: 0 })
@@ -468,6 +513,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
     async function listingsFor(originDate: string) {
       const cached = listingsByDate.get(originDate)
       if (cached) return cached
+      ensureTime(`danh sách tàu từ ngày ${originDate}`)
       const all: Listing[] = []
       for (const line of LINES) {
         for (const direction of DIRECTIONS) {
@@ -484,6 +530,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
     const patterns = new Map<number, PatternStop[] | null>()
     async function patternFor(listing: Listing, originDate: string) {
       if (patterns.has(listing.paTau)) return patterns.get(listing.paTau) ?? null
+      ensureTime(`lịch chạy tàu ${listing.macTau} ngày ${originDate}`)
       await timetablePage.listTrains(listing.line, listing.direction, originDate)
       const gas = await timetablePage.selectTrain(listing.paTau)
       const codes = new Set(gas.map((station) => station.maGa))
@@ -616,6 +663,8 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
       let failures = 0
       for (const group of groups.values()) {
         const { listing, originDate } = group[0]
+        // Outside the try: a budget stop abandons this date's fares (it stays due for the next run).
+        ensureTime(`giá vé ngày ${serviceDate}`)
         try {
           await farePage.listTrains(listing.line, listing.direction, originDate)
           await farePage.selectTrain(listing.paTau)
@@ -682,6 +731,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
           if (reachedHorizon) { closedDates.push(...closedRun); closedRun = [] }
         }
       } catch (error) {
+        if (error instanceof BudgetExceeded) { fail(error.message); break }
         fail(`Danh sách tàu ngày ${date}: ${error instanceof Error ? error.message : error}`)
       }
     }
@@ -718,6 +768,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
           log(`${date}: lịch đã cập nhật`)
         }
       } catch (error) {
+        if (error instanceof BudgetExceeded) { fail(`Hết thời gian chạy: lịch từ ngày ${date} để lượt sau.`); break }
         fail(`Lịch ngày ${date}: ${error instanceof Error ? error.message : error}`)
         markDate(date, { last_error: error instanceof Error ? error.message.slice(0, 500) : 'Lỗi không rõ' })
       }
@@ -731,6 +782,7 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
           await syncFares(date, built)
           fareSet.delete(date)
         } catch (error) {
+          if (error instanceof BudgetExceeded) break
           fail(`Giá ngày ${date}: ${error instanceof Error ? error.message : error}`)
         }
       }
@@ -779,8 +831,14 @@ export async function runDsvnSync(options: DsvnSyncOptions): Promise<DsvnSyncRes
     const hasErrors = result.errors.length > 0
     result.status = !hasErrors ? 'succeeded' : result.completedSnapshots > 0 || result.fareDates > 0 ? 'partial' : 'failed'
   } catch (error) {
-    result.status = 'failed'
-    fail(error instanceof Error ? error.message : 'Unknown DSVN sync failure.')
+    if (error instanceof BudgetExceeded) {
+      // E.g. while sampling dates for the projected timetable: keep what was saved.
+      fail(error.message)
+      result.status = result.completedSnapshots > 0 || result.fareDates > 0 ? 'partial' : 'failed'
+    } else {
+      result.status = 'failed'
+      fail(error instanceof Error ? error.message : 'Unknown DSVN sync failure.')
+    }
   } finally {
     await browser?.close().catch(() => undefined)
   }

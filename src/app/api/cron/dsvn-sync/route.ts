@@ -1,6 +1,6 @@
 import { timingSafeEqual } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
-import { runDsvnScheduleSync } from '@/lib/dsvn-sync'
+import { DsvnSyncBusyError, runDsvnScheduleSync } from '@/lib/dsvn-sync'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
     const result = await runDsvnScheduleSync('cron')
     return NextResponse.json(result, { status: result.status === 'failed' ? 502 : 200 })
   } catch (error) {
+    // Another sync is already running: skip tonight's run instead of competing with it.
+    if (error instanceof DsvnSyncBusyError) return NextResponse.json({ skipped: true, reason: error.message })
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Schedule sync failed.' },
       { status: 500 }

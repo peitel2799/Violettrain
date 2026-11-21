@@ -55,7 +55,7 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
   const load = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/operations/dsvn-sync', { cache: 'no-store' })
-      const payload = await response.json()
+      const payload = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(payload.error || 'Không thể tải trạng thái đồng bộ.')
       setData(payload)
       setDays(payload.config.defaultDays)
@@ -77,8 +77,12 @@ export default function DsvnSyncPanel({ canEdit }: { canEdit: boolean }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ days }),
       })
-      const payload = await response.json()
-      if (!response.ok) throw new Error(payload.error || payload.errors?.[0] || 'Đồng bộ DSVN thất bại.')
+      // A gateway timeout (504) returns an HTML page, not JSON.
+      const payload = await response.json().catch(() => ({}))
+      if (response.status === 504) {
+        throw new Error('Máy chủ hết thời gian chờ. Phần lịch đã lấy được vẫn được giữ; lượt đồng bộ sau (hoặc bấm lại với ít ngày hơn) sẽ làm tiếp.')
+      }
+      if (!response.ok) throw new Error(payload.error || payload.errors?.[0] || `Đồng bộ DSVN thất bại (mã ${response.status}).`)
       setMessage({
         type: payload.status === 'succeeded' ? 'success' : 'error',
         text: payload.status === 'succeeded'

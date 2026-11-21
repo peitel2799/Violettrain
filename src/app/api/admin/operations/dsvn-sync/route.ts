@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAdminApi } from '@/lib/admin-session'
-import { getDsvnSyncConfiguration, runDsvnScheduleSync } from '@/lib/dsvn-sync'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { DsvnSyncBusyError, getDsvnSyncConfiguration, runDsvnScheduleSync } from '@/lib/dsvn-sync'
+import { closeStaleRuns } from '@/lib/dsvn-sync-core'
+import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -15,6 +16,8 @@ export async function GET() {
     return NextResponse.json({ error: authorization.error }, { status: authorization.status })
   }
 
+  // Runs killed by a timeout would otherwise show as "running" forever.
+  await closeStaleRuns(createSupabaseServiceClient()).catch(() => undefined)
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase
     .from('schedule_sync_runs')
@@ -45,6 +48,7 @@ export async function POST(request: NextRequest) {
     const result = await runDsvnScheduleSync('manual', parsed.data.days)
     return NextResponse.json(result, { status: result.status === 'failed' ? 502 : 200 })
   } catch (error) {
+    if (error instanceof DsvnSyncBusyError) return NextResponse.json({ error: error.message }, { status: 409 })
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Không thể đồng bộ lịch DSVN.' },
       { status: 500 }
